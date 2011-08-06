@@ -5,12 +5,13 @@
 
 ;;;; External packages
 
-(require 'ack-emacs)       ;; Integration with the ACK source code search tool
-(require 'develock)        ;; Develock whitespace highlighting
-(require 'mvn)             ;; Maven support
-(require 'point-stack)     ;; A point stack facility.
-(require 'tabulate-region) ;; Region tabulate
-(require 'vcsh)            ;; Support for vcsh Scheme extensions
+(require 'ack-emacs)
+(require 'develock)
+(require 'mvn)
+(require 'point-stack)
+(require 'tabulate-region)
+(require 'vcsh)
+(require 'java-mode-indent-annotations)
 
 ;;;; Show the time and date
 
@@ -218,6 +219,7 @@ BEG and END (region to sort)."
 
 (add-hook 'java-mode-hook
           #'(lambda ()
+              (java-mode-indent-annotations-setup)
               (local-set-key [(shift f5)] 'mvn-master)
               (local-set-key [(control shift f5)] 'mvn)))
 
