@@ -1,16 +1,16 @@
+
 ;;;; Setup the load path
 
-(push "~" load-path)
 (push "~/.emacs.d/" load-path)
 
-;;;; Require some generally useful packages.
+;;;; External packages
 
-(require 'cl)        ;; Common Lisp compatibiliy functions
-(require 'ack-emacs) ;; Integration with the ACK source code search tool
-(require 'develock)  ;; Develock whitespace highlighting
-(require 'mvn)       ;; Maven support
-(require 'compile)   ;; Bring in the standard compile package, so that we
-                     ;; can add error message regexp's.
+(require 'ack-emacs)       ;; Integration with the ACK source code search tool
+(require 'develock)        ;; Develock whitespace highlighting
+(require 'mvn)             ;; Maven support
+(require 'point-stack)     ;; A point stack facility.
+(require 'tabulate-region) ;; Region tabulate
+(require 'vcsh)            ;; Support for vcsh Scheme extensions
 
 ;;;; Show the time and date
 
@@ -114,79 +114,11 @@
 (push (cons "\\.tps"    'sql-mode) auto-mode-alist)
 (push (cons "\\.vw"     'sql-mode) auto-mode-alist)
 
-;;;;; A simple point-stack mechanism
-;;
-;; from: http://www.zafar.se/bkz/Articles/EmacsTips
-
-(global-set-key [f7] 'point-stack-push)
-(global-set-key [f8] 'point-stack-pop)
-
-(defvar point-stack nil)
-
-(defun point-stack-push ()
-  "Push current location and buffer info onto stack."
-  (interactive)
-  (message "Location marked.")
-  (setq point-stack (cons (list (current-buffer) (point)) point-stack)))
-
-(defun point-stack-pop ()
-  "Pop a location off the stack and move to buffer"
-  (interactive)
-  (if (null point-stack)
-      (message "Stack is empty.")
-    (switch-to-buffer (caar point-stack))
-    (goto-char (cadar point-stack))
-    (setq point-stack (cdr point-stack))))
-
 ;;;;; Load cygwin32-mount
 
 (when ()
   (require 'cygwin-mount)
   (cygwin-mount-activate))
-
-;;;;; vCalc and vcsh related scheme indent paramaters
-
-(put '%early-dbind 'scheme-indent-function 2)
-(put '%early-define 'scheme-indent-function 1)
-(put '%early-defmacro 'scheme-indent-function 1)
-(put '%lambda 'scheme-indent-function 2)
-(put 'awhen 'scheme-indent-function 1)
-(put 'awhile 'scheme-indent-function 1)
-(put 'bench-repeat  'scheme-indent-function 1)
-(put 'bind-if-match 'scheme-indent-function 2)
-(put 'call-with-compiler-tracing 'scheme-indent-function 3)
-(put 'cond-match 'scheme-indent-function 1)
-(put 'case 'scheme-indent-function 1)
-(put 'catch 'scheme-indent-function 1)
-(put 'dbind 'scheme-indent-function 2)
-(put 'dbind-if-match 'scheme-indent-function 2)
-(put 'define-integration 'scheme-indent-function 1)
-(put 'do-memlog-recs 'scheme-indent-function 1)
-(put 'dohash 'scheme-indent-function 1)
-(put 'doiterate 'scheme-indent-function 1)
-(put 'dolist 'scheme-indent-function 1)
-(put 'dotimes 'scheme-indent-function 1)
-(put 'dovec 'scheme-indent-function 1)
-(put 'dynamic-let 'scheme-indent-function 1)
-(put 'etypecase 'scheme-indent-function 1)
-(put 'eval-when 'scheme-indent-function 1)
-(put 'handler-bind 'scheme-indent-function 1)
-(put 'list-let 'scheme-indent-function 2)
-(put 'locally-capture 'scheme-indent-function 1)
-(put 'mvbind 'scheme-indent-function 2)
-(put 'repeat 'scheme-indent-function 1)
-(put 'test-case/execution-order 'scheme-indent-function 1)
-(put 'typecase 'scheme-indent-function 1)
-(put 'unless 'scheme-indent-function 1)
-(put 'values-bind 'scheme-indent-function 2)
-(put 'when 'scheme-indent-function 1)
-(put 'while 'scheme-indent-function 1)
-(put 'with-fasl-file 'scheme-indent-function 2)
-(put 'with-gensyms 'scheme-indent-function 1)
-(put 'with-global-environment 'scheme-indent-function 1)
-(put 'with-port 'scheme-indent-function 2)
-(put 'with-temporary-file 'scheme-indent-function 2)
-
 
 (setq compilation-scroll-output t)
 
@@ -240,128 +172,6 @@
       org-todo-interpretation 'sequence)
 
 (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
-
-;;;; Text tabulate (convert into columns)
-
-(defun tab-current-char-to-point (target-point)
-  (let ((spaces-needed (- target-point (point))))
-    (when (> spaces-needed 0)
-      (dotimes (ii spaces-needed)
-        (insert " ")))))
-
-(defun tab-current-char-to-column (target-column)
-  (interactive "nTarget column: ")
-  (tab-current-char-to-point (+ (point-at-bol) target-column -1)))
-
-(defun mapcar/2 (fn xs ys)
-  (if (and (null xs) (null ys))
-      ()
-    (cons (funcall fn (car xs) (car ys))
-          (mapcar/2 fn (cdr xs) (cdr ys)))))
-
-(defun fold-list (kons knil lis)
-  (if (null lis)
-      knil
-    (fold-list kons
-               (funcall kons (car lis) knil)
-               (cdr lis))))
-
-(defvar *last-delim-positions* ())
-
-(defun max/content-widths (widths-1 widths-2)
-  (mapcar/2 #'(lambda (x y)
-                (max (if (null x) y x)
-                     (if (null y) x y)))
-            widths-1 widths-2))
-
-(defun find-delim-positions (delim start end)
-  (save-excursion
-    (goto-char start)
-    (let ((columns ()))
-      (while (search-forward delim end t)
-        (push (- (point) start) columns))
-      (reverse columns))))
-
-(defun apply-delim-positions (delim start end positions)
-   (save-excursion
-     (save-restriction
-       (narrow-to-region start end)
-       (goto-char 0)
-       (catch 'no-more-delims
-         (dolist (position positions)
-           (unless (search-forward delim nil t)
-          (throw 'no-more-delims ()))
-        (save-excursion
-          (goto-char (match-beginning 0))
-          (tab-current-char-to-point (+ start position -1))))))))
-
-(defun find-delim-positions-in-current-line (delim)
-  (interactive "MDelimiter: ")
-  (setq *last-delim-positions*
-        (find-delim-positions delim (point-at-bol) (point-at-eol))))
-
-(defun apply-delim-positions-to-current-line (delim)
-  (interactive "MDelimiter: ")
-  (apply-delim-positions delim (point-at-bol) (point-at-eol)  *last-delim-positions*))
-
-(defun apply-delim-positions-to-current-region (start end delim)
-  (interactive "r\nMDelimiter: ")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region start end)
-      (goto-char start)
-      (while (< (point) (point-max))
-        (apply-delim-positions delim (point-at-bol) (point-at-eol)  *last-delim-positions*)
-        (forward-line)))))
-
-(defun map-region-lines (fn start end)
-  (let ((result ()))
-    (save-excursion
-      (save-restriction
-        (narrow-to-region start end) ; no guarantee during fn that we have same narrowing...
-        (goto-char start)
-        (while (< (point) (point-max))
-          (push (funcall fn (point-at-bol) (point-at-eol)) result)
-          (forward-line))
-        (nreverse result)))))
-
-(defun delimiter-columns->content-widths (delim-cols)
-  (let ((pos 0))
-    (mapcar #'(lambda (col)
-                (prog1 
-                    (- col pos)
-                  (setq pos col)))
-            delim-cols)))
-
-(defun content-widths->delimiter-columns (delim-cols)
-  (let ((pos 0))
-    (mapcar #'(lambda (col)
-                (let ((col-end-pos (+ col pos)))
-                  (setq pos col-end-pos)
-                  col-end-pos))
-            delim-cols)))
-
-(defun find-best-delim-positions (start end delim)
-  (content-widths->delimiter-columns
-   (fold-list #'max/content-widths ()
-              (mapcar #'delimiter-columns->content-widths
-                      (map-region-lines #'(lambda (bol eol)
-                                            (find-delim-positions delim bol eol))
-                                        start end)))))
-
-
-(defun tabulate-region (start end delim)
-  (interactive "r\nMDelimiter: ")
-  (let ((best-positions (find-best-delim-positions start end delim)))
-    (map-region-lines #'(lambda (bol eol)
-                          (apply-delim-positions delim bol eol best-positions))
-                      start end)))
-
-
-(global-set-key [(control ?c) ?t ?f] 'find-delim-positions-in-current-line)
-(global-set-key [(control ?c) ?t ?a] 'apply-delim-positions-to-current-line)
-(global-set-key [(control ?c) ?t ?A] 'apply-delim-positions-to-current-region)
-(global-set-key [(control ?c) ?t ?t] 'tabulate-region)
 
 ;;;; Remove duplicate lines
 
