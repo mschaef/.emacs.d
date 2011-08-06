@@ -237,4 +237,7 @@ BEG and END (region to sort)."
                                paredit-mode-map))))))
 
 
-;;; Good ideas here: http://xenon.stanford.edu/~manku/emacs.html
+;;; Good ideas here:
+;;; *) http://xenon.stanford.edu/~manku/emacs.html
+;;; *) http://technical-dresese.blogspot.com/2008/11/why-ive-abandoned-eclipse-for-emacs.html
+;;; *) http://www.emacswiki.org/emacs/EmacsNiftyTricks
