@@ -9,6 +9,8 @@
 (require 'ack-emacs) ;; Integration with the ACK source code search tool
 (require 'develock)  ;; Develock whitespace highlighting
 (require 'mvn)       ;; Maven support
+(require 'compile)   ;; Bring in the standard compile package, so that we
+                     ;; can add error message regexp's.
 
 ;;;; Show the time and date
 
@@ -185,23 +187,8 @@
 (put 'with-port 'scheme-indent-function 2)
 (put 'with-temporary-file 'scheme-indent-function 2)
 
-;;;;; to allow next-error to work with csc.exe:
 
 (setq compilation-scroll-output t)
-
-(add-hook 'compilation-mode-hook
-          (lambda ()
-            (setq-default compilation-error-regexp-alist
-                          (append '(
-                                    ;; C# Compiler
-                                    ;; t.cs(6,18): error SC1006: Name of constructor must match name of class
-                                    ;;
-                                    ;; ("[ \t]*\\(\\([_a-zA-Z:\]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\)[,]\\([0-9]+\\)): \\(|error\\|warning\\) C+[0-9]+:" 1 3 4)
-                                    
-                                    ;; MS C++, but with fatal errors.
-                                    ("^\\([0-9]+>\\)?\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\)) : \\(?:error\\|fatal error\\|warnin\\(g\\)\\) C[0-9]+:" 2 3 nil (4)))
-                                  
-                                  compilation-error-regexp-alist))))
 
 ;;;;;  Setup Steve Yegge's js2-mode
 

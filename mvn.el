@@ -16,6 +16,10 @@
 
 (set 'compilation-buffer-name-function 'mvn-compile-buffer-name)
 
+
+(add-to-list 'compilation-error-regexp-alist
+             '("^\\(.+\\):\\[\\([0-9]+\\),\\([0-9]+\\)\\] " 1 2 3))
+
 (set 'compilation-mode-font-lock-keywords
      '(("^\\[ERROR\\] BUILD FAILURE"
         (0 compilation-error-face))
