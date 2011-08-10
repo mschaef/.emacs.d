@@ -115,9 +115,9 @@
 (push (cons "\\.tps"    'sql-mode) auto-mode-alist)
 (push (cons "\\.vw"     'sql-mode) auto-mode-alist)
 
-;;;;; Load cygwin32-mount
+;;;;; Load cygwin32-mount on Windows
 
-(when ()
+(when (eq system-type 'windows-nt)
   (require 'cygwin-mount)
   (cygwin-mount-activate))
 
@@ -172,7 +172,11 @@
                           "|" "DONE" "NOT-DONE")
       org-todo-interpretation 'sequence)
 
-(global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
+;;; Bind a key to toggle fullscreen mode
+
+(when (fboundp 'ns-toggle-fullscreen)
+  (global-set-key (kbd "M-RET")
+                  'ns-toggle-fullscreen))
 
 ;;;; Remove duplicate lines
 
@@ -241,3 +245,7 @@ BEG and END (region to sort)."
 ;;; *) http://xenon.stanford.edu/~manku/emacs.html
 ;;; *) http://technical-dresese.blogspot.com/2008/11/why-ive-abandoned-eclipse-for-emacs.html
 ;;; *) http://www.emacswiki.org/emacs/EmacsNiftyTricks
+
+;;; Start the emacs server
+
+(server-start)
