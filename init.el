@@ -249,3 +249,21 @@ BEG and END (region to sort)."
 ;;; Start the emacs server
 
 (server-start)
+
+
+(defun split-v () ;;; Taken from http://www.emacswiki.org/emacs/ThreeWindow
+  (interactive)
+  (if (= 2 (length (window-list)))
+    (let ((this-buffer (window-buffer))
+          (next-buffer (progn
+                         (other-window 1)
+                         (buffer-name))))
+      (progn
+        (delete-other-windows)
+        (split-window-horizontally)
+        (set-window-buffer nil this-buffer)
+        (set-window-buffer (next-window) next-buffer)))))
+
+;; http://stackoverflow.com/questions/60367/the-single-most-useful-emacs-feature
+;; http://www.emacswiki.org/emacs/SqlComplete
+;; http://www.emacswiki.org/emacs/AntCall
