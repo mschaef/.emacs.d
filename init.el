@@ -2,6 +2,7 @@
 ;;;; Setup the load path
 
 (push "~/.emacs.d/" load-path)
+(push "~/.emacs.d/slime" load-path)
 
 ;;;; External packages
 
@@ -137,6 +138,7 @@
   ;; If there is more than one, they won't work right.
  '(initial-buffer-choice t)
  '(menu-bar-mode nil)
+ '(safe-local-variable-values (quote ((lexical-binding . t))))
  '(tnt-persistent-timeout 15)
  '(tool-bar-mode nil))
 
@@ -250,6 +252,15 @@ BEG and END (region to sort)."
 
 (server-start)
 
+;;;; Get slime set up
+
+(setq inferior-lisp-program "/opt/local/bin/clisp") ; your Lisp system
+
+(require 'slime)
+
+(slime-setup)
+
+;;;; Test functions
 
 (defun split-v () ;;; Taken from http://www.emacswiki.org/emacs/ThreeWindow
   (interactive)
@@ -267,3 +278,4 @@ BEG and END (region to sort)."
 ;; http://stackoverflow.com/questions/60367/the-single-most-useful-emacs-feature
 ;; http://www.emacswiki.org/emacs/SqlComplete
 ;; http://www.emacswiki.org/emacs/AntCall
+(put 'narrow-to-page 'disabled nil)
