@@ -29,6 +29,7 @@
 (put 'downcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 (put 'set-goal-column 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
 
 ;;;; Switch to better looking colors
 
@@ -278,4 +279,4 @@ BEG and END (region to sort)."
 ;; http://stackoverflow.com/questions/60367/the-single-most-useful-emacs-feature
 ;; http://www.emacswiki.org/emacs/SqlComplete
 ;; http://www.emacswiki.org/emacs/AntCall
-(put 'narrow-to-page 'disabled nil)
+
