@@ -261,6 +261,10 @@ BEG and END (region to sort)."
 
 (slime-setup)
 
+;;;; Remove the "Yes"/"No" questions in favor of the simpler "Y"/"N"
+
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 ;;;; Test functions
 
 (defun split-v () ;;; Taken from http://www.emacswiki.org/emacs/ThreeWindow
