@@ -9,12 +9,10 @@
 (require 'compile)
 
 (defvar mvn-command-history nil
-"Maven command history variable")
+  "Maven command history variable")
 
-(defun mvn-compile-buffer-name (mode)
-"*Maven Compile*")
-
-(set 'compilation-buffer-name-function 'mvn-compile-buffer-name)
+(defvar mvn-command-template ""
+  "The string formatting template used to form the mvn command.")
 
 
 (add-to-list 'compilation-error-regexp-alist
@@ -93,10 +91,25 @@ if no POM is found, returns nil."
         (mvn-look-for-master-pom pom-path)
       pom-path)))
 
+(defun mvn-compilation-buffer-name (mode-name)
+  "*maven-compilation*")
+
+(defun mvn-compile-command (pom-path goal)
+  "Find the compilation command for the pom in the POM-PATH directory,
+and the specified goal."
+  (concat "mvn -o -f " pom-path "/pom.xml " goal " "))
+
+(defun mvn-read-compile-command (pom-path)
+  (mvn-compile-command pom-path
+                       (read-from-minibuffer (format "(POM %s) Goal: " pom-path)
+                                             "clean compile"
+                                             nil nil 'mvn-command-history)))
+
 (defun mvn-interactive-compile (pom-path goal)
-  (compile (read-from-minibuffer "Command: "
-                                 (concat "mvn -o -f " pom-path "/pom.xml " goal " ")
-                                 nil nil 'mvn-command-history)))
+  (save-some-buffers (not compilation-ask-about-save) nil)
+  (compilation-start (mvn-read-compile-command pom-path)
+                     t
+                     #'mvn-compilation-buffer-name))
 
 (defun mvn-compile (goal look-for-master-p)
   "Runs maven in the current project. Starting at the directoy where the file
