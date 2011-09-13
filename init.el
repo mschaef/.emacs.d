@@ -284,3 +284,22 @@ BEG and END (region to sort)."
 ;; http://www.emacswiki.org/emacs/SqlComplete
 ;; http://www.emacswiki.org/emacs/AntCall
 
+;; A more completeframe title format, taken from
+;;
+;;   http://ubuntuforums.org/showthread.php?t=1530333
+
+(setq-default frame-title-format
+              '(:eval
+                (format "%s@%s: %s %s"
+                        (or (file-remote-p default-directory 'user)
+                            user-real-login-name)
+                        (or (file-remote-p default-directory 'host)
+                            system-name)
+                        (buffer-name)
+                        (cond
+                         (buffer-file-truename
+                          (concat "(" buffer-file-truename ")"))
+                         (dired-directory
+                          (concat "{" dired-directory "}"))
+                         (t
+                          "[no file]")))))
