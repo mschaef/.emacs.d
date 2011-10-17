@@ -13,6 +13,7 @@
 (require 'tabulate-region)
 (require 'vcsh)
 (require 'java-mode-indent-annotations)
+(require 'markdown-mode)
 
 ;;;; Show the time and date
 
@@ -21,7 +22,9 @@
 
 ;;;; Configure ACK
 
-(setq ack-command "/opt/local/bin/ack")
+(setq ack-command "perl /usr/local/bin/ack")
+
+(setq ack-command "ack")
 
 ;;;; Enable some commands that Emacs disables by default.
 
@@ -106,8 +109,6 @@
           #'(lambda ()
               (local-set-key [(shift f5)] 'sql-send-buffer)))
 
-;;;;; File types from MSRS
-
 (push (cons "\\.fnc"    'sql-mode) auto-mode-alist)
 (push (cons "\\.pkb"    'sql-mode) auto-mode-alist)
 (push (cons "\\.pks"    'sql-mode) auto-mode-alist)
@@ -116,6 +117,12 @@
 (push (cons "\\.sql"    'sql-mode) auto-mode-alist)
 (push (cons "\\.tps"    'sql-mode) auto-mode-alist)
 (push (cons "\\.vw"     'sql-mode) auto-mode-alist)
+
+;;;;; Markdown Support
+
+(push (cons "\\.md"     'markdown-mode) auto-mode-alist)
+
+(add-hook 'markdown-mode-hook 'turn-on-auto-fill)
 
 ;;;;; Load cygwin32-mount on Windows
 
@@ -301,5 +308,11 @@ BEG and END (region to sort)."
                           (concat "(" buffer-file-truename ")"))
                          (dired-directory
                           (concat "{" dired-directory "}"))
-                         (t
-                          "[no file]")))))
+
+                         "[no file]"))))
+
+(defun remove-trailing-spaces () ; TODO: Restrict to current selection
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (replace-regexp " +$" "")))
