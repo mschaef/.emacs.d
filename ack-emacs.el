@@ -30,45 +30,43 @@
 
 (defvar ack-guess-search-string nil
   "If non-nil, use the symbol at the point as a search string,")
- 
+
+(defvar ack-command-suffix nil
+  "If non-nil, the suffix for the ack command.")
+
 (define-compilation-mode ack-mode "Ack"
   "Specialization of compilation-mode for use with ack."
   nil)
  
-(defun ack-search (dir pattern args)
+(defun ack-search (pattern args)
   "Run ack, with user-specified ARGS, and collect output in a buffer.
 While ack runs asynchronously, you can use the \\[next-error] command to
 find the text that ack hits refer to. The command actually run is
 defined by the ack-command variable."
-  (interactive (list (read-file-name "Run ack in directory: " nil "" t)
-                     (read-string "Search for: " (if ack-guess-search-string (thing-at-point 'symbol) ""))
+  (interactive (list (read-string "Search for: " (if ack-guess-search-string (thing-at-point 'symbol) ""))
                      (read-string "Ack arguments: " "-i --nocolor --nogroup" nil "-i --nocolor --nogroup" nil)))
-  ;; Get dir into an the right state, incase a file name was used
-  (setq dir (abbreviate-file-name
-             (file-name-as-directory (expand-file-name dir))))
-  ;; Check that it's really a directory.
-  (or (file-directory-p dir)
-      (error "ack needs a directory: %s" dir))
  
   (let (compile-command
-        (compilation-error-regexp-alist grep-regexp-alist)
+         (compilation-error-regexp-alist grep-regexp-alist)
         (compilation-directory default-directory)
         (ack-full-buffer-name (concat "*ack-" pattern "*")))
     ;; (save-some-buffers (not compilation-ask-about-save) nil)
     ;; lambda defined here since compilation-start expects to call a function to get the buffer name
-    (compilation-start (concat ack-command " " args " " pattern " " dir) 'ack-mode
+    (compilation-start (concat ack-command " " args " " pattern (if ack-command-suffix
+                                                                    ack-command-suffix
+                                                                  ""))
+                       'ack-mode
                        (when ack-use-search-in-buffer-name
                          (function (lambda (ignore)
                                      ack-full-buffer-name)))
                        (regexp-quote pattern))))
 
-(defun ack (dir pattern)
+(defun ack (pattern)
   "Run ack, with user-specified ARGS, and collect output in a buffer.
 While ack runs asynchronously, you can use the \\[next-error] command to
 find the text that ack hits refer to. The command actually run is
 defined by the ack-command variable."
-  (interactive (list (read-file-name "Run ack in directory: " nil "" t)
-                     (read-string "Search for: " (if ack-guess-search-string (thing-at-point 'symbol) ""))))
-  (ack-search dir pattern "-i --nocolor --nogroup"))
+  (interactive (list (read-string "Search for: " (if ack-guess-search-string (thing-at-point 'symbol) ""))))
+  (ack-search pattern "-i --nocolor --nogroup"))
 
 (provide 'ack-emacs)
