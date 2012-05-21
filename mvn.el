@@ -14,9 +14,16 @@
 (defvar mvn-command-template ""
   "The string formatting template used to form the mvn command.")
 
+(defvar mvn-default-goal "clean compile"
+  "The default goal for mvn compilations")
 
 (add-to-list 'compilation-error-regexp-alist
-             '("^\\(.+\\):\\[\\([0-9]+\\),\\([0-9]+\\)\\] " 1 2 3))
+             '("\\[ERROR\\] \\(.+\\):\\[\\([0-9]+\\),\\([0-9]+\\)\\] .+$" 1 2 3))
+
+(add-to-list 'compilation-error-regexp-alist
+             '("\\[WARNING\\] \\([a-zA-Z]:\\)?\\(.+\\):\\([0-9]+\\): .+$" 2 3))
+
+
 
 (set 'compilation-mode-font-lock-keywords
      '(("^\\[ERROR\\] BUILD FAILURE"
@@ -99,17 +106,18 @@ if no POM is found, returns nil."
 and the specified goal."
   (concat "mvn -o -f " pom-path "/pom.xml " goal " "))
 
-(defun mvn-read-compile-command (pom-path)
+(defun mvn-read-compile-command (pom-path goal)
   (mvn-compile-command pom-path
                        (read-from-minibuffer (format "(POM %s) Goal: " pom-path)
-                                             "clean compile"
+                                             goal
                                              nil nil 'mvn-command-history)))
 
 (defun mvn-interactive-compile (pom-path goal)
   (save-some-buffers (not compilation-ask-about-save) nil)
-  (compilation-start (mvn-read-compile-command pom-path)
-                     t
-                     #'mvn-compilation-buffer-name))
+  (let ((default-directory pom-path))
+    (compilation-start (mvn-read-compile-command pom-path goal)
+                       t
+                       #'mvn-compilation-buffer-name)))
 
 (defun mvn-compile (goal look-for-master-p)
   "Runs maven in the current project. Starting at the directoy where the file
@@ -127,12 +135,21 @@ compilations."
   (interactive)
   "Runs maven in the current project, against the first POM file upward in the
 directory hierarchy from the current buffer."
-  (mvn-compile "compile" ()))
+  (mvn-compile mvn-default-goal ()))
 
 (defun mvn-master ()
   (interactive)
   "Runs maven against the current project's POM file. If there is a master POM
 file, the master POM file is used."
-  (mvn-compile "compile" t))
+  (mvn-compile mvn-default-goal t))
+
+(defun mvn-set-default-key-bindings ()
+  (local-set-key [(shift f5)] 'mvn-master)
+  (local-set-key [(control shift f5)] 'mvn))
+
+(add-hook 'java-mode-hook
+          #'(lambda ()
+              (java-mode-indent-annotations-setup)
+              (mvn-set-default-key-bindings)))
 
 (provide 'mvn)

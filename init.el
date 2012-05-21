@@ -3,17 +3,22 @@
 
 (push "~/.emacs.d/" load-path)
 (push "~/.emacs.d/slime" load-path)
+(push "~/.emacs.d/magit" load-path)
 
 ;;;; External packages
 
 (require 'ack-emacs)
 (require 'develock)
 (require 'mvn)
+;(require 'ftl)
 (require 'point-stack)
 (require 'tabulate-region)
 (require 'vcsh)
 (require 'java-mode-indent-annotations)
 (require 'markdown-mode)
+
+(require 'magit)
+(require 'magit-svn)
 
 ;;;; Show the time and date
 
@@ -34,6 +39,7 @@
 (put 'set-goal-column 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 
+
 ;;;; Switch to better looking colors
 
 (set 'default-frame-alist
@@ -48,8 +54,12 @@
 (set-face-background 'highlight "red")
 (set-face-foreground 'highlight "yellow")
 
-(set-face-background 'modeline "gray70")
-(set-face-foreground 'modeline "black")
+(set-face-background 'modeline "darkblue")
+(set-face-foreground 'modeline "yellown")
+(set-face-background 'modeline-inactive "gray40")
+(set-face-foreground 'modeline-inactive "black")
+
+(set-face-foreground 'modeline-buffer-id "green")
 
 (set-face-font 'modeline "Lucida Console:Bold:10")
 
@@ -84,6 +94,18 @@
        (global-font-lock-mode t)
        (setq font-lock-maximum-decoration t)))
 
+
+;; Turn off hl-line-mode. It is not useful.
+;;
+;; (cond ((fboundp 'global-hl-line-mode)
+;;        (global-hl-line-mode 1)
+;;        (set-face-background 'hl-line "gray40")))
+
+(cond ((fboundp 'global-linum-mode)
+       (global-linum-mode 1)
+       (set-face-background 'linum "gray40")
+       (set-face-foreground 'linum "gray70")))
+
 ;;;; Highlight the region between the mark and point
 
 (transient-mark-mode t)
@@ -93,7 +115,6 @@
 (global-set-key [f12] 'next-error)
 (global-set-key [(shift f5)] 'compile)
 (global-set-key "\C-z" 'undo)
-(global-set-key [f9] 'speedbar-get-focus)
 (global-set-key [f5] 'goto-line)
 
 (global-unset-key [?\s-p])
@@ -124,6 +145,14 @@
 
 (add-hook 'markdown-mode-hook 'turn-on-auto-fill)
 
+;;;;; Freemarker support
+
+;; (push (cons "\\.ftl$" 'ftl-mode) auto-mode-alist)
+
+;; (add-hook 'ftl-mode-hook
+;;           #'(lambda ()
+;;               (mvn-set-default-key-bindings)))
+
 ;;;;; Load cygwin32-mount on Windows
 
 (when (eq system-type 'windows-nt)
@@ -146,7 +175,7 @@
   ;; If there is more than one, they won't work right.
  '(initial-buffer-choice t)
  '(menu-bar-mode nil)
- '(safe-local-variable-values (quote ((lexical-binding . t))))
+ '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
  '(tnt-persistent-timeout 15)
  '(tool-bar-mode nil))
 
@@ -223,19 +252,13 @@ BEG and END (region to sort)."
     ;; Put HTML tags beginning and end of current region.
     (save-restriction
       (narrow-to-region start end)
-      (goto-char start)
+       (goto-char start)
       (insert (format "<%s>" tag))
       (goto-char (point-max))
       (insert (format "</%s>" tag)))))
 
 (global-set-key [(control ?c) (control ?t)] 'tag-region)
 
-
-(add-hook 'java-mode-hook
-          #'(lambda ()
-              (java-mode-indent-annotations-setup)
-              (local-set-key [(shift f5)] 'mvn-master)
-              (local-set-key [(control shift f5)] 'mvn)))
 
 ;; When `paredit-mode' is enabled it takes precedence over the major
 ;; mode effectively rebinding C-j to `paredit-newline' instead of
@@ -316,3 +339,7 @@ BEG and END (region to sort)."
   (save-excursion
     (goto-char (point-min))
     (replace-regexp " +$" "")))
+
+(require 'vc)
+(remove-hook 'find-file-hooks 'vc-find-file-hook)
+(delete 'Git vc-handled-backends)
