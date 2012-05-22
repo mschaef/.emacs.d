@@ -334,12 +334,17 @@ BEG and END (region to sort)."
 
                          "[no file]"))))
 
-(defun remove-trailing-spaces () ; TODO: Restrict to current selection
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (replace-regexp " +$" "")))
-
 (require 'vc)
 (remove-hook 'find-file-hooks 'vc-find-file-hook)
 (delete 'Git vc-handled-backends)
+
+;;;; Scratch Buffer Tools
+
+(defun switch-to-scratch-buffer ()
+  "Make the scratch buffer (*scratch*) current and display it in
+the current window."
+  (interactive)
+  (switch-to-buffer "*scratch*"))
+
+(global-set-key [(shift f4)] 'switch-to-scratch-buffer)
+
