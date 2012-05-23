@@ -379,3 +379,20 @@ the current window."
   (switch-to-buffer (orglog-most-recent-buffer-name)))
 
 (global-set-key [f6] 'orglog-switch-to-most-recent-buffer)
+
+;;;; Interactive window split
+
+(defun interactive-split-current-window ()
+  "Interactively split the current window, either horizontally or
+vertically. The rule of thumb is that this function favors a
+horizontal split, unless it would result in windows narrower than
+the current fill-column."
+  (interactive)
+  (message "(> %d %d)" (window-width)  (* 2 fill-column))
+  (if (> (window-width) (* 2 fill-column))
+      (split-window-horizontally)
+    (split-window-vertically)))
+
+
+(global-set-key [(control ?x) ?2] 'interactive-split-current-window)
+
