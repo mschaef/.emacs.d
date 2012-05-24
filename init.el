@@ -388,7 +388,6 @@ vertically. The rule of thumb is that this function favors a
 horizontal split, unless it would result in windows narrower than
 the current fill-column."
   (interactive)
-  (message "(> %d %d)" (window-width)  (* 2 fill-column))
   (if (> (window-width) (* 2 fill-column))
       (split-window-horizontally)
     (split-window-vertically)))
