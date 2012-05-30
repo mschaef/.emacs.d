@@ -17,7 +17,6 @@
 (push "~/.emacs.d/slime" load-path)
 (push "~/.emacs.d/magit" load-path)
 
-
 ;;;; External packages
 
 (require 'lisp-utilities)
@@ -102,14 +101,14 @@
 
 ;;;;; Font lock mode is always on
 
-(cond ((fboundp 'global-font-lock-mode)
-       (global-font-lock-mode t)
-       (setq font-lock-maximum-decoration t)))
+(when-fboundp global-font-lock-mode
+  (global-font-lock-mode t)
+  (setq font-lock-maximum-decoration t))
 
-(cond ((fboundp 'global-linum-mode)
-       (global-linum-mode 1)
-       (set-face-background 'linum "gray40")
-       (set-face-foreground 'linum "gray70")))
+(when-fboundp global-linum-mode
+  (global-linum-mode 1)
+  (set-face-background 'linum "gray40")
+  (set-face-foreground 'linum "gray70"))
 
 ;;;; Highlight the region between the mark and point
 
@@ -134,7 +133,7 @@
 
 ;;;;; Load cygwin32-mount on Windows
 
-(when (eq system-type 'windows-nt)
+(when-on-windows
   (require 'cygwin-mount)
   (cygwin-mount-activate))
 
@@ -144,6 +143,7 @@
 
 (autoload 'js2-mode "js2" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+
 ;;;;; Setup Clojure mode
 
 (autoload 'clojure-mode "clojure-mode" "A major mode for Clojure" t)
@@ -171,9 +171,8 @@
 
 ;;; Bind a key to toggle fullscreen mode
 
-(when (fboundp 'ns-toggle-fullscreen)
-  (global-set-key (kbd "M-RET")
-                  'ns-toggle-fullscreen))
+(when-fboundp ns-toggle-fullscreen
+  (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen))
 
 ;;;; Remove duplicate lines
 
@@ -249,11 +248,12 @@ BEG and END (region to sort)."
                          (t
                           "[no file]")))))
 
-;;;; Remove Git from vc support to keep it from being too slow on windows
+;;;; Git integration is slow on windows machines.
 
-(require 'vc)
-(remove-hook 'find-file-hooks 'vc-find-file-hook)
-(delete 'Git vc-handled-backends)
+(when-on-windows
+  (require 'vc)
+  (remove-hook 'find-file-hooks 'vc-find-file-hook)
+  (delete 'Git vc-handled-backends))
 
 ;;;; Scratch Buffer Tools
 

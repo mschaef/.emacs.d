@@ -26,6 +26,20 @@ of the loop."
                (progn ,@body)
              (throw ',escape ())))))))
 
+;;; System configuration macros
+
+(defmacro when-on-windows (&rest body)
+  "Evaluates BODY when running on a Windows PC."
+  (declare (indent 0))
+  `(when (eq system-type 'windows-nt)
+     ,@body))
+
+(defmacro when-fboundp (symbol &rest body)
+  "Evaluates BODY when SYMBOL refers to a symbol that is fboundp."
+  (declare (indent 1))
+  `(when (fboundp ',symbol)
+     ,@body))
+
 ;;; Courtesy of http://stackoverflow.com/questions/5925485/emacs-lisp-macro-stepper
 
 (defun macroexpand-point (sexp)
