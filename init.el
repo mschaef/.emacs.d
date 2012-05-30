@@ -2,7 +2,6 @@
 ;;;;
 ;;;; Toplevel Emacs initialization code.
 
-
 ;;; Good ideas here:
 ;;
 ;; http://xenon.stanford.edu/~manku/emacs.html
@@ -18,21 +17,22 @@
 (push "~/.emacs.d/slime" load-path)
 (push "~/.emacs.d/magit" load-path)
 
+
 ;;;; External packages
 
-(require 'ack-emacs)
-(require 'develock)
-(require 'mvn)
+(require 'lisp-utilities)
 (require 'point-stack)
 (require 'tabulate-region)
-(require 'vcsh)
-(require 'java-mode-indent-annotations)
-(require 'markdown-mode)
-(require 'lisp-utilities)
 (require 'orglog)
-
 (require 'magit)
 (require 'magit-svn)
+(require 'develock)
+(require 'ack-emacs)
+(require 'markdown-mode)
+(require 'mvn)
+(require 'java-mode-indent-annotations)
+(require 'vcsh)
+
 
 ;;;; Show the time and date
 
@@ -40,8 +40,6 @@
 (display-time)
 
 ;;;; Configure ACK
-
-(setq ack-command "perl /usr/local/bin/ack")
 
 (setq ack-command "ack")
 
@@ -124,25 +122,10 @@
 (global-set-key "\C-z" 'undo)
 (global-set-key [f5] 'goto-line)
 
-(global-unset-key [?\s-p])
-
-
 (global-set-key [f2] 'ff-find-other-file)
 
-;;;;; SQL Tools
+(global-unset-key [?\s-p])
 
-(add-hook 'sql-mode-hook
-          #'(lambda ()
-              (local-set-key [(shift f5)] 'sql-send-buffer)))
-
-(push (cons "\\.fnc"    'sql-mode) auto-mode-alist)
-(push (cons "\\.pkb"    'sql-mode) auto-mode-alist)
-(push (cons "\\.pks"    'sql-mode) auto-mode-alist)
-(push (cons "\\.prc"    'sql-mode) auto-mode-alist)
-(push (cons "\\.schema" 'sql-mode) auto-mode-alist)
-(push (cons "\\.sql"    'sql-mode) auto-mode-alist)
-(push (cons "\\.tps"    'sql-mode) auto-mode-alist)
-(push (cons "\\.vw"     'sql-mode) auto-mode-alist)
 
 ;;;;; Markdown Support
 
@@ -161,27 +144,6 @@
 
 (autoload 'js2-mode "js2" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-
-;;;;; Custom stuff.
-
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(initial-buffer-choice t)
- '(menu-bar-mode nil)
- '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
- '(tnt-persistent-timeout 15)
- '(tool-bar-mode nil))
-
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- )
-
 ;;;;; Setup Clojure mode
 
 (autoload 'clojure-mode "clojure-mode" "A major mode for Clojure" t)
@@ -287,6 +249,8 @@ BEG and END (region to sort)."
 
                          "[no file]"))))
 
+;;;; Remove Git from vc support to keep it from being too slow on windows
+
 (require 'vc)
 (remove-hook 'find-file-hooks 'vc-find-file-hook)
 (delete 'Git vc-handled-backends)
@@ -300,6 +264,7 @@ the current window."
   (switch-to-buffer "*scratch*"))
 
 (global-set-key [(shift f4)] 'switch-to-scratch-buffer)
+
 ;;;; Interactive window split
 
 (defun interactive-split-current-window ()
@@ -316,3 +281,22 @@ the current fill-column."
 (global-set-key [(control ?x) ?2] 'interactive-split-current-window)
 
 
+;;;;; Custom stuff.
+
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(initial-buffer-choice t)
+ '(menu-bar-mode nil)
+ '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
+ '(tnt-persistent-timeout 15)
+ '(tool-bar-mode nil))
+
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
