@@ -125,12 +125,6 @@
 
 (global-unset-key [?\s-p])
 
-
-;;;;; Markdown Support
-
-(push (cons "\\.md"     'markdown-mode) auto-mode-alist)
-(add-hook 'markdown-mode-hook 'turn-on-auto-fill)
-
 ;;;;; Load cygwin32-mount on Windows
 
 (when-on-windows
@@ -139,17 +133,24 @@
 
 (setq compilation-scroll-output t)
 
-;;;;;  Setup Steve Yegge's js2-mode
+;;;;; Configure a few new automatic modes
+
+;;; markdown mode
+
+(push (cons "\\.md"     'markdown-mode) auto-mode-alist)
+(add-hook 'markdown-mode-hook 'turn-on-auto-fill)
+
+;;; js2 mode
 
 (autoload 'js2-mode "js2" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
-;;;;; Setup Clojure mode
+;;; Clojure mode
 
 (autoload 'clojure-mode "clojure-mode" "A major mode for Clojure" t)
 (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
 
-;;;;; Setup paredit mode
+;;; paredit
 
 (autoload 'paredit-mode "paredit"
    "Minor mode for pseudo-structurally editing Lisp code."
@@ -162,6 +163,15 @@
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'lisp-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'scheme-mode-hook 'lisp-enable-paredit-hook)
+
+;; Allow C-j to work as it usually does in lisp interaction buffers
+
+(add-hook 'lisp-interaction-mode-hook
+          (lambda ()
+            (setq minor-mode-overriding-map-alist
+                  `((paredit-mode
+                     ,@(remove (cons ?\C-j 'paredit-newline)
+                               paredit-mode-map))))))
 
 ;;;; Org mode keywords
 
@@ -197,14 +207,6 @@ BEG and END (region to sort)."
 
 
 
-;;;; Allow C-j to work as it usually does in lisp interaction buffers
-
-(add-hook 'lisp-interaction-mode-hook
-          (lambda ()
-            (setq minor-mode-overriding-map-alist
-                  `((paredit-mode
-                     ,@(remove (cons ?\C-j 'paredit-newline)
-                               paredit-mode-map))))))
 
 ;;;; Start the emacs server
 
