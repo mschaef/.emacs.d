@@ -6,6 +6,7 @@
 ;;;;   http://thegreylensmansview.blogspot.com/2009/03/stone-tools-and-scala-development-part.html
 ;;;;
 
+(require 'lisp-utilities)
 (require 'compile)
 
 (defvar mvn-command-history nil
@@ -160,3 +161,4 @@ file, the master POM file is used."
   "A regular expression used for matching Java import statements.")
 
 (provide 'mvn)
+
