@@ -152,4 +152,11 @@ file, the master POM file is used."
               (java-mode-indent-annotations-setup)
               (mvn-set-default-key-bindings)))
 
+
+;;;; Import tools
+
+(defvar mvn-java-import-regexp
+  "import[ \\t\\n]+\\(\\([a-zA-Z_][a-zA-Z0-9_]*\\)\\(\\.\\([a-zA-Z_][a-zA-Z0-9_]*\\)\\)*\\);"
+  "A regular expression used for matching Java import statements.")
+
 (provide 'mvn)
