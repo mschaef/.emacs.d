@@ -368,16 +368,17 @@ name if it is, and nil otherwise."
 
 (defun orglog-most-recent-buffer-name ()
   "Return the name of the orglog buffer corresponding to the most
-recent log file."
-  (car (reverse
-        (sort (orglog-buffer-names)
-              #'string<))))
+recent log file. If there is no orglog buffer, returns nil."
+  (car (reverse (sort (orglog-buffer-names) #'string<))))
 
 (defun orglog-switch-to-most-recent-buffer ()
   "Make the most recent orglog buffer current and display it in
-the current window."
+the current window. If there is no such buffer, display an error"
   (interactive)
-  (switch-to-buffer (orglog-most-recent-buffer-name)))
+  (let ((buffer-name (orglog-most-recent-buffer-name)))
+    (if buffer-name
+        (switch-to-buffer buffer-name)
+      (message "No current orglog buffer."))))
 
 (global-set-key [f6] 'orglog-switch-to-most-recent-buffer)
 
