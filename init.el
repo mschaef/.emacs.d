@@ -197,12 +197,8 @@ BEG and END (region to sort)."
 
 
 
-;; When `paredit-mode' is enabled it takes precedence over the major
-;; mode effectively rebinding C-j to `paredit-newline' instead of
-;; `eval-print-last-sexp'.  I do not want this overridden in
-;; lisp-interaction-mode.  So, use the buffer-local
-;; `minor-mode-overriding-map-alist' to remove the C-j mapping from
-;; the standard `paredit-mode' bindings.
+;;;; Allow C-j to work as it usually does in lisp interaction buffers
+
 (add-hook 'lisp-interaction-mode-hook
           (lambda ()
             (setq minor-mode-overriding-map-alist
@@ -210,14 +206,13 @@ BEG and END (region to sort)."
                      ,@(remove (cons ?\C-j 'paredit-newline)
                                paredit-mode-map))))))
 
-
 ;;;; Start the emacs server
 
 (server-start)
 
 ;;;; Get slime set up
 
-(setq inferior-lisp-program "/opt/local/bin/clisp") ; your Lisp system
+(setq inferior-lisp-program "clisp") ; your Lisp system
 
 (require 'slime)
 
@@ -277,9 +272,7 @@ the current fill-column."
       (split-window-horizontally)
     (split-window-vertically)))
 
-
 (global-set-key [(control ?x) ?2] 'interactive-split-current-window)
-
 
 ;;;;; Custom stuff.
 
