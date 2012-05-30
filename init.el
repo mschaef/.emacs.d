@@ -67,7 +67,7 @@
 (set-face-foreground 'highlight "yellow")
 
 (set-face-background 'modeline "darkblue")
-(set-face-foreground 'modeline "yellown")
+(set-face-foreground 'modeline "yellow")
 (set-face-background 'modeline-inactive "gray40")
 (set-face-foreground 'modeline-inactive "black")
 
@@ -246,8 +246,8 @@ BEG and END (region to sort)."
                           (concat "(" buffer-file-truename ")"))
                          (dired-directory
                           (concat "{" dired-directory "}"))
-
-                         "[no file]"))))
+                         (t
+                          "[no file]")))))
 
 ;;;; Remove Git from vc support to keep it from being too slow on windows
 
