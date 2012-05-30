@@ -16,6 +16,7 @@
 (require 'vcsh)
 (require 'java-mode-indent-annotations)
 (require 'markdown-mode)
+(require 'lisp-utilities)
 
 (require 'magit)
 (require 'magit-svn)
@@ -394,4 +395,5 @@ the current fill-column."
 
 
 (global-set-key [(control ?x) ?2] 'interactive-split-current-window)
+
 
