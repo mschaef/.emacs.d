@@ -1,3 +1,16 @@
+;;;; init.el
+;;;;
+;;;; Toplevel Emacs initialization code.
+
+
+;;; Good ideas here:
+;;
+;; http://xenon.stanford.edu/~manku/emacs.html
+;; http://technical-dresese.blogspot.com/2008/11/why-ive-abandoned-eclipse-for-emacs.html
+;; http://www.emacswiki.org/emacs/EmacsNiftyTricks
+;; http://stackoverflow.com/questions/60367/the-single-most-useful-emacs-feature
+;; http://www.emacswiki.org/emacs/SqlComplete
+;; http://www.emacswiki.org/emacs/AntCall
 
 ;;;; Setup the load path
 
@@ -10,7 +23,6 @@
 (require 'ack-emacs)
 (require 'develock)
 (require 'mvn)
-;(require 'ftl)
 (require 'point-stack)
 (require 'tabulate-region)
 (require 'vcsh)
@@ -96,13 +108,6 @@
        (global-font-lock-mode t)
        (setq font-lock-maximum-decoration t)))
 
-
-;; Turn off hl-line-mode. It is not useful.
-;;
-;; (cond ((fboundp 'global-hl-line-mode)
-;;        (global-hl-line-mode 1)
-;;        (set-face-background 'hl-line "gray40")))
-
 (cond ((fboundp 'global-linum-mode)
        (global-linum-mode 1)
        (set-face-background 'linum "gray40")
@@ -112,7 +117,7 @@
 
 (transient-mark-mode t)
 
-;;;;; Set a few keys to honor a few old Visual Studio habits :-(
+;;;; Set a few keys to honor a few old Visual Studio habits
 
 (global-set-key [f12] 'next-error)
 (global-set-key [(shift f5)] 'compile)
@@ -121,8 +126,6 @@
 
 (global-unset-key [?\s-p])
 
-;;;;; Find other file. This works by default for C++, but needs to be
-;; customized for HTML and JavaScript.
 
 (global-set-key [f2] 'ff-find-other-file)
 
@@ -144,16 +147,7 @@
 ;;;;; Markdown Support
 
 (push (cons "\\.md"     'markdown-mode) auto-mode-alist)
-
 (add-hook 'markdown-mode-hook 'turn-on-auto-fill)
-
-;;;;; Freemarker support
-
-;; (push (cons "\\.ftl$" 'ftl-mode) auto-mode-alist)
-
-;; (add-hook 'ftl-mode-hook
-;;           #'(lambda ()
-;;               (mvn-set-default-key-bindings)))
 
 ;;;;; Load cygwin32-mount on Windows
 
@@ -241,26 +235,6 @@ BEG and END (region to sort)."
           (goto-char next-line))))))
 
 
-(defun tag-region (start end tag)
-  (interactive "r\nMTag: ")
-  (save-excursion
-    ;; If no selection, set region to current word.
-    (when (= 1 (- end start))
-      (save-excursion
-        (backward-word)
-        (setq start (point))
-        (forward-word)
-        (setq end (point))))
-    ;; Put HTML tags beginning and end of current region.
-    (save-restriction
-      (narrow-to-region start end)
-       (goto-char start)
-      (insert (format "<%s>" tag))
-      (goto-char (point-max))
-      (insert (format "</%s>" tag)))))
-
-(global-set-key [(control ?c) (control ?t)] 'tag-region)
-
 
 ;; When `paredit-mode' is enabled it takes precedence over the major
 ;; mode effectively rebinding C-j to `paredit-newline' instead of
@@ -276,12 +250,7 @@ BEG and END (region to sort)."
                                paredit-mode-map))))))
 
 
-;;; Good ideas here:
-;;; *) http://xenon.stanford.edu/~manku/emacs.html
-;;; *) http://technical-dresese.blogspot.com/2008/11/why-ive-abandoned-eclipse-for-emacs.html
-;;; *) http://www.emacswiki.org/emacs/EmacsNiftyTricks
-
-;;; Start the emacs server
+;;;; Start the emacs server
 
 (server-start)
 
@@ -297,28 +266,10 @@ BEG and END (region to sort)."
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;;;; Test functions
 
-(defun split-v () ;;; Taken from http://www.emacswiki.org/emacs/ThreeWindow
-  (interactive)
-  (if (= 2 (length (window-list)))
-    (let ((this-buffer (window-buffer))
-          (next-buffer (progn
-                         (other-window 1)
-                         (buffer-name))))
-      (progn
-        (delete-other-windows)
-        (split-window-horizontally)
-        (set-window-buffer nil this-buffer)
-        (set-window-buffer (next-window) next-buffer)))))
-
-;; http://stackoverflow.com/questions/60367/the-single-most-useful-emacs-feature
-;; http://www.emacswiki.org/emacs/SqlComplete
-;; http://www.emacswiki.org/emacs/AntCall
-
-;; A more completeframe title format, taken from
-;;
-;;   http://ubuntuforums.org/showthread.php?t=1530333
+;;;; A more completeframe title format, taken from
+;;;;
+;;;;   http://ubuntuforums.org/showthread.php?t=1530333
 
 (setq-default frame-title-format
               '(:eval
