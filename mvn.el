@@ -132,26 +132,28 @@ compilations."
         (message "No pom.xml found")
       (mvn-interactive-compile path goal))))
 
-(defun mvn (&optional parent-p)
+;;;; Interactive Entry Points
+
+(defun mvn-build-module (&optional parent-p)
   (interactive)
-  "Runs maven in the current project, against the first POM file upward in the
-directory hierarchy from the current buffer."
+  "Runs maven for the current module, against the first POM file
+upward in the directory hierarchy from the current buffer."
   (mvn-compile mvn-default-goal ()))
 
-(defun mvn-master ()
+(defun mvn-build-project ()
   (interactive)
   "Runs maven against the current project's POM file. If there is a master POM
 file, the master POM file is used."
   (mvn-compile mvn-default-goal t))
 
-(defun mvn-set-default-key-bindings ()
-  (local-set-key [(shift f5)] 'mvn-master)
-  (local-set-key [(control shift f5)] 'mvn))
+;;;; Setup
 
-(add-hook 'java-mode-hook
-          #'(lambda ()
-              (java-mode-indent-annotations-setup)
-              (mvn-set-default-key-bindings)))
+(defun mvn-set-default-key-bindings ()
+  (local-set-key [(shift f5)] 'mvn-build-module)
+  (local-set-key [(control shift f5)] 'mvn-build-project))
+
+(add-hook 'java-mode-hook 'java-mode-indent-annotations-setup)
+(add-hook 'java-mode-hook 'mvn-set-default-key-bindings)
 
 
 ;;;; Import tools
