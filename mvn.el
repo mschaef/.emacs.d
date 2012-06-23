@@ -72,21 +72,29 @@
   "Does a pom.xml exist in the given path."
   (file-exists-p (concat path "/pom.xml")))
 
-(defun mvn-find-module-root-directory ()
+(defun mvn-find-module-root-directory (source-file-name)
+  "Search upward in the directory hierarchy, looking for the
+  current module's root directory. The root directory is defined
+  to be the first upward directory containing a Maven POM
+  file. The search starts in the directory containing
+  SOURCE-FILE-NAME. If no POM is found, returns nil."
+  (let ((path (file-name-directory source-file-name)))
+    (while (and (not (mvn-pom-at-path-p path))
+                (not (mvn-root-path-p path)))
+      (setq path (mvn-parent-path path)))
+    (if (mvn-pom-at-path-p path)
+        path
+      ())))
+
+(defun mvn-find-current-module-root-directory ()
   "Search upward in the directory hierarchy, looking for the
   current module's root directory. The root directory is defined
   to be the first upward directory containing a Maven POM
   file. The search starts in the directory for the current
-  buffer.  if no POM is found, returns nil."
+  buffer.  If no POM is found, returns nil."
   (let ((fn (buffer-file-name)))
     (and fn
-         (let ((path (file-name-directory fn)))
-           (while (and (not (mvn-pom-at-path-p path))
-                       (not (mvn-root-path-p path)))
-             (setq path (mvn-parent-path path)))
-           (if (mvn-pom-at-path-p path)
-               path
-             ())))))
+         (mvn-find-module-root-directory fn))))
 
 (defun mvn-look-for-project-root-directory (module-root)
   "Given a module root directory, look for a project root in the
@@ -101,7 +109,7 @@ project root, returns the module root."
     ()))
 
 (defun mvn-find-project-root-directory ()
-  (mvn-look-for-project-root-directory (mvn-find-module-root-directory)))
+  (mvn-look-for-project-root-directory (mvn-find-current-module-root-directory)))
 
 (defun mvn-compilation-buffer-name (mode-name)
   "*maven-compilation*")
@@ -142,7 +150,7 @@ compilations."
   (interactive)
   "Runs maven for the current module, against the first POM file
 upward in the directory hierarchy from the current buffer."
-  (mvn-compile mvn-default-goal (mvn-find-module-root-directory)))
+  (mvn-compile mvn-default-goal (mvn-find-current-module-root-directory)))
 
 (defun mvn-build-project ()
   (interactive)
