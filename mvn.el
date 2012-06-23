@@ -72,10 +72,12 @@
   "Does a pom.xml exist in the given path."
   (file-exists-p (concat path "/pom.xml")))
 
-(defun mvn-find-path-to-first-pom ()
-  "Search upward in the directory hierarchy, looking for the first Maven pom
-file (pom.xml). The search starts in the directory for the current buffer.
-if no POM is found, returns nil."
+(defun mvn-find-module-root-directory ()
+  "Search upward in the directory hierarchy, looking for the
+  current module's root directory. The root directory is defined
+  to be the first upward directory containing a Maven POM
+  file. The search starts in the directory for the current
+  buffer.  if no POM is found, returns nil."
   (let ((fn (buffer-file-name)))
     (and fn
          (let ((path (file-name-directory fn)))
@@ -86,18 +88,20 @@ if no POM is found, returns nil."
                path
              ())))))
 
-(defun mvn-look-for-master-pom (starting-path)
-  (let ((pom-path starting-path))
-    (let ((master-pom-path (mvn-parent-path pom-path)))
-      (if (mvn-pom-at-path-p master-pom-path)
-          master-pom-path
-        starting-path))))
+(defun mvn-look-for-project-root-directory (module-root)
+  "Given a module root directory, look for a project root in the
+directory immediately above the module root. If there is no
+project root, returns the module root."
+  (if module-root
+      (let ((pom-path module-root))
+        (let ((master-pom-path (mvn-parent-path pom-path)))
+          (if (mvn-pom-at-path-p master-pom-path)
+              master-pom-path
+            module-root)))
+    ()))
 
-(defun mvn-find-path-to-pom (&optional look-for-master-p)
-  (let ((pom-path (mvn-find-path-to-first-pom)))
-    (if look-for-master-p
-        (mvn-look-for-master-pom pom-path)
-      pom-path)))
+(defun mvn-find-project-root-directory ()
+  (mvn-look-for-project-root-directory (mvn-find-module-root-directory)))
 
 (defun mvn-compilation-buffer-name (mode-name)
   "*maven-compilation*")
@@ -120,31 +124,30 @@ and the specified goal."
                        t
                        #'mvn-compilation-buffer-name)))
 
-(defun mvn-compile (goal look-for-master-p)
+(defun mvn-compile (goal target-root)
   "Runs maven in the current project. Starting at the directoy where the file
 being visited resides, a search is made for pom.xml moving up the directory
 hierarchy. A maven command is made from the first directory where the pom.xml
 file is found is then displayed in the minibuffer. The command can be edited as
 needed and then executed. Compile errors can be jumped to as is usual for
 compilations."
-  (let ((path (mvn-find-path-to-pom look-for-master-p)))
-    (if (not (mvn-pom-at-path-p path))
-        (message "No pom.xml found")
-      (mvn-interactive-compile path goal))))
+    (if (not target-root)
+        (message "No compilation target root. (pom.xml not found)")
+      (mvn-interactive-compile target-root goal)))
 
 ;;;; Interactive Entry Points
 
-(defun mvn-build-module (&optional parent-p)
+(defun mvn-build-module ()
   (interactive)
   "Runs maven for the current module, against the first POM file
 upward in the directory hierarchy from the current buffer."
-  (mvn-compile mvn-default-goal ()))
+  (mvn-compile mvn-default-goal (mvn-find-module-root-directory)))
 
 (defun mvn-build-project ()
   (interactive)
   "Runs maven against the current project's POM file. If there is a master POM
 file, the master POM file is used."
-  (mvn-compile mvn-default-goal t))
+  (mvn-compile mvn-default-goal (mvn-find-project-root-directory)))
 
 ;;;; Setup
 
