@@ -118,11 +118,12 @@ and the specified goal."
                                              nil nil 'mvn-command-history)))
 
 (defun mvn-interactive-compile (pom-path goal)
-  (save-some-buffers (not compilation-ask-about-save) nil)
-  (let ((default-directory pom-path))
-    (compilation-start (mvn-read-compile-command pom-path goal)
-                       t
-                       #'mvn-compilation-buffer-name)))
+  (let ((compile-command (mvn-read-compile-command pom-path goal)))
+    (save-some-buffers (not compilation-ask-about-save) nil)
+    (let ((default-directory pom-path))
+      (compilation-start compile-command
+                         t
+                         #'mvn-compilation-buffer-name))))
 
 (defun mvn-compile (goal target-root)
   "Runs maven in the current project. Starting at the directoy where the file
