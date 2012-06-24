@@ -83,7 +83,7 @@
                 (not (mvn-root-path-p path)))
       (setq path (mvn-parent-path path)))
     (if (mvn-pom-at-path-p path)
-        path
+        (file-name-as-directory path)
       ())))
 
 (defun mvn-find-current-module-root-directory ()
@@ -117,7 +117,7 @@ project root, returns the module root."
 (defun mvn-compile-command (pom-path goal)
   "Find the compilation command for the pom in the POM-PATH directory,
 and the specified goal."
-  (concat "mvn -o -f " pom-path "/pom.xml " goal " "))
+  (concat "mvn -o -f " pom-path "pom.xml " goal " "))
 
 (defun mvn-read-compile-command (pom-path goal)
   (mvn-compile-command pom-path
@@ -134,15 +134,113 @@ and the specified goal."
                          #'mvn-compilation-buffer-name))))
 
 (defun mvn-compile (goal target-root)
-  "Runs maven in the current project. Starting at the directoy where the file
-being visited resides, a search is made for pom.xml moving up the directory
-hierarchy. A maven command is made from the first directory where the pom.xml
-file is found is then displayed in the minibuffer. The command can be edited as
-needed and then executed. Compile errors can be jumped to as is usual for
-compilations."
+  "Runs maven in the current project. Starting at the directoy
+where the file being visited resides, a search is made for
+pom.xml moving up the directory hierarchy. A maven command is
+made from the first directory where the pom.xml file is found is
+then displayed in the minibuffer. The command can be edited as
+needed and then executed. Compile errors can be jumped to as is
+usual for compilations."
     (if (not target-root)
         (message "No compilation target root. (pom.xml not found)")
       (mvn-interactive-compile target-root goal)))
+
+(defun mvn-find-module-relative-path (source-path)
+  "Given a SOURCE-PATH to a file, return the module relative
+path. This is the path to the file within the module's hierarchy."
+  (let* ((source-path (file-truename source-path))
+         (module-root (mvn-find-module-root-directory source-path)))
+    (and module-root
+         (string-prefix-p module-root source-path)
+         (substring source-path (length module-root)))))
+
+(defvar mvn-class-source-prefix "src/main/java/")
+(defvar mvn-test-source-prefix "src/test/java/")
+
+(defun mvn-is-source-path-p (module-relative-path)
+  "Given a MODULE-RELATIVE-PATH, return the type of source code
+that should be contained under that directory. Returns one of the
+symbols main or test, or nil in the case that the path is not to
+a source directory."
+  (cond ((string-prefix-p mvn-class-source-prefix module-relative-path)
+          'main)
+        ((string-prefix-p mvn-test-source-prefix module-relative-path)
+         'test)
+        (t
+         ())))
+
+(defun mvn-source-prefix-from-type (source-path-type)
+    (cond ((eq source-path-type 'main)
+           mvn-class-source-prefix)
+          ((eq source-path-type 'test)
+           mvn-test-source-prefix)
+          (t
+           "")))
+
+(defun mvn-strip-source-prefix (source-path)
+  (substring source-path
+             (length (mvn-source-prefix-from-type
+                      (mvn-is-source-path-p source-path)))))
+
+(defun mvn-source-file-class-name (source-path)
+  (let ((mr-path (mvn-find-module-relative-path source-path)))
+    (message mr-path)
+    (and (mvn-is-source-path-p mr-path)
+         (let ((package-path (file-name-directory (mvn-strip-source-prefix mr-path)))
+               (class-name (file-name-sans-extension (file-name-nondirectory mr-path))))
+           (concat (mapconcat 'identity (split-string package-path "/") ".")
+                   class-name)))))
+
+(defun mvn-current-file-class-name ()
+  (let ((fn (buffer-file-name)))
+    (and fn
+         (mvn-source-file-class-name fn))))
+
+(defun mvn-is-test-class-p (full-class-name)
+  (string-suffix-p full-class-name "Test"))
+
+(defun mvn-find-test-class-name (full-class-name)
+  (if (mvn-is-test-class-p full-class-name)
+      full-class-name
+    (concat full-class-name "Test")))
+
+(defun mvn-find-impl-class-name (full-class-name)
+  (if (mvn-is-test-class-p full-class-name)
+      (substring full-class-name 0 -4)
+    full-class-name))
+
+(defun mvn-find-class-path (full-class-name)
+  (let* ((class-name-parts (split-string full-class-name "\\."))
+         (package-parts (butlast class-name-parts))
+         (class-name (car (last class-name-parts))))
+    (concat (file-name-as-directory (mapconcat 'identity package-parts "/"))
+            class-name
+            ".java")))
+
+(defun mvn-find-module-class-path (module-root source-path-type full-class-name)
+  (concat module-root
+          (mvn-source-prefix-from-type source-path-type)
+          (mvn-find-class-path full-class-name)))
+
+(defun mvn-find-current-module-class-path (source-path-type full-class-name)
+  (mvn-find-module-class-path (mvn-find-current-module-root-directory)
+                              source-path-type
+                              full-class-name))
+
+(defun mvn-find-other-file ()
+  (interactive)
+  (find-file
+   (let ((class-name (mvn-current-file-class-name)))
+     (if (mvn-is-test-class-p class-name)
+         (mvn-find-current-module-class-path 'main
+                                             (mvn-find-impl-class-name class-name))
+       (mvn-find-current-module-class-path 'test
+                                           (mvn-find-test-class-name class-name))))))
+
+(defun mvn-goto-class-definition (class-name)
+  (interactive "MClass name: ")
+  (find-file (mvn-find-current-module-class-path 'main class-name)))
+
 
 ;;;; Interactive Entry Points
 
@@ -154,8 +252,8 @@ upward in the directory hierarchy from the current buffer."
 
 (defun mvn-build-project ()
   (interactive)
-  "Runs maven against the current project's POM file. If there is a master POM
-file, the master POM file is used."
+  "Runs maven against the current project's POM file. If there is
+a master POM file, the master POM file is used."
   (mvn-compile mvn-default-goal (mvn-find-project-root-directory)))
 
 ;;;; Setup
