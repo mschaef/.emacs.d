@@ -227,19 +227,22 @@ a source directory."
                               source-path-type
                               full-class-name))
 
+(defun mvn-find-file (filename)
+  (let ((directory-name (file-name-directory filename)))
+    (unless (file-exists-p directory-name)
+      (message "Creating Directory: %s" directory-name)
+      (mkdir directory-name t))
+    (find-file filename)))
+
 (defun mvn-find-other-file ()
   (interactive)
-  (find-file
+  (mvn-find-file
    (let ((class-name (mvn-current-file-class-name)))
      (if (mvn-is-test-class-p class-name)
          (mvn-find-current-module-class-path 'main
                                              (mvn-find-impl-class-name class-name))
        (mvn-find-current-module-class-path 'test
                                            (mvn-find-test-class-name class-name))))))
-
-(defun mvn-goto-class-definition (class-name)
-  (interactive "MClass name: ")
-  (find-file (mvn-find-current-module-class-path 'main class-name)))
 
 
 ;;;; Interactive Entry Points
