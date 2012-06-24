@@ -43,6 +43,11 @@ of the loop."
   `(when (fboundp ',symbol)
      ,@body))
 
+(defun string-suffix-p (s ending)
+  "return non-nil if string S ends with ENDING."
+  (let ((elength (length ending)))
+    (string= (substring s (- 0 elength)) ending)))
+
 ;;; Courtesy of http://stackoverflow.com/questions/5925485/emacs-lisp-macro-stepper
 
 (defun macroexpand-point (sexp)
