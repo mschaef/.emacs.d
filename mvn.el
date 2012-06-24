@@ -218,16 +218,25 @@ a source directory."
             ".java")))
 
 (defun mvn-find-module-class-path (module-root source-path-type full-class-name)
+  "Find a classes' path within the module identified by
+MODULE-ROOT. SOURCE-PATH-TYPE is the type of the class, and must
+be either main or test. FULL-CLASS-NAME is the full,
+dot-delimited class name to be found."
   (concat module-root
           (mvn-source-prefix-from-type source-path-type)
           (mvn-find-class-path full-class-name)))
 
 (defun mvn-find-current-module-class-path (source-path-type full-class-name)
+  "Find a classes' path within the current
+module. SOURCE-PATH-TYPE is the type of the class, and must be
+either main or test. FULL-CLASS-NAME is the full, dot-delimited
+class name to be found."
   (mvn-find-module-class-path (mvn-find-current-module-root-directory)
                               source-path-type
                               full-class-name))
 
 (defun mvn-find-file (filename)
+  "Find FILENAME, ensuring that the containing directory exists."
   (let ((directory-name (file-name-directory filename)))
     (unless (file-exists-p directory-name)
       (message "Creating Directory: %s" directory-name)
@@ -235,6 +244,10 @@ a source directory."
     (find-file filename)))
 
 (defun mvn-find-other-file ()
+  "Find the other file for the current source file. For class
+implementations, switch to the test class. For test classes,
+switch to the implemenation class. If the target file does not
+exist, it is created, including any necessary subdirectories."
   (interactive)
   (mvn-find-file
    (let ((class-name (mvn-current-file-class-name)))
@@ -244,19 +257,18 @@ a source directory."
        (mvn-find-current-module-class-path 'test
                                            (mvn-find-test-class-name class-name))))))
 
-
 ;;;; Interactive Entry Points
 
 (defun mvn-build-module ()
-  (interactive)
   "Runs maven for the current module, against the first POM file
 upward in the directory hierarchy from the current buffer."
+  (interactive)
   (mvn-compile mvn-default-goal (mvn-find-current-module-root-directory)))
 
 (defun mvn-build-project ()
-  (interactive)
   "Runs maven against the current project's POM file. If there is
 a master POM file, the master POM file is used."
+  (interactive)
   (mvn-compile mvn-default-goal (mvn-find-project-root-directory)))
 
 ;;;; Setup
