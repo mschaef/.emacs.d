@@ -259,12 +259,12 @@ a master POM file, the master POM file is used."
 ;;;; Setup
 
 (defun mvn-set-default-key-bindings ()
+  (local-set-key [(f2)] 'mvn-find-other-file)
   (local-set-key [(shift f5)] 'mvn-build-module)
   (local-set-key [(control shift f5)] 'mvn-build-project))
 
 (add-hook 'java-mode-hook 'java-mode-indent-annotations-setup)
 (add-hook 'java-mode-hook 'mvn-set-default-key-bindings)
-
 
 ;;;; Import tools
 
