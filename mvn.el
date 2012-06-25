@@ -104,7 +104,7 @@ project root, returns the module root."
       (let ((pom-path module-root))
         (let ((master-pom-path (mvn-parent-path pom-path)))
           (if (mvn-pom-at-path-p master-pom-path)
-              master-pom-path
+              (file-name-as-directory master-pom-path)
             module-root)))
     ()))
 
