@@ -15,7 +15,7 @@
 (defvar mvn-command-template ""
   "The string formatting template used to form the mvn command.")
 
-(defvar mvn-default-goal "clean compile"
+(defvar mvn-default-goal "clean install"
   "The default goal for mvn compilations")
 
 (add-to-list 'compilation-error-regexp-alist

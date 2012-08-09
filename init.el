@@ -275,6 +275,7 @@ the current fill-column."
     (split-window-vertically)))
 
 (global-set-key [(control ?x) ?2] 'interactive-split-current-window)
+(global-set-key [(control ?x) ?2] 'interactive-split-current-window)
 
 ;;;;; Custom stuff.
 
