@@ -1,0 +1,3 @@
+#name: logger
+# --
+private static final Logger log = LoggerFactory.getLogger(${type}.class);

@@ -1,0 +1,13 @@
+#name: property
+# --
+   private ${type} ${name}
+
+   public void set${name}(${type} ${name})
+   {
+       this.${name} = ${name};
+   }
+
+   public ${type} get${name}()
+   {
+      return ${name};
+   }

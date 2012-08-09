@@ -16,6 +16,7 @@
 (push "~/.emacs.d/" load-path)
 (push "~/.emacs.d/slime" load-path)
 (push "~/.emacs.d/magit" load-path)
+(push "~/.emacs.d/yasnippet" load-path)
 
 ;;;; External packages
 
@@ -31,7 +32,7 @@
 (require 'mvn)
 (require 'java-mode-indent-annotations)
 (require 'vcsh)
-
+(require 'yasnippet)
 
 ;;;; Show the time and date
 
@@ -276,6 +277,11 @@ the current fill-column."
 
 (global-set-key [(control ?x) ?2] 'interactive-split-current-window)
 (global-set-key [(control ?x) ?2] 'interactive-split-current-window)
+
+;;;;; Set up snippets
+
+(yas/initialize)
+(yas/load-directory "~/.emacs.d/yasnippet/snippets")
 
 ;;;;; Custom stuff.
 
