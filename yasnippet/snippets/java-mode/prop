@@ -1,13 +1,23 @@
 #name: prop
 # --
-   private $1 $2;
 
-   public void set${2:$(capitalize text)}($1$2)
+   /** ${3:documentation}**/
+   private ${1:type} ${2:name};
+
+   /**
+    * Set ${3:$(downcase-first-letter text)}
+    *
+    * @param $2 $3
+    */
+   public void set${2:$(capitalize-first-letter text)}($1 $2)
    {
        this.$2 = $2;
    }
 
-   public $1 get${2:$(capitalize text)}()
+   /**
+    * @return ${3:$(downcase-first-letter text)}
+    */
+   public $1 get${2:$(capitalize-first-letter text)}()
    {
-      return $2;
+       return $2;
    }$0
