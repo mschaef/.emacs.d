@@ -1,13 +1,13 @@
-#name: property
+#name: prop
 # --
-   private ${type} ${name}
+   private $1 $2;
 
-   public void set${name}(${type} ${name})
+   public void set${2:$(capitalize text)}($1$2)
    {
-       this.${name} = ${name};
+       this.$2 = $2;
    }
 
-   public ${type} get${name}()
+   public $1 get${2:$(capitalize text)}()
    {
-      return ${name};
-   }
+      return $2;
+   }$0
