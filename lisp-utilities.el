@@ -48,6 +48,24 @@ of the loop."
   (let ((elength (length ending)))
     (string= (substring s (- 0 elength)) ending)))
 
+(defun capitalize-first-letter (str)
+  "Capitalize the first letter of the string STR."
+  (unless (stringp str)
+    (signal 'wrong-type-argument (list 'stringp str)))
+  (if (< (length str) 1)
+      ""
+    (concat (capitalize (substring str 0 1))
+            (substring str 1))))
+
+(defun downcase-first-letter (str)
+  "Downcase the first letter of the string STR."
+  (unless (stringp str)
+    (signal 'wrong-type-argument (list 'stringp str)))
+  (if (< (length str) 1)
+      ""
+    (concat (downcase (substring str 0 1))
+            (substring str 1))))
+
 ;;; Courtesy of http://stackoverflow.com/questions/5925485/emacs-lisp-macro-stepper
 
 (defun macroexpand-point (sexp)
