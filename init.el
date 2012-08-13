@@ -282,8 +282,6 @@ the current fill-column."
 ;;;;; Set up snippets
 
 (yas/initialize)
-(yas/load-directory "~/.emacs.d/yasnippet/snippets")
-(yas/global-mode 1)
 
 ;;;;; Custom stuff.
 

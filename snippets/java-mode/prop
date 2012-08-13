@@ -1,7 +1,7 @@
 #name: prop
 # --
 
-   /** ${3:documentation}**/
+   /** ${3:documentation} **/
    private ${1:type} ${2:name};
 
    /**
