@@ -18,6 +18,7 @@
 (push "~/.emacs.d/magit" load-path)
 (push "~/.emacs.d/yasnippet" load-path)
 
+
 ;;;; External packages
 
 (require 'lisp-utilities)
@@ -282,6 +283,7 @@ the current fill-column."
 
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/yasnippet/snippets")
+(yas/global-mode 1)
 
 ;;;;; Custom stuff.
 
