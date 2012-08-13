@@ -52,7 +52,6 @@
 (put 'set-goal-column 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 
-
 ;;;; Switch to better looking colors
 
 (set 'default-frame-alist
@@ -282,6 +281,10 @@ the current fill-column."
 ;;;;; Set up snippets
 
 (yas/initialize)
+
+;;;;; Set the orglog root
+
+(setq orglog-root "/personal/log")
 
 ;;;;; Custom stuff.
 
