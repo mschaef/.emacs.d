@@ -36,7 +36,11 @@
 
 (defun orglog-enter-day ()
   (interactive)
-  (insert (concat "* " (orglog-today-basename))))
+  (insert (concat "* " (orglog-today-header)))
+  (newline)
+  (insert "** ")
+  (save-excursion
+    (newline)))
 
 (global-set-key [f6] 'orglog-find-todays-file)
 (global-set-key [(shift f6)] 'orglog-enter-day)
