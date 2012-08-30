@@ -18,15 +18,50 @@
 (defvar mvn-default-goal "clean install"
   "The default goal for mvn compilations")
 
-(defvar mvn-path-prefix "c:\\personal\\jdk1.7.0_05\\bin;c:\\personal\\jdk1.7.0_05\\jre\\bin"
-  "The prefix to be prepended to the process PATH during the compiler invocation.")
+(defvar mvn-jdk-name ()
+  "The name of the JDK to use for invoking Maven. NIL means use the
+Emacs process environment.")
 
-(defvar mvn-java-home "c:\\personal\\jdk1.7.0_05\\"
-  "the JAVA_HOME to be defined during the compiler invocation.")
 
-(defun mvn-set-java6 ()
-  (setq mvn-path-prefix "c:\\personal\\jdk1.6.0_23\\bin;c:\\personal\\jdk1.6.0_23\\jre\\bin")
-  (setq mvn-java-home "c:\\personal\\jdk1.6.0_23\\"))
+(defvar mvn-jdk-list
+  '(("jdk7"
+    "c:\\personal\\jdk1.7.0_05\\"
+    "c:\\personal\\jdk1.7.0_05\\bin;c:\\personal\\jdk1.7.0_05\\jre\\bin")
+   ("jdk6"
+    "c:\\personal\\jdk1.6.0_23\\"
+    "c:\\personal\\jdk1.6.0_23\\bin;c:\\personal\\jdk1.6.0_23\\jre\\bin"))
+
+  "A list of all JDK definitions. Each element has the form (JDK-NAME JAVA_HOME PATH_PREFIX)")
+
+(defun mvn-jdk-choices ()
+ (mapcar #'car mvn-jdk-list))
+
+(defun mvn-jdk-overrides ()
+  (if (null mvn-jdk-name)
+      ()
+    (let ((overrides (assoc mvn-jdk-name mvn-jdk-list)))
+      (if (null overrides)
+          (error "Unknown JDK: %s, choices: %s" mvn-jdk-name (mvn-jdk-choices))
+        (cdr overrides)))))
+
+(defun mvn-set-jdk (jdk-name)
+  (interactive
+   (list
+    (completing-read "JDK Name: " (mvn-jdk-choices))))
+  (setq mvn-jdk-name jdk-name))
+
+
+(defun mvn-path-override ()
+  (let ((overrides (mvn-jdk-overrides)))
+    (if (null overrides)
+        ()
+      (format "PATH=%s;%s" (second overrides) (getenv "PATH")))))
+
+(defun mvn-java-home-override ()
+  (let ((overrides (mvn-jdk-overrides)))
+    (if (null overrides)
+        ()
+      (format "JAVA_HOME=%s" (first overrides)))))
 
 (add-to-list 'compilation-error-regexp-alist
              '("\\[ERROR\\] \\(.+\\):\\[\\([0-9]+\\),\\([0-9]+\\)\\] .+$" 1 2 3))
@@ -130,8 +165,8 @@ and the specified goal."
   (concat "mvn -o -f " pom-path "pom.xml " goal " "))
 
 (defun mvn-compiler-process-environment ()
-  (append (list (format "PATH=%s;%s" mvn-path-prefix (getenv "PATH"))
-                (format "JAVA_HOME=%s" mvn-java-home))
+  (append (list (mvn-java-home-override))
+          (list (mvn-path-override))
           process-environment))
 
 (defun mvn-read-compile-command (pom-path goal)
