@@ -18,6 +18,16 @@
 (defvar mvn-default-goal "clean install"
   "The default goal for mvn compilations")
 
+(defvar mvn-path-prefix "c:\\personal\\jdk1.7.0_05\\bin;c:\\personal\\jdk1.7.0_05\\jre\\bin"
+  "The prefix to be prepended to the process PATH during the compiler invocation.")
+
+(defvar mvn-java-home "c:\\personal\\jdk1.7.0_05\\"
+  "the JAVA_HOME to be defined during the compiler invocation.")
+
+(defun mvn-set-java6 ()
+  (setq mvn-path-prefix "c:\\personal\\jdk1.6.0_23\\bin;c:\\personal\\jdk1.6.0_23\\jre\\bin")
+  (setq mvn-java-home "c:\\personal\\jdk1.6.0_23\\"))
+
 (add-to-list 'compilation-error-regexp-alist
              '("\\[ERROR\\] \\(.+\\):\\[\\([0-9]+\\),\\([0-9]+\\)\\] .+$" 1 2 3))
 
@@ -119,6 +129,11 @@ project root, returns the module root."
 and the specified goal."
   (concat "mvn -o -f " pom-path "pom.xml " goal " "))
 
+(defun mvn-compiler-process-environment ()
+  (append (list (format "PATH=%s;%s" mvn-path-prefix (getenv "PATH"))
+                (format "JAVA_HOME=%s" mvn-java-home))
+          process-environment))
+
 (defun mvn-read-compile-command (pom-path goal)
   (mvn-compile-command pom-path
                        (read-from-minibuffer (format "(POM %s) Goal: " pom-path)
@@ -128,7 +143,8 @@ and the specified goal."
 (defun mvn-interactive-compile (pom-path goal)
   (let ((compile-command (mvn-read-compile-command pom-path goal)))
     (save-some-buffers (not compilation-ask-about-save) nil)
-    (let ((default-directory pom-path))
+    (let ((default-directory pom-path)
+          (process-environment (mvn-compiler-process-environment)))
       (compilation-start compile-command
                          t
                          #'mvn-compilation-buffer-name))))
@@ -286,6 +302,50 @@ a master POM file, the master POM file is used."
 (defvar mvn-java-import-regexp
   "import[ \\t\\n]+\\(\\([a-zA-Z_][a-zA-Z0-9_]*\\)\\(\\.\\([a-zA-Z_][a-zA-Z0-9_]*\\)\\)*\\);"
   "A regular expression used for matching Java import statements.")
+
+(defvar mvn-java-import-prefix-order
+  '("java"
+    "org.slf4j"
+    "org.springframework"
+    "com.pjm.m2m.corelibs")
+  "A list of package prefixes in the order in which classes should be imported")
+
+
+(defun mvn-split-classes (prefix classes)
+  (let ((matches ())
+        (non-matches ()))
+    (dolist (class classes)
+      (if (string-prefix-p prefix class)
+          (push class matches)
+        (push class non-matches)))
+    (cons matches non-matches)))
+
+(defun mvn-partition-classes-by-prefix-order (classes)
+  (let ((partitions ())
+        (classes classes))
+    (dolist (prefix mvn-java-import-prefix-order)
+      (let ((current-split (mvn-split-classes prefix classes)))
+        (unless (null (car current-split))
+          (push (car current-split) partitions))
+        (setq classes (cdr current-split))))
+    (push classes partitions)
+    (reverse partitions)))
+
+(defun mvn-all-file-imports ()
+    (let ((imports ()))
+      (save-excursion
+        (goto-char (point-min))
+        (catch 'done
+          (while t
+            (unless (re-search-forward mvn-java-import-regexp (point-max) t)
+              (throw 'done imports))
+            (push (buffer-substring (match-beginning 1) (match-end 1))
+                  imports))))))
+
+(defun mvn-show-all-file-imports ()
+  (interactive)
+  (dolist (import (mvn-all-file-imports))
+    (message "Import: %s" import)))
 
 (provide 'mvn)
 
