@@ -335,14 +335,18 @@ a master POM file, the master POM file is used."
   "import[ \\t\\n]+\\(\\([a-zA-Z_][a-zA-Z0-9_]*\\)\\(\\.\\([a-zA-Z_][a-zA-Z0-9_]*\\)\\)*\\);"
   "A regular expression used for matching Java import statements.")
 
-(defvar mvn-java-import-prefix-order
-  '("java.util"
+(defvar mvn-java-import-leading-prefixes
+  '("org.slf4j"
+    "java.util"
     "java"
     "javax"
     "org.slf4j"
     "org.apache"
-    "org.springframework"
-    "com.pjm.m2m.corelibs"
+    "org.springframework")
+  "A list of package prefixes in the order in which classes should be imported")
+
+(defvar mvn-java-import-trailing-prefixes
+  '("com.pjm.m2m.corelibs"
     "com.pjm")
   "A list of package prefixes in the order in which classes should be imported")
 
@@ -356,16 +360,24 @@ a master POM file, the master POM file is used."
         (push class non-matches)))
     (cons matches non-matches)))
 
-(defun mvn-partition-classes-by-prefix-order (classes)
+(defun mvn-partition-classes (classes prefixes)
   (let ((partitions ())
         (classes classes))
-    (dolist (prefix mvn-java-import-prefix-order)
+    (dolist (prefix prefixes)
       (let ((current-split (mvn-split-classes prefix classes)))
         (unless (null (car current-split))
           (push (car current-split) partitions))
         (setq classes (cdr current-split))))
-    (push classes partitions)
-    (reverse partitions)))
+    (cons classes (reverse partitions))))
+
+(defun mvn-partition-classes-by-prefix-order (classes)
+  (let* ((leading-partition (mvn-partition-classes classes
+                                                  mvn-java-import-leading-prefixes))
+         (trailing-partition (mvn-partition-classes (car leading-partition)
+                                                   mvn-java-import-trailing-prefixes)))
+    (append (cdr leading-partition)
+            (list (car trailing-partition))
+            (cdr trailing-partition))))
 
 (defun mvn-all-file-imports ()
   (let ((imports ()))
