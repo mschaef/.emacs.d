@@ -18,7 +18,6 @@
 (push "~/.emacs.d/magit" load-path)
 (push "~/.emacs.d/yasnippet" load-path)
 
-
 ;;;; External packages
 
 (require 'lisp-utilities)
@@ -278,15 +277,11 @@ the current fill-column."
 (global-set-key [(control ?x) ?2] 'interactive-split-current-window)
 (global-set-key [(control ?x) ?2] 'interactive-split-current-window)
 
-;;;;; Set up snippets
+;;;; Set up snippets
 
 (yas/initialize)
 
-;;;;; Set the orglog root
-
-(setq orglog-root "/personal/log")
-
-;;;;; Custom stuff.
+;;;; Custom stuff.
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
@@ -305,3 +300,8 @@ the current fill-column."
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  )
+
+;;;; Load local customizations
+
+(load "local" t)
+

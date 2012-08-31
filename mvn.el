@@ -22,16 +22,9 @@
   "The name of the JDK to use for invoking Maven. NIL means use the
 Emacs process environment.")
 
-
-(defvar mvn-jdk-list
-  '(("jdk7"
-    "c:\\personal\\jdk1.7.0_05\\"
-    "c:\\personal\\jdk1.7.0_05\\bin;c:\\personal\\jdk1.7.0_05\\jre\\bin")
-   ("jdk6"
-    "c:\\personal\\jdk1.6.0_23\\"
-    "c:\\personal\\jdk1.6.0_23\\bin;c:\\personal\\jdk1.6.0_23\\jre\\bin"))
-
-  "A list of all JDK definitions. Each element has the form (JDK-NAME JAVA_HOME PATH_PREFIX)")
+(defvar mvn-jdk-list ()
+  "A list of all JDK definitions. Each element has the form
+(JDK-NAME JAVA_HOME PATH_PREFIX)")
 
 (defun mvn-jdk-choices ()
  (mapcar #'car mvn-jdk-list))
