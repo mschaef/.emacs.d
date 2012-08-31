@@ -29,6 +29,11 @@ Emacs process environment.")
 (defun mvn-jdk-choices ()
  (mapcar #'car mvn-jdk-list))
 
+(defun mvn-jdk-name ()
+  (if (null mvn-jdk-name)
+      "<default>"
+    mvn-jdk-name))
+
 (defun mvn-jdk-overrides ()
   (if (null mvn-jdk-name)
       ()
@@ -40,9 +45,8 @@ Emacs process environment.")
 (defun mvn-set-jdk (jdk-name)
   (interactive
    (list
-    (completing-read "JDK Name: " (mvn-jdk-choices))))
+    (completing-read (format "Select JDK (current: %s): " (mvn-jdk-name)) (mvn-jdk-choices))))
   (setq mvn-jdk-name jdk-name))
-
 
 (defun mvn-path-override ()
   (let ((overrides (mvn-jdk-overrides)))
@@ -164,7 +168,7 @@ and the specified goal."
 
 (defun mvn-read-compile-command (pom-path goal)
   (mvn-compile-command pom-path
-                       (read-from-minibuffer (format "(POM %s) Goal: " pom-path)
+                       (read-from-minibuffer (format "(JDK:%s) (POM %s) Goal: " (mvn-jdk-name) pom-path)
                                              goal
                                              nil nil 'mvn-command-history)))
 
@@ -332,10 +336,14 @@ a master POM file, the master POM file is used."
   "A regular expression used for matching Java import statements.")
 
 (defvar mvn-java-import-prefix-order
-  '("java"
+  '("java.util"
+    "java"
+    "javax"
     "org.slf4j"
+    "org.apache"
     "org.springframework"
-    "com.pjm.m2m.corelibs")
+    "com.pjm.m2m.corelibs"
+    "com.pjm")
   "A list of package prefixes in the order in which classes should be imported")
 
 
@@ -360,20 +368,45 @@ a master POM file, the master POM file is used."
     (reverse partitions)))
 
 (defun mvn-all-file-imports ()
-    (let ((imports ()))
-      (save-excursion
-        (goto-char (point-min))
-        (catch 'done
-          (while t
-            (unless (re-search-forward mvn-java-import-regexp (point-max) t)
-              (throw 'done imports))
-            (push (buffer-substring (match-beginning 1) (match-end 1))
-                  imports))))))
+  (let ((imports ()))
+    (save-excursion
+      (goto-char (point-min))
+      (catch 'done
+        (while t
+          (unless (re-search-forward mvn-java-import-regexp (point-max) t)
+            (throw 'done imports))
+          (push (buffer-substring (match-beginning 1) (match-end 1))
+                imports))))))
 
-(defun mvn-show-all-file-imports ()
+(defun mvn-goto-import-location ()
+  (goto-char (point-min))
+  (when (and
+         (search-forward "package" nil t)
+         (search-forward ";" nil t))
+    (newline)
+    (newline)))
+
+(defun mvn-insert-imports (class-names)
+  (dolist (partition (mvn-partition-classes-by-prefix-order class-names))
+    (dolist (class-name (sort partition #'string<))
+      (insert "import " class-name)
+      (newline))
+    (newline)))
+
+(defun mvn-strip-all-file-imports ()
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward mvn-java-import-regexp nil t)
+      (replace-match "" nil nil)
+      (delete-blank-lines))))
+
+(defun mvn-reformat-all-file-imports ()
   (interactive)
-  (dolist (import (mvn-all-file-imports))
-    (message "Import: %s" import)))
+  (let ((all-imports (mvn-all-file-imports)))
+    (mvn-strip-all-file-imports)
+    (mvn-goto-import-location)
+    (mvn-insert-imports all-imports)
+    (delete-blank-lines)))
 
 (provide 'mvn)
 

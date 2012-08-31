@@ -43,7 +43,11 @@
     (newline)))
 
 (global-set-key [f6] 'orglog-find-todays-file)
-(global-set-key [(shift f6)] 'orglog-enter-day)
+
+(defun orglog-turn-on-bindings ()
+  (local-set-key [(shift f6)] 'orglog-enter-day))
+
+(add-hook 'org-mode-hook 'orglog-turn-on-bindings)
 
 
 (push (cons "\\.orglog" 'org-mode) auto-mode-alist)
