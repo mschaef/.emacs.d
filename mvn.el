@@ -389,7 +389,7 @@ a master POM file, the master POM file is used."
 (defun mvn-insert-imports (class-names)
   (dolist (partition (mvn-partition-classes-by-prefix-order class-names))
     (dolist (class-name (sort partition #'string<))
-      (insert "import " class-name)
+      (insert "import " class-name ";")
       (newline))
     (newline)))
 
