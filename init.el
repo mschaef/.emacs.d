@@ -25,7 +25,6 @@
 (require 'orglog)
 (require 'magit)
 (require 'magit-svn)
-(require 'develock)
 (require 'ack-emacs)
 (require 'markdown-mode)
 (require 'mvn)
