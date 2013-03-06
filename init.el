@@ -14,7 +14,6 @@
 ;;;; Setup the load path
 
 (push "~/.emacs.d/" load-path)
-(push "~/.emacs.d/slime" load-path)
 (push "~/.emacs.d/magit" load-path)
 (push "~/.emacs.d/yasnippet" load-path)
 
@@ -212,14 +211,6 @@ BEG and END (region to sort)."
 ;;;; Start the emacs server
 
 (server-start)
-
-;;;; Get slime set up
-
-(setq inferior-lisp-program "clisp") ; your Lisp system
-
-(require 'slime)
-
-(slime-setup)
 
 ;;;; Remove the "Yes"/"No" questions in favor of the simpler "Y"/"N"
 
