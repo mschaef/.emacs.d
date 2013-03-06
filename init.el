@@ -283,7 +283,6 @@ the current fill-column."
  '(initial-buffer-choice t)
  '(menu-bar-mode nil)
  '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
- '(tnt-persistent-timeout 15)
  '(tool-bar-mode nil))
 
 (custom-set-faces
