@@ -65,8 +65,28 @@ with `format-time-string'.")
 
 (add-hook 'org-mode-hook 'orglog-activate-for-orglog-buffers)
 
-
 (push (cons "\\.orglog" 'org-mode) auto-mode-alist)
+
+;;; Thing-at-point for orglog dates
+
+(defvar orglog-date-regexp
+  "[[:digit:]]\\{4\\}-[[:digit:]]\\{2\\}-[[:digit:]]\\{2\\}")
+
+(put 'orglog-date 'bounds-of-thing-at-point
+     (lambda ()
+       (let ((thing (thing-at-point-looking-at orglog-date-regexp)))
+         (if thing
+             (let ((beginning (match-beginning 0))
+                   (end (match-end 0)))
+               (cons beginning end))))))
+
+(put 'orglog-date 'thing-at-point
+     (lambda ()
+       (let ((boundary-pair (bounds-of-thing-at-point 'orglog-date)))
+         (if boundary-pair
+             (buffer-substring-no-properties
+              (car boundary-pair) (cdr boundary-pair))))))
+
 
 (provide 'orglog)
 
