@@ -1,0 +1,7 @@
+#name: rtsbtostring
+# --
+    /** {@inheritDoc} */
+    public String toString()
+    {
+        return ReflectionToStringBuilder.toString(this);
+    }
