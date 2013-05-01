@@ -31,6 +31,7 @@
 (require 'java-mode-indent-annotations)
 (require 'vcsh)
 (require 'yasnippet)
+(require 'find-file-in-project)
 
 ;;;; Show the time and date
 
@@ -267,6 +268,18 @@ the current fill-column."
 
 (global-set-key [(control ?x) ?2] 'interactive-split-current-window)
 (global-set-key [(control ?x) ?2] 'interactive-split-current-window)
+
+;;;; find-file-in-project
+
+(setq ffip-path-to-find "c:\\Personal\\cygwin\\bin\\find")
+(setq ffip-find-options "-not -regex .*/target/.*")
+(setq ffip-limit 2048)
+
+(push "*.java" ffip-patterns)
+(push "*.ftl" ffip-patterns)
+(push "*.cs" ffip-patterns)
+
+(global-set-key (kbd "C-x f") 'find-file-in-project)
 
 ;;;; Set up snippets
 
