@@ -271,7 +271,6 @@ the current fill-column."
 
 ;;;; find-file-in-project
 
-(setq ffip-path-to-find "c:\\Personal\\cygwin\\bin\\find")
 (setq ffip-find-options "-not -regex .*/target/.*")
 (setq ffip-limit 2048)
 
