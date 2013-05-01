@@ -55,17 +55,28 @@ with `format-time-string'.")
   (save-excursion
     (newline)))
 
+;; Emacs 'helpfully' autotranslates (shift f6) to f6 too...
+;;
+;; http://www.emacswiki.org/emacs/TheMysteriousCaseOfShiftedFunctionKeys
 (global-set-key [f6] 'orglog-find-todays-file)
+(global-set-key [(control shift f6)] 'orglog-grep)
 
 (defun orglog-activate-for-orglog-buffers ()
   (when (and buffer-file-truename
-             (string-suffix-p buffer-file-truename
-                              ".orglog"))
+             (string-suffix-p buffer-file-truename ".orglog"))
     (orglog-mode)))
 
 (add-hook 'org-mode-hook 'orglog-activate-for-orglog-buffers)
 
 (push (cons "\\.orglog" 'org-mode) auto-mode-alist)
+
+(defun orglog-grep (regex)
+  (interactive
+   (list
+    (read-string "Orglog grep regexp: " "" 'orglog-grep-history)))
+  (progn
+    (grep-compute-defaults)
+    (grep (format "%s %s %s/*.orglog" grep-command regex orglog-root))))
 
 ;;; Thing-at-point for orglog dates
 
