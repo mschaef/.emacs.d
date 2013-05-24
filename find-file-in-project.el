@@ -109,9 +109,15 @@ This overrides variable `ffip-project-root' when set.")
         (progn (message "No project was defined for the current file.")
                nil))))
 
-(defun ffip-cygwin-adjust-path (path)
+(defun ffip-cygwin-unix-path (path)
   (if (and (boundp 'cygwin-mount-activated) cygwin-mount-activated)
       (car (split-string (shell-command-to-string (format "cygpath -u %s" path))))
+      path
+    path))
+
+(defun ffip-cygwin-windows-path (path)
+  (if (and (boundp 'cygwin-mount-activated) cygwin-mount-activated)
+      (car (split-string (shell-command-to-string (format "cygpath --windows --absolute %s" path))))
       path
     path))
 
@@ -147,7 +153,7 @@ directory they are found in so that they are unique."
                   file-cons)))
             (let ((shell-command (format "%s %s -type f \\( %s \\) %s | head -n %s"
                                          ffip-path-to-find
-                                         (ffip-cygwin-adjust-path root)
+                                         (ffip-cygwin-unix-path root)
                                          (ffip-join-patterns)
                                          ffip-find-options
                                          ffip-limit)))

@@ -38,10 +38,6 @@
 (setq display-time-day-and-date t)
 (display-time)
 
-;;;; Configure ACK
-
-(setq ack-command "ack")
-
 ;;;; Enable some commands that Emacs disables by default.
 
 (put 'upcase-region 'disabled nil)
@@ -271,14 +267,29 @@ the current fill-column."
 
 ;;;; find-file-in-project
 
-(setq ffip-find-options "-not -regex .*/target/.*")
+(setq ffip-find-options "-not -regex \\\".*/target/.*\\\"")
 (setq ffip-limit 2048)
 
 (push "*.java" ffip-patterns)
 (push "*.ftl" ffip-patterns)
 (push "*.cs" ffip-patterns)
+(push "*.xml" ffip-patterns)
 
 (global-set-key (kbd "C-x f") 'find-file-in-project)
+
+;;;; A form of ack that searches the current project
+
+(defun project-ack (pattern)
+  "Run ack, with user-specified ARGS, and collect output in a buffer.
+While ack runs asynchronously, you can use the \\[next-error] command to
+find the text that ack hits refer to. The command actually run is
+defined by the ack-command variable."
+  (interactive
+   (list (read-string "Search for: " (if ack-guess-search-string (thing-at-point 'symbol) ""))))
+  (let ((root (ffip-project-root)))
+    (ack-search pattern
+                (ffip-cygwin-windows-path root)
+                ack-default-args)))
 
 ;;;; Set up snippets
 

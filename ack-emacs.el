@@ -34,17 +34,22 @@
 (defvar ack-command-suffix nil
   "If non-nil, the suffix for the ack command.")
 
+(defvar ack-default-args "-i --nocolor --nogroup"
+  "The default arguments for the ack command.")
+
 (define-compilation-mode ack-mode "Ack"
   "Specialization of compilation-mode for use with ack."
   nil)
  
-(defun ack-search (pattern args)
+(defun ack-search (pattern start-path args)
   "Run ack, with user-specified ARGS, and collect output in a buffer.
 While ack runs asynchronously, you can use the \\[next-error] command to
 find the text that ack hits refer to. The command actually run is
 defined by the ack-command variable."
-  (interactive (list (read-string "Search for: " (if ack-guess-search-string (thing-at-point 'symbol) ""))
-                     (read-string "Ack arguments: " "-i --nocolor --nogroup" nil "-i --nocolor --nogroup" nil)))
+  (interactive
+   (list (read-string "Search for: " (if ack-guess-search-string (thing-at-point 'symbol) ""))
+         (read-string "Start Path: " ".")
+         (read-string "Ack arguments: " ack-default-args nil ack-default-args nil)))
  
   (let (compile-command
          (compilation-error-regexp-alist grep-regexp-alist)
@@ -52,9 +57,15 @@ defined by the ack-command variable."
         (ack-full-buffer-name (concat "*ack-" pattern "*")))
     ;; (save-some-buffers (not compilation-ask-about-save) nil)
     ;; lambda defined here since compilation-start expects to call a function to get the buffer name
-    (compilation-start (concat ack-command " " args " " pattern (if ack-command-suffix
-                                                                    ack-command-suffix
-                                                                  ""))
+    (compilation-start (concat ack-command
+                               " " args
+                               " " pattern
+                               (if start-path
+                                   (concat " " start-path)
+                                 nil)
+                               (if ack-command-suffix
+                                   ack-command-suffix
+                                 ""))
                        'ack-mode
                        (when ack-use-search-in-buffer-name
                          (function (lambda (ignore)
@@ -66,7 +77,8 @@ defined by the ack-command variable."
 While ack runs asynchronously, you can use the \\[next-error] command to
 find the text that ack hits refer to. The command actually run is
 defined by the ack-command variable."
-  (interactive (list (read-string "Search for: " (if ack-guess-search-string (thing-at-point 'symbol) ""))))
-  (ack-search pattern "-i --nocolor --nogroup"))
+  (interactive
+   (list (read-string "Search for: " (if ack-guess-search-string (thing-at-point 'symbol) ""))))
+  (ack-search pattern nil ack-default-args))
 
 (provide 'ack-emacs)
