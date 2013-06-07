@@ -157,6 +157,7 @@ directory they are found in so that they are unique."
                                          (ffip-join-patterns)
                                          ffip-find-options
                                          ffip-limit)))
+              (print shell-command)
               (split-string (shell-command-to-string shell-command))))))
 
 

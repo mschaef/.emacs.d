@@ -267,7 +267,7 @@ the current fill-column."
 
 ;;;; find-file-in-project
 
-(setq ffip-find-options "-not -regex \\\".*/target/.*\\\"")
+(setq ffip-find-options "-and -not -regex \\\".*/target/.*\\\"")
 (setq ffip-limit 2048)
 
 (push "*.java" ffip-patterns)
