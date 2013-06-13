@@ -32,6 +32,7 @@
 (require 'vcsh)
 (require 'yasnippet)
 (require 'find-file-in-project)
+(require 'nrepl)
 
 ;;;; Show the time and date
 
