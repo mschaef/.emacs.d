@@ -347,6 +347,10 @@ a master POM file, the master POM file is used."
 
 (defvar mvn-java-import-trailing-prefixes
   '("com.pjm.m2m.corelibs"
+    "com.pjm.m2m.repository"
+    "com.pjm.m2m.dataflow"
+    "com.pjm.m2m.datamanager"
+    "com.pjm.m2m.web"
     "com.pjm")
   "A list of package prefixes in the order in which classes should be imported")
 
