@@ -56,7 +56,6 @@
 (set 'default-frame-alist
      '((tool-bar-lines . 0)
        (menu-bar-lines . 0)
-       (font . "-*-Lucida Console-normal-r-*-*-13-*-*-*-*-*-iso8859-1")
        (cursor-color . "green")
        (background-color . "gray30")
        (foreground-color . "yellow")
@@ -72,12 +71,22 @@
 
 (set-face-foreground 'modeline-buffer-id "green")
 
-(set-face-font 'modeline "Lucida Console:Bold:10")
-
 (set-face-background 'isearch "yellow")
 (set-face-foreground 'isearch "red")
 (setq x-pointer-foreground-color "green")
 (setq x-pointer-background-color "blue")
+
+;;;;; On systems with Lucida console, use it.
+
+(when (font-info "Lucida Console")
+  (set-face-font 'modeline "Lucida Console:Bold:10")
+  (push '(font . "-*-Lucida Console-normal-r-*-*-13-*-*-*-*-*-iso8859-1")
+        default-frame-alist))
+
+(when (font-info "Ubuntu Mono")
+  (set-face-font 'modeline "Ubuntu Mono:Bold:16")
+  (push '(font . "-*-Ubuntu Mono-normal-r-*-*-16-*-*-*-*-*-iso8859-1")
+        default-frame-alist))
 
 ;;;;; Switch to rational spacing rules
 
