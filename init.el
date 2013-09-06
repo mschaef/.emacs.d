@@ -49,40 +49,42 @@
 
 ;;;; Switch to better looking colors
 
-(set 'default-frame-alist
-     '((tool-bar-lines . 0)
-       (menu-bar-lines . 0)
-       (cursor-color . "green")
-       (background-color . "gray30")
-       (foreground-color . "yellow")
-       (vertical-scroll-bars . nil)))
+(when window-system
+  (set 'default-frame-alist
+       '((tool-bar-lines . 0)
+         (menu-bar-lines . 0)
+         (cursor-color . "green")
+         (background-color . "gray30")
+         (foreground-color . "yellow")
+         (vertical-scroll-bars . nil)))
 
-(set-face-background 'highlight "red")
-(set-face-foreground 'highlight "yellow")
+  (set-face-background 'highlight "red")
+  (set-face-foreground 'highlight "yellow")
 
-(set-face-background 'modeline "darkblue")
-(set-face-foreground 'modeline "yellow")
-(set-face-background 'modeline-inactive "gray40")
-(set-face-foreground 'modeline-inactive "black")
+  (set-face-background 'modeline "darkblue")
+  (set-face-foreground 'modeline "yellow")
+  (set-face-background 'modeline-inactive "gray40")
+  (set-face-foreground 'modeline-inactive "black")
 
-(set-face-foreground 'modeline-buffer-id "green")
+  (set-face-foreground 'modeline-buffer-id "green")
 
-(set-face-background 'isearch "yellow")
-(set-face-foreground 'isearch "red")
-(setq x-pointer-foreground-color "green")
-(setq x-pointer-background-color "blue")
+  (set-face-background 'isearch "yellow")
+  (set-face-foreground 'isearch "red")
+  (setq x-pointer-foreground-color "green")
+  (setq x-pointer-background-color "blue"))
 
 ;;;;; On systems with Lucida console, use it.
 
-(when (font-info "Lucida Console")
-  (set-face-font 'modeline "Lucida Console:Bold:10")
-  (push '(font . "-*-Lucida Console-normal-r-*-*-13-*-*-*-*-*-iso8859-1")
-        default-frame-alist))
+(when window-system
+  (when (font-info "Lucida Console")
+    (set-face-font 'modeline "Lucida Console:Bold:10")
+    (push '(font . "-*-Lucida Console-normal-r-*-*-13-*-*-*-*-*-iso8859-1")
+          default-frame-alist))
 
-(when (font-info "Ubuntu Mono")
-  (set-face-font 'modeline "Ubuntu Mono:Bold:16")
-  (push '(font . "-*-Ubuntu Mono-normal-r-*-*-16-*-*-*-*-*-iso8859-1")
-        default-frame-alist))
+  (when (font-info "Ubuntu Mono")
+    (set-face-font 'modeline "Ubuntu Mono:Bold:16")
+    (push '(font . "-*-Ubuntu Mono-normal-r-*-*-16-*-*-*-*-*-iso8859-1")
+          default-frame-alist)))
 
 ;;;;; Switch to rational spacing rules
 
@@ -216,7 +218,8 @@ BEG and END (region to sort)."
 
 ;;;; Start the emacs server
 
-(server-start)
+(when window-system
+  (server-start))
 
 ;;;; Remove the "Yes"/"No" questions in favor of the simpler "Y"/"N"
 
@@ -312,6 +315,8 @@ defined by the ack-command variable."
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(inhibit-startup-echo-area-message "mschaef")
+ '(inhibit-startup-screen t)
  '(initial-buffer-choice t)
  '(menu-bar-mode nil)
  '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
