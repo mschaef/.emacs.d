@@ -23,8 +23,9 @@
 (require 'point-stack)
 (require 'tabulate-region)
 (require 'orglog)
-(require 'magit)
-(require 'magit-svn)
+;; Broken on emacs24
+;; (require 'magit)
+;; (require 'magit-svn)
 (require 'ack-emacs)
 (require 'markdown-mode)
 (require 'mvn)
@@ -33,6 +34,12 @@
 (require 'yasnippet)
 (require 'find-file-in-project)
 (require 'nrepl)
+
+;; I've hacked sqlplus to work on emacs24, with its updated three
+;; argument switch-to-buffer. This now breaks it on emacs23. Ideally
+;; I'd fix it, but do not have time.
+(when (>= emacs-major-version 24)
+  (require 'sqlplus))
 
 ;;;; Show the time and date
 
@@ -61,12 +68,19 @@
   (set-face-background 'highlight "red")
   (set-face-foreground 'highlight "yellow")
 
-  (set-face-background 'modeline "darkblue")
-  (set-face-foreground 'modeline "yellow")
-  (set-face-background 'modeline-inactive "gray40")
-  (set-face-foreground 'modeline-inactive "black")
+  (when (face-exists-p 'modeline)
+    (set-face-background 'modeline "darkblue")
+    (set-face-foreground 'modeline "yellow")
+    (set-face-background 'modeline-inactive "gray40")
+    (set-face-foreground 'modeline-inactive "black")
+    (set-face-foreground 'modeline-buffer-id "green"))
 
-  (set-face-foreground 'modeline-buffer-id "green")
+  (when (face-exists-p 'mode-line)
+    (set-face-background 'mode-line "darkblue")
+    (set-face-foreground 'mode-line "yellow")
+    (set-face-background 'mode-line-inactive "gray40")
+    (set-face-foreground 'mode-line-inactive "black")
+    (set-face-foreground 'mode-line-buffer-id "green"))
 
   (set-face-background 'isearch "yellow")
   (set-face-foreground 'isearch "red")
@@ -77,12 +91,21 @@
 
 (when window-system
   (when (font-info "Lucida Console")
-    (set-face-font 'modeline "Lucida Console:Bold:10")
+
+    (when (face-exists-p 'modeline)
+      (set-face-font 'modeline "Lucida Console:Bold:10"))
+    (when (face-exists-p 'mode-line)
+      (set-face-font 'mode-line "Lucida Console:Bold:10"))
+
     (push '(font . "-*-Lucida Console-normal-r-*-*-13-*-*-*-*-*-iso8859-1")
           default-frame-alist))
 
   (when (font-info "Ubuntu Mono")
-    (set-face-font 'modeline "Ubuntu Mono:Bold:16")
+    (when (face-exists-p 'modeline)
+      (set-face-font 'modeline "Ubuntu Mono:Bold:16"))
+    (when (face-exists-p 'mode-line)
+      (set-face-font 'mode-line "Ubuntu Mono:Bold:16"))
+
     (push '(font . "-*-Ubuntu Mono-normal-r-*-*-16-*-*-*-*-*-iso8859-1")
           default-frame-alist)))
 
@@ -307,6 +330,13 @@ defined by the ack-command variable."
 ;;;; Set up snippets
 
 (yas/initialize)
+
+;;;; With a running window system, have hyperlinks open up in a new chrome window
+
+(when window-system
+  (setq browse-url-browser-function 'browse-url-generic)
+  (setq browse-url-generic-args '("--new-window"))
+  (setq browse-url-generic-program "chromium-browser"))
 
 ;;;; Custom stuff.
 

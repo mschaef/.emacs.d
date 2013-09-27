@@ -75,4 +75,8 @@ of the loop."
     (pp (macroexpand sexp)))
   (with-current-buffer "*el-macroexpansion*" (emacs-lisp-mode)))
 
+(defun face-exists-p (face-sym)
+  "Determine whether or not the specified face has been defined."
+  (not (null (get face-sym 'face-defface-spec))))
+
 (provide 'lisp-utilities)
