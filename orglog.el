@@ -2,6 +2,7 @@
 ;;;;
 ;;;; Personal Log Support
 
+(require 'org)
 
 (defvar orglog-root "~/.emacs/orglog"
   "Root directory for orglog files.")
@@ -14,10 +15,17 @@ with `format-time-string'.")
   "Format string for orglog file base names. Must be compatible
 with `format-time-string'.")
 
+(defvar orglog-topic-file-name-regexp  "\\([a-zA-Z]+\\).orglog$"
+  "Regular expression used to identify the filenames for orglog
+non-date topic files. The first regular expression subexpression is
+used for the name of the topic itself.")
+
 (define-minor-mode orglog-mode
   "Toggle interpretation of a buffer as an orglog buffer."
   :lighter " Orglog"
-  :keymap '(([(shift f6)] . orglog-enter-day)))
+  :keymap '(([(shift f6)] . orglog-enter-day)
+            ([(control ?c) ?t ?i] . orglog-insert-topic-link)
+            ([(control ?c) ?t ?I] . orglog-enter-topic)))
 
 (defun orglog-find-root ()
   (if (not (file-exists-p orglog-root))
@@ -36,16 +44,63 @@ with `format-time-string'.")
 (defun orglog-today-basename ()
   (format-time-string orglog-file-basename-format-string (current-time)))
 
-(defun orglog-todays-file-name ()
-  (concat (orglog-find-root) "/" (orglog-today-basename) ".orglog"))
+(defun orglog-topic-file-name (topic)
+  (concat (orglog-find-root) "/" topic ".orglog"))
 
-(defun orglog-find-todays-file ()
-  (interactive)
-  (let* ((filename (orglog-todays-file-name))
-         (buffer (get-file-buffer filename)))
+(defun orglog-todays-file-name ()
+  (orglog-topic-file-name (orglog-today-basename)))
+
+(defun orglog-topic-file-names ()
+  (directory-files (orglog-find-root) nil orglog-topic-file-name-regexp))
+
+(defun orglog-topic-names ()
+  (mapcar #'(lambda (file-name)
+              (if (string-match orglog-topic-file-name-regexp file-name)
+                  (match-string 1 file-name)
+                ""))
+          (orglog-topic-file-names)))
+
+(defun orglog-find-file (filename)
+  (let ((buffer (get-file-buffer filename)))
     (if buffer
         (switch-to-buffer buffer)
       (find-file filename))))
+
+(defun orglog-read-topic-name (prompt)
+  (interactive)
+  (let ((topic-names (orglog-topic-names)))
+    (if (and (boundp 'ido-mode) ido-mode)
+        (ido-completing-read prompt topic-names nil t)
+      (completing-read prompt topic-names nil t))))
+
+(defun orglog-find-topic-file ()
+  (interactive)
+  (let ((topic (orglog-read-topic-name "Find topic: ")))
+    (unless (null topic)
+     (orglog-find-file (orglog-topic-file-name topic)))))
+
+(defun orglog-find-todays-file ()
+  (interactive)
+  (orglog-find-file (orglog-todays-file-name)))
+
+(defun orglog-topic-link (topic)
+  (concat "[[orglog-topic:" topic "][" topic "]]"))
+
+(defun orglog-insert-topic-link ()
+  (interactive)
+  (let ((topic (orglog-read-topic-name "Insert topic link: ")))
+    (unless (null topic)
+      (insert (orglog-topic-link topic)))))
+
+(defun orglog-enter-topic ()
+  (interactive)
+  (let ((topic (orglog-read-topic-name "Enter topic: ")))
+    (unless (null topic)
+      (insert (concat "** " (orglog-topic-link topic)))
+      (newline)
+      (insert "*** ")
+      (save-excursion
+        (newline)))))
 
 (defun orglog-enter-day ()
   (interactive)
@@ -54,6 +109,11 @@ with `format-time-string'.")
   (insert "** ")
   (save-excursion
     (newline)))
+
+(org-add-link-type "orglog-topic" 'orglog-topic-open)
+
+(defun orglog-topic-open (topic)
+  (orglog-find-file (orglog-topic-file-name topic)))
 
 ;; Emacs 'helpfully' autotranslates (shift f6) to f6 too...
 ;;
