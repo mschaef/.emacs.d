@@ -5,24 +5,41 @@
 
 (require 'cl)              ;; Common Lisp compatibiliy functions
 
-(global-set-key [f7] 'point-stack-push)
-(global-set-key [f8] 'point-stack-pop)
+(global-set-key [f7] 'point-stack-save)
+(global-set-key [(shift f7)] 'point-stack-restore)
+
+(global-set-key [f8] 'point-stack-swap)
 
 (defvar point-stack nil)
 
-(defun point-stack-push ()
-  "Push current location and buffer info onto stack."
+(defun point-stack-current-location ()
+  (list (current-buffer) (point)))
+
+(defun point-stack-apply-location (loc)
+  (switch-to-buffer (car loc))
+  (goto-char (cadr loc)))
+
+(defun point-stack-save ()
+  "Save the current point and buffer to the point stack."
   (interactive)
   (message "Location marked.")
-  (setq point-stack (cons (list (current-buffer) (point)) point-stack)))
+  (setq point-stack (cons (point-stack-current-location) point-stack)))
 
-(defun point-stack-pop ()
-  "Pop a location off the stack and move to buffer"
+(defun point-stack-restore ()
+  "Pop a location off the point stack, and go to that location."
   (interactive)
   (if (null point-stack)
       (message "Stack is empty.")
-    (switch-to-buffer (caar point-stack))
-    (goto-char (cadar point-stack))
+    (point-stack-apply-location (car point-stack))
     (setq point-stack (cdr point-stack))))
+
+(defun point-stack-swap ()
+  "Swap the location on the top of the point stack with the current location."
+  (interactive)
+  (if (null point-stack)
+      (message "Stack is empty.")
+    (let ((current-location (point-stack-current-location)))
+      (point-stack-restore)
+      (setq point-stack (cons current-location (cdr point-stack))))))
 
 (provide 'point-stack)
