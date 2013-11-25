@@ -34,6 +34,7 @@
 (require 'yasnippet)
 (require 'find-file-in-project)
 (require 'nrepl)
+(require 'uniquify) 
 
 ;; I've hacked sqlplus to work on emacs24, with its updated three
 ;; argument switch-to-buffer. This now breaks it on emacs23. Ideally
@@ -364,7 +365,13 @@ defined by the ack-command variable."
 
 (setq nrepl-port "53095")
 
+;;;; Customize uniquify to get more rational unique buffer names
+
+(setq uniquify-buffer-name-style 'post-forward)
+(setq uniquify-separator ":")
+
 ;;;; Load local customizations
 
 (load "local" t)
+
 
