@@ -360,6 +360,10 @@ defined by the ack-command variable."
   ;; If there is more than one, they won't work right.
  )
 
+;;;; Assume port 53095 as the default nrepl port
+
+(setq nrepl-port "53095")
+
 ;;;; Load local customizations
 
 (load "local" t)
