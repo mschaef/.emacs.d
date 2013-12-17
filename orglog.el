@@ -15,7 +15,7 @@ with `format-time-string'.")
   "Format string for orglog file base names. Must be compatible
 with `format-time-string'.")
 
-(defvar orglog-topic-file-name-regexp  "\\([a-zA-Z0-9-]+\\).orglog$"
+(defvar orglog-topic-file-name-regexp "^\\([a-zA-Z-][a-zA-Z0-9-]+\\).orglog$"
   "Regular expression used to identify the filenames for orglog
 non-date topic files. The first regular expression subexpression is
 used for the name of the topic itself.")
