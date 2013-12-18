@@ -364,6 +364,8 @@ defined by the ack-command variable."
 ;;;; Assume port 53095 as the default nrepl port
 
 (setq nrepl-port "53095")
+(setq nrepl-popup-stacktraces nil)
+(setq nrepl-popup-stacktraces-in-repl t)
 
 ;;;; Customize uniquify to get more rational unique buffer names
 
