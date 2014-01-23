@@ -35,6 +35,7 @@
 (require 'find-file-in-project)
 (require 'nrepl)
 (require 'uniquify) 
+(require 'clojure-mode)
 
 ;; I've hacked sqlplus to work on emacs24, with its updated three
 ;; argument switch-to-buffer. This now breaks it on emacs23. Ideally
@@ -178,10 +179,18 @@
 
 ;;; Clojure mode
 
-(autoload 'clojure-mode "clojure-mode" "A major mode for Clojure" t)
-
 (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
+
+(define-clojure-indent
+  (defroutes 'defun)
+  (GET 2)
+  (POST 2)
+  (PUT 2)
+  (DELETE 2)
+  (HEAD 2)
+  (ANY 2)
+  (context 2))
 
 ;;; paredit
 
