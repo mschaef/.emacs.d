@@ -174,7 +174,7 @@
 
 ;;; js2 mode
 
-(autoload 'js2-mode "js2" nil t)
+(autoload 'js2-mode "js2-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 ;;; Clojure mode
@@ -373,8 +373,11 @@ defined by the ack-command variable."
 ;;;; Assume port 53095 as the default nrepl port
 
 (setq nrepl-port "53095")
-(setq nrepl-popup-stacktraces nil)
-(setq nrepl-popup-stacktraces-in-repl t)
+
+;; This has proven to be way too verbose
+;;
+;; (setq nrepl-popup-stacktraces nil)
+;; (setq nrepl-popup-stacktraces-in-repl t)
 
 ;;;; Customize uniquify to get more rational unique buffer names
 
