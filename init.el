@@ -40,8 +40,8 @@
 ;; I've hacked sqlplus to work on emacs24, with its updated three
 ;; argument switch-to-buffer. This now breaks it on emacs23. Ideally
 ;; I'd fix it, but do not have time.
-;(when (>= emacs-major-version 24)
-;  (require 'sqlplus))
+(when (>= emacs-major-version 24)
+  (require 'sqlplus))
 
 ;;;; Avoid creating lockfiles
 
