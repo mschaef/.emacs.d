@@ -14,6 +14,7 @@
 ;;;; Setup the load path
 
 (push "~/.emacs.d/" load-path)
+(push "~/.emacs.d/git-modes" load-path)
 (push "~/.emacs.d/magit" load-path)
 (push "~/.emacs.d/yasnippet" load-path)
 
@@ -23,9 +24,8 @@
 (require 'point-stack)
 (require 'tabulate-region)
 (require 'orglog)
-;; Broken on emacs24
-;; (require 'magit)
-;; (require 'magit-svn)
+(require 'magit)
+(require 'magit-svn)
 (require 'ack-emacs)
 (require 'mvn)
 (require 'java-mode-indent-annotations)
