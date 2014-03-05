@@ -43,6 +43,10 @@
 (when (>= emacs-major-version 24)
   (require 'sqlplus))
 
+;;;; Avoid creating lockfiles
+
+(setq create-lockfiles nil)
+
 ;;;; Show the time and date
 
 (setq display-time-day-and-date t)
