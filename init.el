@@ -11,6 +11,10 @@
 ;; http://www.emacswiki.org/emacs/SqlComplete
 ;; http://www.emacswiki.org/emacs/AntCall
 
+;;;; Record the start time
+
+(defvar *emacs-load-start* (current-time))
+
 ;;;; Setup the load path
 
 (push "~/.emacs.d/" load-path)
@@ -24,15 +28,17 @@
 (require 'point-stack)
 (require 'tabulate-region)
 (require 'orglog)
-(require 'magit)
-(require 'magit-svn)
-(require 'ack-emacs)
 (require 'mvn)
 (require 'java-mode-indent-annotations)
 (require 'vcsh)
 (require 'yasnippet)
 (require 'find-file-in-project)
 (require 'uniquify) 
+
+(require 'magit)
+(require 'magit-svn)
+
+(require 'ack-emacs)
 (require 'clojure-mode)
 (require 'nrepl)
 
@@ -397,3 +403,10 @@ defined by the ack-command variable."
 (load "local" t)
 
 
+;;;; Write out a message indicating how long it took to process the init script
+
+(message ".emacs loaded in %ds"
+         (destructuring-bind (hi lo ms ps) (current-time)
+           (- (+ hi lo)
+              (+ (first *emacs-load-start*)
+                 (second *emacs-load-start*)))))
