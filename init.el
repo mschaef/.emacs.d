@@ -27,21 +27,21 @@
 ;; (require 'magit)
 ;; (require 'magit-svn)
 (require 'ack-emacs)
-(require 'markdown-mode)
 (require 'mvn)
 (require 'java-mode-indent-annotations)
 (require 'vcsh)
 (require 'yasnippet)
 (require 'find-file-in-project)
-(require 'nrepl)
 (require 'uniquify) 
 (require 'clojure-mode)
+(require 'nrepl)
+
 
 ;; I've hacked sqlplus to work on emacs24, with its updated three
 ;; argument switch-to-buffer. This now breaks it on emacs23. Ideally
 ;; I'd fix it, but do not have time.
 (when (>= emacs-major-version 24)
-  (require 'sqlplus))
+  (autoload 'sqlplus "sqlplus" nil t))
 
 ;;;; Avoid creating lockfiles
 
@@ -173,6 +173,8 @@
 
 ;;; markdown mode
 
+(autoload 'markdown-mode "markdown-mode" nil t)
+
 (push (cons "\\.md"     'markdown-mode) auto-mode-alist)
 (add-hook 'markdown-mode-hook 'turn-on-auto-fill)
 
@@ -182,6 +184,7 @@
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 ;;; Clojure mode
+
 
 (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
@@ -377,6 +380,7 @@ defined by the ack-command variable."
 ;;;; Assume port 53095 as the default nrepl port
 
 (setq nrepl-port "53095")
+
 
 ;; This has proven to be way too verbose
 ;;
