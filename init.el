@@ -40,9 +40,6 @@
 (require 'magit-svn)
 
 (require 'ack-emacs)
-(require 'clojure-mode)
-(require 'nrepl)
-
 
 ;; I've hacked sqlplus to work on emacs24, with its updated three
 ;; argument switch-to-buffer. This now breaks it on emacs23. Ideally
@@ -186,36 +183,6 @@
 
 (setq compilation-scroll-output t)
 
-;;;;; Configure a few new automatic modes
-
-;;; markdown mode
-
-(autoload 'markdown-mode "markdown-mode" nil t)
-
-(push (cons "\\.md"     'markdown-mode) auto-mode-alist)
-(add-hook 'markdown-mode-hook 'turn-on-auto-fill)
-
-;;; js2 mode
-
-(autoload 'js2-mode "js2-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-
-;;; Clojure mode
-
-
-(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
-(add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
-
-(define-clojure-indent 
-  (defroutes 'defun)
-  (GET 2)
-  (POST 2)
-  (PUT 2)
-  (DELETE 2)
-  (HEAD 2)
-  (ANY 2)
-  (context 2))
-
 ;;; paredit
 
 (autoload 'paredit-mode "paredit"
@@ -226,7 +193,7 @@
   (paredit-mode 1))
 
 (add-hook 'emacs-lisp-mode-hook 'lisp-enable-paredit-hook)
-(add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
+
 (add-hook 'lisp-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'scheme-mode-hook 'lisp-enable-paredit-hook)
 
@@ -238,6 +205,42 @@
                   `((paredit-mode
                      ,@(remove (cons ?\C-j 'paredit-newline)
                                paredit-mode-map))))))
+
+;;;;; Configure a few new automatic modes
+
+;;; markdown mode
+
+(autoload 'markdown-mode "markdown-mode" nil t)
+
+(push (cons "\\.md"     'markdown-mode) auto-mode-alist)
+
+(add-hook 'markdown-mode-hook 'turn-on-auto-fill)
+
+;;; js2 mode
+
+(autoload 'js2-mode "js2-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+
+;;; Clojure mode
+
+(autoload 'clojure-mode "clojure-mode" nil t)
+
+(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
+
+(eval-after-load "clojure-mode"
+  '(progn
+     (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
+
+     (define-clojure-indent 
+       (defroutes 'defun)
+       (GET 2)
+       (POST 2)
+       (PUT 2)
+       (DELETE 2)
+       (HEAD 2)
+       (ANY 2)
+       (context 2))))
 
 ;;;; Org mode keywords
 
@@ -394,9 +397,14 @@ defined by the ack-command variable."
   ;; If there is more than one, they won't work right.
  )
 
-;;;; Assume port 53095 as the default nrepl port
+;;;; Make nrepl mode available
 
-(setq nrepl-port "53095")
+(autoload 'nrepl "nrepl" nil t)
+
+(eval-after-load "nrepl"
+  '(progn
+     ;; Assume port 53095 as the default nrepl port
+     (setq nrepl-port "53095")))
 
 ;;;; Customize uniquify to get more rational unique buffer names
 
