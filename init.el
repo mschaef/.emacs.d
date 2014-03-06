@@ -181,6 +181,9 @@
   (require 'cygwin-mount)
   (cygwin-mount-activate))
 
+;;;;; Scroll the compiler output window so that the most recent output
+;;;;; is always visible.
+
 (setq compilation-scroll-output t)
 
 ;;;;; Configure a few new automatic modes
@@ -203,7 +206,7 @@
 (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
 
-(define-clojure-indent
+(define-clojure-indent 
   (defroutes 'defun)
   (GET 2)
   (POST 2)
@@ -394,12 +397,6 @@ defined by the ack-command variable."
 ;;;; Assume port 53095 as the default nrepl port
 
 (setq nrepl-port "53095")
-
-
-;; This has proven to be way too verbose
-;;
-;; (setq nrepl-popup-stacktraces nil)
-;; (setq nrepl-popup-stacktraces-in-repl t)
 
 ;;;; Customize uniquify to get more rational unique buffer names
 
