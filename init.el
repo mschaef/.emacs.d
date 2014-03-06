@@ -10,6 +10,7 @@
 ;; http://stackoverflow.com/questions/60367/the-single-most-useful-emacs-feature
 ;; http://www.emacswiki.org/emacs/SqlComplete
 ;; http://www.emacswiki.org/emacs/AntCall
+;; https://sites.google.com/site/steveyegge2/effective-emacs
 
 ;;;; Record the start time
 
@@ -166,6 +167,17 @@
 (global-set-key [f2] 'ff-find-other-file)
 
 (global-unset-key [?\s-p])
+
+;; Enable M-x without M-
+
+(global-set-key "\C-x\C-m" 'execute-extended-command)
+(global-set-key "\C-c\C-m" 'execute-extended-command)
+
+;; Use C-w to kill the previous word and rebind kill-region to something else.
+
+(global-set-key "\C-w" 'backward-kill-word)
+(global-set-key "\C-x\C-k" 'kill-region)
+(global-set-key "\C-c\C-k" 'kill-region)
 
 ;;;;; Load cygwin32-mount on Windows
 
