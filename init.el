@@ -153,10 +153,6 @@
   (set-face-background 'linum "gray40")
   (set-face-foreground 'linum "gray70"))
 
-;;;; Highlight the region between the mark and point
-
-(transient-mark-mode t)
-
 ;;;; Set a few keys to honor a few old Visual Studio habits
 
 (global-set-key [f12] 'next-error)
