@@ -40,6 +40,9 @@
 (require 'magit-svn)
 
 (require 'ack-emacs)
+(require 'clojure-mode)
+
+
 
 ;; I've hacked sqlplus to work on emacs24, with its updated three
 ;; argument switch-to-buffer. This now breaks it on emacs23. Ideally
@@ -223,24 +226,20 @@
 
 ;;; Clojure mode
 
-(autoload 'clojure-mode "clojure-mode" nil t)
-
 (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
 
-(eval-after-load "clojure-mode"
-  '(progn
-     (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
+(add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 
-     (define-clojure-indent 
-       (defroutes 'defun)
-       (GET 2)
-       (POST 2)
-       (PUT 2)
-       (DELETE 2)
-       (HEAD 2)
-       (ANY 2)
-       (context 2))))
+(define-clojure-indent 
+  (defroutes 'defun)
+  (GET 2)
+  (POST 2)
+  (PUT 2)
+  (DELETE 2)
+  (HEAD 2)
+  (ANY 2)
+  (context 2))
 
 ;;;; Org mode keywords
 
