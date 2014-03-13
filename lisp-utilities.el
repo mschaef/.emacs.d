@@ -79,4 +79,31 @@ of the loop."
   "Determine whether or not the specified face has been defined."
   (not (null (get face-sym 'face-defface-spec))))
 
+(defun safe-set-face-background ( faces color )
+  "Change the background color of face faces to color. faces can
+be either a symbol or a list of symbols."
+  (if (symbolp faces)
+      (safe-set-face-background (list faces) color)
+    (dolist (face faces)
+      (when (face-exists-p face)
+        (set-face-background face color)))))
+
+(defun safe-set-face-foreground ( faces color )
+  "Change the foreground color of face faces to color. faces can
+be either a symbol or a list of symbols."
+  (if (symbolp faces)
+      (safe-set-face-foreground (list faces) color)
+    (dolist (face faces)
+      (when (face-exists-p face)
+        (set-face-foreground face color)))))
+
+(defun safe-set-face-font ( faces color )
+  "Change the font color of face faces to color. faces can
+be either a symbol or a list of symbols."
+  (if (symbolp faces)
+      (safe-set-face-font (list faces) color)
+    (dolist (face faces)
+      (when (face-exists-p face)
+        (set-face-font face color)))))
+
 (provide 'lisp-utilities)

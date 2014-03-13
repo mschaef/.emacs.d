@@ -81,46 +81,34 @@
   (set-face-background 'highlight "red")
   (set-face-foreground 'highlight "yellow")
 
-  (when (face-exists-p 'modeline)
-    (set-face-background 'modeline "darkblue")
-    (set-face-foreground 'modeline "yellow")
-    (set-face-background 'modeline-inactive "gray40")
-    (set-face-foreground 'modeline-inactive "black")
-    (set-face-foreground 'modeline-buffer-id "green"))
-
-  (when (face-exists-p 'mode-line)
-    (set-face-background 'mode-line "darkblue")
-    (set-face-foreground 'mode-line "yellow")
-    (set-face-background 'mode-line-inactive "gray40")
-    (set-face-foreground 'mode-line-inactive "black")
-    (set-face-foreground 'mode-line-buffer-id "green"))
+  (safe-set-face-background '(modeline mode-line) "darkred")
+  (safe-set-face-foreground '(modeline mode-line) "yellow")
+  (safe-set-face-background '(modeline-inactive mode-line-inactive) "darkblue")
+  (safe-set-face-foreground '(modeline-inactive mode-line-inactive) "gray50")
+  (safe-set-face-foreground '(modeline-buffer-id mode-line-buffer-id) "green")
 
   (set-face-background 'isearch "yellow")
   (set-face-foreground 'isearch "red")
+
   (setq x-pointer-foreground-color "green")
   (setq x-pointer-background-color "blue"))
 
-;;;;; On systems with Lucida console, use it.
+;;;;; Pick an appropriate font for the machine, based on the fonts that are available.
 
-(when window-system
-  (when (font-info "Lucida Console")
+(cond
+ ((not window-system)
+  ;; Do nothing without a window sytem
+  )
 
-    (when (face-exists-p 'modeline)
-      (set-face-font 'modeline "Lucida Console:Bold:10"))
-    (when (face-exists-p 'mode-line)
-      (set-face-font 'mode-line "Lucida Console:Bold:10"))
+ ((font-info "Lucida Console")
+  (safe-set-face-font '(modeline mode-line) "Lucida Console:Bold:10")
+  (push '(font . "-*-Lucida Console-normal-r-*-*-13-*-*-*-*-*-iso8859-1")
+        default-frame-alist))
 
-    (push '(font . "-*-Lucida Console-normal-r-*-*-13-*-*-*-*-*-iso8859-1")
-          default-frame-alist))
-
-  (when (font-info "Ubuntu Mono")
-    (when (face-exists-p 'modeline)
-      (set-face-font 'modeline "Ubuntu Mono:Bold:16"))
-    (when (face-exists-p 'mode-line)
-      (set-face-font 'mode-line "Ubuntu Mono:Bold:16"))
-
-    (push '(font . "-*-Ubuntu Mono-normal-r-*-*-16-*-*-*-*-*-iso8859-1")
-          default-frame-alist)))
+ ((font-info "Ubuntu Mono")
+  (safe-set-face-font '(modeline mode-line) "Ubuntu Mono:Bold:16")
+  (push '(font . "-*-Ubuntu Mono-normal-r-*-*-16-*-*-*-*-*-iso8859-1")
+        default-frame-alist)))
 
 ;;;;; Switch to rational spacing rules
 
