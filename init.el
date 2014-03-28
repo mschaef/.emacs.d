@@ -43,6 +43,10 @@
 (require 'clojure-mode)
 
 
+;; Enable Tramp mode for remote editing
+
+(require 'tramp)
+(setq tramp-default-method "ssh")
 
 ;; I've hacked sqlplus to work on emacs24, with its updated three
 ;; argument switch-to-buffer. This now breaks it on emacs23. Ideally
@@ -151,12 +155,6 @@
 (global-set-key [f2] 'ff-find-other-file)
 
 (global-unset-key [?\s-p])
-
-;; Enable M-x without M-
-
-(global-set-key "\C-x\C-m" 'execute-extended-command)
-(global-set-key "\C-c\C-m" 'execute-extended-command)
-
 
 ;;;;; Load cygwin32-mount on Windows
 
