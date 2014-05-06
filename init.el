@@ -22,6 +22,7 @@
 (push "~/.emacs.d/git-modes" load-path)
 (push "~/.emacs.d/magit" load-path)
 (push "~/.emacs.d/yasnippet" load-path)
+(push "~/.emacs.d/cider" load-path)
 
 ;;;; External packages
 
