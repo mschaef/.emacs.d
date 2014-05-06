@@ -43,6 +43,7 @@
 (require 'ack-emacs)
 (require 'clojure-mode)
 
+(require 'cider)
 
 ;; Enable Tramp mode for remote editing
 
