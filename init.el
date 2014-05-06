@@ -379,12 +379,12 @@ defined by the ack-command variable."
 
 ;;;; Make nrepl mode available
 
-(autoload 'nrepl "nrepl" nil t)
+;; (autoload 'nrepl "nrepl" nil t)
 
-(eval-after-load "nrepl"
-  '(progn
-     ;; Assume port 53095 as the default nrepl port
-     (setq nrepl-port "53095")))
+;; (eval-after-load "nrepl"
+;;   '(progn
+;;      ;; Assume port 53095 as the default nrepl port
+;;      (setq nrepl-port "53095")))
 
 ;;;; Customize uniquify to get more rational unique buffer names
 
