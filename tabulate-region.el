@@ -10,26 +10,13 @@
   (interactive "nTarget column: ")
   (tab-current-char-to-point (+ (point-at-bol) target-column -1)))
 
-(defun mapcar/2 (fn xs ys)
-  (if (and (null xs) (null ys))
-      ()
-    (cons (funcall fn (car xs) (car ys))
-          (mapcar/2 fn (cdr xs) (cdr ys)))))
-
-(defun fold-list (kons knil lis)
-  (if (null lis)
-      knil
-    (fold-list kons
-               (funcall kons (car lis) knil)
-               (cdr lis))))
-
 (defvar *last-delim-positions* ())
 
 (defun max/content-widths (widths-1 widths-2)
-  (mapcar/2 #'(lambda (x y)
-                (max (if (null x) y x)
-                     (if (null y) x y)))
-            widths-1 widths-2))
+  (mapcar* #'(lambda (x y)
+               (max (if (null x) y x)
+                    (if (null y) x y)))
+           widths-1 widths-2))
 
 (defun find-delim-positions (delim start end)
   (save-excursion
@@ -98,13 +85,19 @@
                   col-end-pos))
             delim-cols)))
 
+(defun tabulate-fold-list (kons knil lis)
+  (let ((accum knil))
+    (dolist (elt lis)
+      (setq accum (funcall kons elt accum)))
+    accum))
+
 (defun find-best-delim-positions (start end delim)
   (content-widths->delimiter-columns
-   (fold-list #'max/content-widths ()
-              (mapcar #'delimiter-columns->content-widths
-                      (map-region-lines #'(lambda (bol eol)
-                                            (find-delim-positions delim bol eol))
-                                        start end)))))
+   (tabulate-fold-list #'max/content-widths ()
+                       (mapcar #'delimiter-columns->content-widths
+                               (map-region-lines #'(lambda (bol eol)
+                                                     (find-delim-positions delim bol eol))
+                                                 start end)))))
 
 
 (defun tabulate-region (start end delim)
