@@ -12,11 +12,18 @@
 
 (defvar *last-delim-positions* ())
 
-(defun max/content-widths (widths-1 widths-2)
-  (mapcar* #'(lambda (x y)
-               (max (if (null x) y x)
-                    (if (null y) x y)))
-           widths-1 widths-2))
+(defun  max/content-widths (xs ys)
+  (let ((accum ()))
+    (while (not (and (null xs) (null ys)))
+      (let ((x (car xs))
+            (y (car ys)))
+        (setq accum (cons (max (if (null x) y x)
+                               (if (null y) x y))
+                          accum)))
+      (setq ys (cdr ys))
+      (setq xs (cdr xs)))
+    (nreverse accum)))
+
 
 (defun find-delim-positions (delim start end)
   (save-excursion
