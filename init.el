@@ -379,7 +379,17 @@ defined by the ack-command variable."
   ;; If there is more than one, they won't work right.
  )
 
-;;;; Make nrepl mode available
+;;;; Configure Cider and nREPL
+
+(setq nrepl-hide-special-buffers t)
+(setq nrepl-port "53095")
+
+(setq cider-repl-print-length 10) 
+
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+(setq cider-popup-stacktraces nil)
+(setq cider-repl-popup-stacktraces t)
+
 
 ;; (autoload 'nrepl "nrepl" nil t)
 
