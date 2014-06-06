@@ -8,8 +8,8 @@
 (global-set-key [f7] 'point-stack-save)
 (global-set-key [(shift f7)] 'point-stack-save-overwrite)
 
-(global-set-key [f8] 'point-stack-swap)
-(global-set-key [(shift f8)] 'point-stack-restore)
+(global-set-key [f8] 'point-stack-restore)
+(global-set-key [(shift f8)] 'point-stack-swap)
 (global-set-key [(control shift f8)] 'point-stack-clear)
 
 (defvar point-stack nil)
