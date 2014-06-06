@@ -386,7 +386,8 @@ defined by the ack-command variable."
 
 (setq cider-repl-print-length 10) 
 
-(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+;; disable to hopefully fix hang
+;;(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 (setq cider-popup-stacktraces nil)
 (setq cider-repl-popup-stacktraces t)
 
