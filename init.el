@@ -222,7 +222,9 @@
   (DELETE 2)
   (HEAD 2)
   (ANY 2)
-  (context 2))
+  (context 2)
+  (unless 1)
+  (unless* 1))
 
 ;;;; Org mode keywords
 
