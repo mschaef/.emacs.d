@@ -52,13 +52,15 @@ Emacs process environment.")
   (let ((overrides (mvn-jdk-overrides)))
     (if (null overrides)
         ()
-      (format "PATH=%s;%s" (second overrides) (getenv "PATH")))))
+      (list
+       (format "PATH=%s;%s" (second overrides) (getenv "PATH"))))))
 
 (defun mvn-java-home-override ()
   (let ((overrides (mvn-jdk-overrides)))
     (if (null overrides)
         ()
-      (format "JAVA_HOME=%s" (first overrides)))))
+      (list
+       (format "JAVA_HOME=%s" (first overrides))))))
 
 (add-to-list 'compilation-error-regexp-alist
              '("\\[ERROR\\] \\(.+\\):\\[\\([0-9]+\\),\\([0-9]+\\)\\] .+$" 1 2 3))
@@ -162,8 +164,8 @@ and the specified goal."
   (concat "mvn -o -f " pom-path "pom.xml " goal " "))
 
 (defun mvn-compiler-process-environment ()
-  (append (list (mvn-java-home-override))
-          (list (mvn-path-override))
+  (append (mvn-java-home-override)
+          (mvn-path-override)
           process-environment))
 
 (defun mvn-read-compile-command (pom-path goal)
