@@ -378,8 +378,10 @@ a master POM file, the master POM file is used."
   "A regular expression used for matching Java import statements.")
 
 (defvar mvn-java-import-leading-prefixes
-  '("org.slf4j"
+  '("org.slf4j.Logger"
     "java.util"
+    "java.io"
+    "java.nio"
     "java"
     "javax"
     "org.slf4j"
@@ -388,12 +390,7 @@ a master POM file, the master POM file is used."
   "A list of package prefixes in the order in which classes should be imported")
 
 (defvar mvn-java-import-trailing-prefixes
-  '("com.pjm.m2m.corelibs"
-    "com.pjm.m2m.repository"
-    "com.pjm.m2m.dataflow"
-    "com.pjm.m2m.datamanager"
-    "com.pjm.m2m.web"
-    "com.pjm")
+  '("com")
   "A list of package prefixes in the order in which classes should be imported")
 
 
@@ -401,7 +398,7 @@ a master POM file, the master POM file is used."
   (let ((matches ())
         (non-matches ()))
     (dolist (class classes)
-      (if (string-prefix-p prefix class)
+      (if (string-prefix-p class prefix)
           (push class matches)
         (push class non-matches)))
     (cons matches non-matches)))
@@ -417,10 +414,8 @@ a master POM file, the master POM file is used."
     (cons classes (reverse partitions))))
 
 (defun mvn-partition-classes-by-prefix-order (classes)
-  (let* ((leading-partition (mvn-partition-classes classes
-                                                  mvn-java-import-leading-prefixes))
-         (trailing-partition (mvn-partition-classes (car leading-partition)
-                                                   mvn-java-import-trailing-prefixes)))
+  (let* ((leading-partition (mvn-partition-classes classes mvn-java-import-leading-prefixes))
+         (trailing-partition (mvn-partition-classes (car leading-partition) mvn-java-import-trailing-prefixes)))
     (append (cdr leading-partition)
             (list (car trailing-partition))
             (cdr trailing-partition))))
@@ -433,7 +428,7 @@ a master POM file, the master POM file is used."
         (while t
           (unless (re-search-forward mvn-java-import-regexp (point-max) t)
             (throw 'done imports))
-          (push (buffer-substring (match-beginning 1) (match-end 1))
+          (push (buffer-substring-no-properties (match-beginning 1) (match-end 1))
                 imports))))))
 
 (defun mvn-goto-import-location ()
@@ -446,10 +441,11 @@ a master POM file, the master POM file is used."
 
 (defun mvn-insert-imports (class-names)
   (dolist (partition (mvn-partition-classes-by-prefix-order class-names))
-    (dolist (class-name (sort partition #'string<))
-      (insert "import " class-name ";")
-      (newline))
-    (newline)))
+    (when (> (length partition) 0)
+      (dolist (class-name (sort partition #'string<))
+        (insert "import " class-name ";")
+        (newline))
+      (newline))))
 
 (defun mvn-strip-all-file-imports ()
   (save-excursion
