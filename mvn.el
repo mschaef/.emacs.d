@@ -63,11 +63,10 @@ Emacs process environment.")
        (format "JAVA_HOME=%s" (first overrides))))))
 
 (add-to-list 'compilation-error-regexp-alist
-             '("\\[ERROR\\] \\(.+\\):\\[\\([0-9]+\\),\\([0-9]+\\)\\] .+$" 1 2 3))
+             '("\\[ERROR\\] /?\\(.+\\):\\[\\([0-9]+\\),\\([0-9]+\\)\\] .+$" 1 2 3)))
 
 (add-to-list 'compilation-error-regexp-alist
-             '("\\[WARNING\\] \\([a-zA-Z]:\\)?\\(.+\\):\\([0-9]+\\): .+$" 2 3))
-
+             '("\\[WARNING\\] /?\\([a-zA-Z]:\\)?\\(.+\\):\\([0-9]+\\): .+$" 2 3))
 
 
 (set 'compilation-mode-font-lock-keywords
