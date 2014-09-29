@@ -43,10 +43,17 @@ of the loop."
   `(when (fboundp ',symbol)
      ,@body))
 
+(defun string-prefix-p (s beginning)
+  "return non-nil if string S begins with BEGINNING."
+  (let ((blength (length beginning)))
+    (and (>= (length s) blength)
+         (string= (substring s 0 blength) beginning))))
+
 (defun string-suffix-p (s ending)
   "return non-nil if string S ends with ENDING."
   (let ((elength (length ending)))
-    (string= (substring s (- 0 elength)) ending)))
+    (and (>= (length s) elength)
+         (string= (substring s (- 0 elength)) ending))))
 
 (defun capitalize-first-letter (str)
   "Capitalize the first letter of the string STR."
@@ -105,5 +112,27 @@ be either a symbol or a list of symbols."
     (dolist (face faces)
       (when (face-exists-p face)
         (set-face-font face color)))))
+
+
+
+(defun log-message ( &rest args )
+  "Display a log message at the bottom of the screen. All
+arguments are written in princ format."
+  (message
+   (apply #'concat
+          (cons "LOG:"
+                (mapcar #'(lambda (arg)
+                            (with-output-to-string
+                              (princ " ")
+                              (princ arg)))
+                        args)))))
+
+
+(defmacro log-watch ( &rest varnames )
+  `(progn
+     ,@(mapcar #'(lambda ( varname )
+                   `(log-message "WATCH:"',varname "=" (prin1-to-string ,varname)))
+               varnames)))
+
 
 (provide 'lisp-utilities)
