@@ -63,10 +63,11 @@ Emacs process environment.")
        (format "JAVA_HOME=%s" (first overrides))))))
 
 (add-to-list 'compilation-error-regexp-alist
-             '("\\[ERROR\\] /?\\(.+\\):\\[\\([0-9]+\\),\\([0-9]+\\)\\] .+$" 1 2 3)))
+             '("\\[ERROR\\] /?\\(.+\\):\\[\\([0-9]+\\),\\([0-9]+\\)\\] .+$" 1 2 3))
 
 (add-to-list 'compilation-error-regexp-alist
              '("\\[WARNING\\] /?\\([a-zA-Z]:\\)?\\(.+\\):\\([0-9]+\\): .+$" 2 3))
+
 
 
 (set 'compilation-mode-font-lock-keywords
@@ -135,21 +136,20 @@ Emacs process environment.")
   to be the first upward directory containing a Maven POM
   file. The search starts in the directory for the current
   buffer.  If no POM is found, returns nil."
-  (let ((fn (buffer-file-name)))
-    (and fn
-         (mvn-find-module-root-directory fn))))
+  (let ((filename (buffer-file-name)))
+    (and filename
+         (mvn-find-module-root-directory filename))))
 
 (defun mvn-look-for-project-root-directory (module-root)
   "Given a module root directory, look for a project root in the
 directory immediately above the module root. If there is no
 project root, returns the module root."
-  (if module-root
-      (let ((pom-path module-root))
-        (let ((master-pom-path (mvn-parent-path pom-path)))
-          (if (mvn-pom-at-path-p master-pom-path)
-              (file-name-as-directory master-pom-path)
-            module-root)))
-    ()))
+  (and module-root
+       (let* ((pom-path module-root)
+              (master-pom-path (mvn-parent-path pom-path)))
+         (if (mvn-pom-at-path-p master-pom-path)
+             (file-name-as-directory master-pom-path)
+           module-root))))
 
 (defun mvn-find-project-root-directory ()
   (mvn-look-for-project-root-directory (mvn-find-current-module-root-directory)))
@@ -200,7 +200,7 @@ path. This is the path to the file within the module's hierarchy."
   (let* ((source-path (file-truename source-path))
          (module-root (mvn-find-module-root-directory source-path)))
     (and module-root
-         (string-prefix-p module-root source-path)
+         (string-prefix-p source-path module-root)
          (substring source-path (length module-root)))))
 
 (defvar mvn-class-source-prefix "src/main/java/")
@@ -211,9 +211,9 @@ path. This is the path to the file within the module's hierarchy."
 that should be contained under that directory. Returns one of the
 symbols main or test, or nil in the case that the path is not to
 a source directory."
-  (cond ((string-prefix-p mvn-class-source-prefix module-relative-path)
+  (cond ((string-prefix-p module-relative-path mvn-class-source-prefix)
           'main)
-        ((string-prefix-p mvn-test-source-prefix module-relative-path)
+        ((string-prefix-p module-relative-path mvn-test-source-prefix)
          'test)
         (t
          ())))
@@ -233,7 +233,6 @@ a source directory."
 
 (defun mvn-source-file-class-name (source-path)
   (let ((mr-path (mvn-find-module-relative-path source-path)))
-    (message mr-path)
     (and (mvn-is-source-path-p mr-path)
          (let ((package-path (file-name-directory (mvn-strip-source-prefix mr-path)))
                (class-name (file-name-sans-extension (file-name-nondirectory mr-path))))
@@ -241,28 +240,66 @@ a source directory."
                    class-name)))))
 
 (defun mvn-current-file-class-name ()
-  (let ((fn (buffer-file-name)))
-    (and fn
-         (mvn-source-file-class-name fn))))
+  (let ((filename (buffer-file-name)))
+    (and filename
+         (mvn-source-file-class-name filename))))
+
+
+(defun mvn-parse-full-class-name ( full-class-name )
+  "Given a fully package-qualified class name in FULL-CLASS-NAME,
+return two values: a list of package components and the class name
+itself."
+  (let ((class-name-parts (split-string full-class-name "\\.")))
+    (cl-values (butlast class-name-parts) 
+               (car (last class-name-parts)))))
+
+(defun mvn-assemble-full-class-name ( package class-name )
+  (concat (mapconcat 'identity package ".")
+          (if (= 0 (length package)) "" ".")
+          class-name))
 
 (defun mvn-is-test-class-p (full-class-name)
-  (string-suffix-p full-class-name "Test"))
+  "Predicate that determines whether or not FULL-CLASS-NAME
+refers to a test class or an implementation class. Test classes
+are further subdivided into prefix-test and suffix-test, based on
+whether or not the 'Test' component of the class name is applied
+as a prefix or a suffix."
+  (cl-multiple-value-bind (package class-name) (mvn-parse-full-class-name full-class-name)
+    (cond ((string-prefix-p class-name "Test") 'prefix-test)
+          ((string-suffix-p class-name "Test") 'suffix-test)
+          (t nil))))
 
-(defun mvn-find-test-class-name (full-class-name)
+(defun mvn-find-test-class-names ( full-class-name )
+  "Given a FULL-CLASS-NAME, return a list of candidate class
+names for the corresponding test class."
   (if (mvn-is-test-class-p full-class-name)
-      full-class-name
-    (concat full-class-name "Test")))
+      (list full-class-name)
+    (cl-multiple-value-bind (package class-name) (mvn-parse-full-class-name full-class-name)
+      (list
+       (mvn-assemble-full-class-name package (concat "Test" class-name))
+       (mvn-assemble-full-class-name package (concat class-name "Test"))))))
+
 
 (defun mvn-find-impl-class-name (full-class-name)
-  (if (mvn-is-test-class-p full-class-name)
-      (substring full-class-name 0 -4)
-    full-class-name))
+  "Given a FULL-CLASS-NAME that might refer to a test class,
+return the corresponding implementation class name. In the event
+that FULL-CLASS-NAME is an implementation class itself, it is
+returned unchanged."
+  (cl-multiple-value-bind (package class-name) (mvn-parse-full-class-name full-class-name)
+    (let ((test-class-p (mvn-is-test-class-p full-class-name)))
+      (mvn-assemble-full-class-name package
+                                    (cond ((eq test-class-p 'prefix-test) (substring class-name 4))
+                                          ((eq test-class-p 'suffix-test) (substring class-name 0 -4))
+                                          (t class-name))))))
+
 
 (defun mvn-find-class-path (full-class-name)
-  (let* ((class-name-parts (split-string full-class-name "\\."))
-         (package-parts (butlast class-name-parts))
-         (class-name (car (last class-name-parts))))
-    (concat (file-name-as-directory (mapconcat 'identity package-parts "/"))
+  "Find the filesystem path for the fully qualified filename in
+FULL-CLASS-NAME. The resultant path will be relative to one of
+the subtrees (main/ or test/) within a Maven module's source
+tree."
+  (cl-multiple-value-bind (package class-name) (mvn-parse-full-class-name full-class-name)
+    (concat (file-name-as-directory (mapconcat 'identity package "/"))
             class-name
             ".java")))
 
@@ -301,10 +338,14 @@ exist, it is created, including any necessary subdirectories."
   (mvn-find-file
    (let ((class-name (mvn-current-file-class-name)))
      (if (mvn-is-test-class-p class-name)
-         (mvn-find-current-module-class-path 'main
-                                             (mvn-find-impl-class-name class-name))
-       (mvn-find-current-module-class-path 'test
-                                           (mvn-find-test-class-name class-name))))))
+         (mvn-find-current-module-class-path 'main (mvn-find-impl-class-name class-name))
+
+       (let* ((candidate-test-class-names (mvn-find-test-class-names class-name))
+              (test-file-name (mvn-find-current-module-class-path 'test (first candidate-test-class-names))))
+         (dolist (class-name candidate-test-class-names test-file-name)
+           (let ((test-path (mvn-find-current-module-class-path 'test class-name)))
+             (when (file-exists-p test-path)
+               (setq test-file-name test-path)))))))))
 
 ;;;; Interactive Entry Points
 
