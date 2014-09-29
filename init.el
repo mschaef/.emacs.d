@@ -80,7 +80,7 @@
        '((tool-bar-lines . 0)
          (menu-bar-lines . 0)
          (cursor-color . "green")
-         (background-color . "gray30")
+         (background-color . "gray20")
          (foreground-color . "yellow")
          (vertical-scroll-bars . nil)))
 
