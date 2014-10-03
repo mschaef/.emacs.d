@@ -20,14 +20,22 @@ with `format-time-string'.")
 non-date topic files. The first regular expression subexpression is
 used for the name of the topic itself.")
 
+(defvar orglog-date-regexp
+  "\\([[:digit:]]\\{4\\}-[[:digit:]]\\{2\\}\\)-[[:digit:]]\\{2\\}"
+  "Regular expression used to identify orglog date strings (in
+ISO-8601 YYYY-MM-DD format). The first regular expression
+subexpresison is used for the YYYY-MM portion of the date (the
+date's topic name.)")
+
+
 (define-minor-mode orglog-mode
   "Toggle interpretation of a buffer as an orglog buffer."
   :lighter " Orglog"
-  :keymap '(([(shift f6)] . orglog-enter-day)
+  :keymap '(([(shift f6)] . orglog-find-today)
             ([(control ?c) ?t ?i] . orglog-insert-topic-link)
             ([(control ?c) ?t ?I] . orglog-enter-topic)))
 
-(defun orglog-find-root ()
+(defun orglog-find-root-directory ()
   (if (not (file-exists-p orglog-root))
       (progn
         (message "Orglog root %s does not exist, using home directory." orglog-root)
@@ -38,6 +46,23 @@ used for the name of the topic itself.")
           "~")
       orglog-root)))
 
+(defun orglog-find-date ( date-str )
+  "Given an orglog date string (YYYY-MM-DD), jump to the date's
+orglog entry."
+  (if (string-match orglog-date-regexp date-str)
+      (let ((date-topic-name (match-string 1 date-str))
+            (date (match-string 0 date-str)))
+        (orglog-find-file (orglog-topic-file-name date-topic-name))
+        (goto-char (point-min))
+        (unless (re-search-forward (format "^\\* +%s[:space:]*$" date) nil t)
+          (goto-char (point-max))
+          (orglog-enter-day date-str)))
+    (message "Invalid orglog date string: %s." orglog-root)))
+
+(defun orglog-find-today ()
+  (interactive)
+  (orglog-find-date (orglog-today-header)))
+
 (defun orglog-today-header ()
   (format-time-string orglog-header-format-string (current-time)))
 
@@ -45,13 +70,13 @@ used for the name of the topic itself.")
   (format-time-string orglog-file-basename-format-string (current-time)))
 
 (defun orglog-topic-file-name (topic)
-  (concat (orglog-find-root) "/" topic ".orglog"))
+  (concat (orglog-find-root-directory) "/" topic ".orglog"))
 
 (defun orglog-todays-file-name ()
   (orglog-topic-file-name (orglog-today-basename)))
 
 (defun orglog-topic-file-names ()
-  (directory-files (orglog-find-root) nil orglog-topic-file-name-regexp))
+  (directory-files (orglog-find-root-directory) nil orglog-topic-file-name-regexp))
 
 (defun orglog-topic-names ()
   (mapcar #'(lambda (file-name)
@@ -79,10 +104,6 @@ used for the name of the topic itself.")
     (unless (null topic)
      (orglog-find-file (orglog-topic-file-name topic)))))
 
-(defun orglog-find-todays-file ()
-  (interactive)
-  (orglog-find-file (orglog-todays-file-name)))
-
 (defun orglog-topic-link (topic)
   (concat "[[orglog-topic:" topic "][" topic "]]"))
 
@@ -102,9 +123,9 @@ used for the name of the topic itself.")
       (save-excursion
         (newline)))))
 
-(defun orglog-enter-day ()
+(defun orglog-enter-day ( date-str )
   (interactive)
-  (insert (concat "* " (orglog-today-header)))
+  (insert (concat "* " date-str))
   (newline)
   (insert "** ")
   (save-excursion
@@ -139,9 +160,6 @@ used for the name of the topic itself.")
     (grep (format "%s %s %s/*.orglog" grep-command regex orglog-root))))
 
 ;;; Thing-at-point for orglog dates
-
-(defvar orglog-date-regexp
-  "[[:digit:]]\\{4\\}-[[:digit:]]\\{2\\}-[[:digit:]]\\{2\\}")
 
 (put 'orglog-date 'bounds-of-thing-at-point
      (lambda ()
