@@ -139,7 +139,7 @@ orglog entry."
 ;; Emacs 'helpfully' autotranslates (shift f6) to f6 too...
 ;;
 ;; http://www.emacswiki.org/emacs/TheMysteriousCaseOfShiftedFunctionKeys
-(global-set-key [f6] 'orglog-find-todays-file)
+(global-set-key [f6] 'orglog-find-today)
 (global-set-key [(control shift f6)] 'orglog-grep)
 
 (defun orglog-activate-for-orglog-buffers ()
