@@ -51,6 +51,7 @@
 
 (require 'cider)
 
+(require 'develock)
 (require 'keyfreq)
 
 ;; Enable Tramp mode for remote editing
