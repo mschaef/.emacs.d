@@ -41,7 +41,7 @@
 (require 'vcsh)
 (require 'yasnippet)
 (require 'find-file-in-project)
-(require 'uniquify) 
+(require 'uniquify)
 
 (require 'magit)
 (require 'magit-svn)
@@ -159,7 +159,6 @@
 ;;;; Set a few keys to honor a few old Visual Studio habits
 
 (global-set-key [f12] 'next-error)
-(global-set-key [(shift f5)] 'compile)
 (global-set-key "\C-z" 'undo)
 (global-set-key [f5] 'goto-line)
 
@@ -167,14 +166,23 @@
 
 (global-unset-key [?\s-p])
 
-;;;;; Load cygwin32-mount on Windows
+;;;; Compile gets bound appropriately for C project files
+
+(defun c-mode-enable-compile-command ()
+  (local-set-key [(shift f5)] 'compile))
+
+(add-hook 'c-mode-common-hook 'c-mode-enable-compile-command)
+(add-hook 'makefile-mode-hook 'c-mode-enable-compile-command)
+
+
+;;;; Load cygwin32-mount on Windows
 
 (when-on-windows
   (require 'cygwin-mount)
   (cygwin-mount-activate))
 
-;;;;; Scroll the compiler output window so that the most recent output
-;;;;; is always visible.
+;;;; Scroll the compiler output window so that the most recent output
+;;;; is always visible.
 
 (setq compilation-scroll-output t)
 
