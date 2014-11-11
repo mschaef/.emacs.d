@@ -2180,11 +2180,11 @@ static char * go_next_xpm[] = {
            ;; SQL*Plus
            (when (eq mode-symbol 'sqlplus-mode)
              (unless sqlplus-commands-regexp-1
-               (flet ((first-form-fun (cmds) (mapcar (lambda (name) (car (sqlplus-full-forms name))) cmds))
+               (cl-flet ((first-form-fun (cmds) (mapcar (lambda (name) (car (sqlplus-full-forms name))) cmds))
                       (all-forms-fun (cmds) (mapcan 'sqlplus-full-forms cmds))
                       (sqlplus-commands-regexp-fun (form-fun cmds) (concat "^" (regexp-opt (funcall form-fun cmds) t) "\\b"))
                       (sqlplus-system-variables-fun (form-fun vars) (concat "\\b" (regexp-opt (funcall form-fun vars) t) "\\b")))
-                 (flet ((sqlplus-v22-commands-font-lock-keywords-fun
+                 (cl-flet ((sqlplus-v22-commands-font-lock-keywords-fun
                          (form-fun)
                          (delq nil
                                (mapcar
