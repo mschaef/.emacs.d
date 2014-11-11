@@ -386,22 +386,26 @@ defined by the ack-command variable."
 ;;;; Custom stuff.
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(inhibit-startup-echo-area-message "mschaef")
  '(inhibit-startup-screen t)
  '(initial-buffer-choice t)
+ '(keyfreq-autosave-mode t)
+ '(keyfreq-file "~/.emacs.d/emacs.keyfreq")
+ '(keyfreq-file-lock "~/.emacs.d/emacs.keyfreq.lock")
+ '(keyfreq-mode t)
  '(menu-bar-mode nil)
  '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
  '(tool-bar-mode nil))
 
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
 
 ;;;; Configure Cider and nREPL
