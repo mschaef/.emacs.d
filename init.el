@@ -303,7 +303,7 @@ BEG and END (region to sort)."
   (remove-hook 'find-file-hooks 'vc-find-file-hook)
   (delete 'Git vc-handled-backends))
 
-;;;; Scratch Buffer Tools
+;;;; Scratch and Message Buffer Tools
 
 (defun switch-to-scratch-buffer ()
   "Make the scratch buffer (*scratch*) current and display it in
@@ -311,7 +311,14 @@ the current window."
   (interactive)
   (switch-to-buffer "*scratch*"))
 
+(defun switch-to-messages-buffer ()
+  "Make the messages buffer (*Messages*) current and display it in
+the current window."
+  (interactive)
+  (switch-to-buffer "*Messages*"))
+
 (global-set-key [(shift f4)] 'switch-to-scratch-buffer)
+(global-set-key [(control shift f4)] 'switch-to-messages-buffer)
 
 ;;;; Interactive window split
 
@@ -422,6 +429,13 @@ defined by the ack-command variable."
 (keyfreq-mode 1)
 (keyfreq-autosave-mode 1)
 
+;;;; Bind shift-f5 in Emacs Lisp mode to evaluate the current buffer
+
+(add-hook 'emacs-lisp-mode-hook 'rebind-emacs-lisp-shift-f5)
+
+(defun rebind-emacs-lisp-shift-f5 ()
+  (local-set-key [(shift f5)] 'eval-buffer))
+
 ;;;; Load local customizations
 
 (load "local" t)
@@ -434,3 +448,4 @@ defined by the ack-command variable."
            (- (+ hi lo)
               (+ (first *emacs-load-start*)
                  (second *emacs-load-start*)))))
+
