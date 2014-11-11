@@ -200,7 +200,7 @@ path. This is the path to the file within the module's hierarchy."
   (let* ((source-path (file-truename source-path))
          (module-root (mvn-find-module-root-directory source-path)))
     (and module-root
-         (string-prefix-p source-path module-root)
+         (string-prefix-p module source-path-root)
          (substring source-path (length module-root)))))
 
 (defvar mvn-class-source-prefix "src/main/java/")
@@ -211,9 +211,9 @@ path. This is the path to the file within the module's hierarchy."
 that should be contained under that directory. Returns one of the
 symbols main or test, or nil in the case that the path is not to
 a source directory."
-  (cond ((string-prefix-p module-relative-path mvn-class-source-prefix)
+  (cond ((string-prefix-p mvn-class-source-prefix module-relative-path)
           'main)
-        ((string-prefix-p module-relative-path mvn-test-source-prefix)
+        ((string-prefix-p mvn-test-source-prefix module-relative-path)
          'test)
         (t
          ())))
@@ -265,8 +265,8 @@ are further subdivided into prefix-test and suffix-test, based on
 whether or not the 'Test' component of the class name is applied
 as a prefix or a suffix."
   (cl-multiple-value-bind (package class-name) (mvn-parse-full-class-name full-class-name)
-    (cond ((string-prefix-p class-name "Test") 'prefix-test)
-          ((string-suffix-p class-name "Test") 'suffix-test)
+    (cond ((string-prefix-p "Test" class-name) 'prefix-test)
+          ((string-suffix-p "Test" class-name) 'suffix-test)
           (t nil))))
 
 (defun mvn-find-test-class-names ( full-class-name )
@@ -398,7 +398,7 @@ a master POM file, the master POM file is used."
   (let ((matches ())
         (non-matches ()))
     (dolist (class classes)
-      (if (string-prefix-p class prefix)
+      (if (string-prefix-p prefix class)
           (push class matches)
         (push class non-matches)))
     (cons matches non-matches)))

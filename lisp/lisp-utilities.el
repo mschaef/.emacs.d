@@ -43,18 +43,6 @@ of the loop."
   `(when (fboundp ',symbol)
      ,@body))
 
-(defun string-prefix-p (s beginning)
-  "return non-nil if string S begins with BEGINNING."
-  (let ((blength (length beginning)))
-    (and (>= (length s) blength)
-         (string= (substring s 0 blength) beginning))))
-
-(defun string-suffix-p (s ending)
-  "return non-nil if string S ends with ENDING."
-  (let ((elength (length ending)))
-    (and (>= (length s) elength)
-         (string= (substring s (- 0 elength)) ending))))
-
 (defun capitalize-first-letter (str)
   "Capitalize the first letter of the string STR."
   (unless (stringp str)

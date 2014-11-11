@@ -144,7 +144,7 @@ orglog entry."
 
 (defun orglog-activate-for-orglog-buffers ()
   (when (and buffer-file-truename
-             (string-suffix-p buffer-file-truename ".orglog"))
+             (string-suffix-p ".orglog" buffer-file-truename))
     (orglog-mode)))
 
 (add-hook 'org-mode-hook 'orglog-activate-for-orglog-buffers)
