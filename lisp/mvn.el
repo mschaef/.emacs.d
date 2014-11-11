@@ -136,9 +136,10 @@ Emacs process environment.")
   to be the first upward directory containing a Maven POM
   file. The search starts in the directory for the current
   buffer.  If no POM is found, returns nil."
-  (let ((filename (buffer-file-name)))
-    (and filename
-         (mvn-find-module-root-directory filename))))
+  (let ((filename (or (buffer-file-name)
+                      list-buffers-directory)))
+        (and filename
+             (mvn-find-module-root-directory filename))))
 
 (defun mvn-look-for-project-root-directory (module-root)
   "Given a module root directory, look for a project root in the

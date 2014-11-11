@@ -166,7 +166,7 @@
 
 (global-unset-key [?\s-p])
 
-;;;; Compile gets bound only for C project files
+;;;; Compile commands get bound appropriately, defaulting to Maven
 
 (defun c-mode-enable-compile-command ()
   (local-set-key [(shift f5)] 'compile))
