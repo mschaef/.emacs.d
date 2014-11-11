@@ -51,6 +51,8 @@
 
 (require 'cider)
 
+(require 'keyfreq)
+
 ;; Enable Tramp mode for remote editing
 
 (require 'tramp)
@@ -415,6 +417,11 @@ defined by the ack-command variable."
 ;;;; Add autoloads for pianobar
 
 (autoload 'pianobar "pianobar" nil t)
+
+;;;; Enable keyfreq mode
+
+(keyfreq-mode 1)
+(keyfreq-autosave-mode 1)
 
 ;;;; Load local customizations
 
