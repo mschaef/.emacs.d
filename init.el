@@ -406,6 +406,10 @@ defined by the ack-command variable."
 (setq uniquify-buffer-name-style 'post-forward)
 (setq uniquify-separator ":")
 
+;;;; Add autoloads for pianobar
+
+(autoload 'pianobar "pianobar" nil t)
+
 ;;;; Load local customizations
 
 (load "local" t)
