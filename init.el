@@ -46,7 +46,7 @@
 (require 'magit)
 (require 'magit-svn)
 
-(require 'ack-emacs)
+(require 'ack)
 (require 'clojure-mode)
 
 (require 'cider)
