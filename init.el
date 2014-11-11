@@ -187,7 +187,6 @@
   (paredit-mode 1))
 
 (add-hook 'emacs-lisp-mode-hook 'lisp-enable-paredit-hook)
-
 (add-hook 'lisp-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'scheme-mode-hook 'lisp-enable-paredit-hook)
 
@@ -265,8 +264,6 @@ BEG and END (region to sort)."
                (format "^%s" (regexp-quote (car kill-ring))) nil t)
             (replace-match "" nil nil))
           (goto-char next-line))))))
-
-
 
 
 ;;;; Start the emacs server
@@ -417,6 +414,8 @@ defined by the ack-command variable."
 ;;;; Add autoloads for pianobar
 
 (autoload 'pianobar "pianobar" nil t)
+
+(defalias 'pandora 'pianobar)
 
 ;;;; Enable keyfreq mode
 
