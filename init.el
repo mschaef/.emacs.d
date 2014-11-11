@@ -18,7 +18,13 @@
 
 ;;;; Setup the load path
 
-(push "~/.emacs.d/" load-path)
+;;; .emacs.d itself shoudl not be in the load path
+;;;
+;;; See:
+;;; 1) http://www.emacswiki.org/emacs/LoadPath
+;;; 2) http://stackoverflow.com/questions/24779041/disable-warning-about-emacs-d-in-load-path
+
+(push "~/.emacs.d/lisp" load-path)
 (push "~/.emacs.d/git-modes" load-path)
 (push "~/.emacs.d/magit" load-path)
 (push "~/.emacs.d/yasnippet" load-path)
