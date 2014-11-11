@@ -166,7 +166,7 @@
 
 (global-unset-key [?\s-p])
 
-;;;; Compile gets bound appropriately for C project files
+;;;; Compile gets bound only for C project files
 
 (defun c-mode-enable-compile-command ()
   (local-set-key [(shift f5)] 'compile))
@@ -174,6 +174,8 @@
 (add-hook 'c-mode-common-hook 'c-mode-enable-compile-command)
 (add-hook 'makefile-mode-hook 'c-mode-enable-compile-command)
 
+(global-set-key [(shift f5)] 'mvn-build-module)
+(global-set-key [(control shift f5)] 'mvn-build-project)
 
 ;;;; Load cygwin32-mount on Windows
 
