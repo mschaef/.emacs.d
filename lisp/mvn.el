@@ -26,8 +26,11 @@ Emacs process environment.")
   "A list of all JDK definitions. Each element has the form
 (JDK-NAME JAVA_HOME PATH_PREFIX)")
 
+(defvar mvn-ack-guess-search-string nil
+  "True if mvn-ack should attempt to guess the search string.")
+
 (defun mvn-jdk-choices ()
- (mapcar #'car mvn-jdk-list))
+  (mapcar #'car mvn-jdk-list))
 
 (defun mvn-jdk-name ()
   (if (null mvn-jdk-name)
@@ -462,6 +465,21 @@ a master POM file, the master POM file is used."
     (mvn-goto-import-location)
     (mvn-insert-imports all-imports)
     (delete-blank-lines)))
+
+
+
+;;;; A form of ack that searches the current project
+
+(defun mvn-ack (pattern)
+  "Run ack, with user-specified ARGS, and collect output in a buffer.
+While ack runs asynchronously, you can use the \\[next-error] command to
+find the text that ack hits refer to. The command actually run is
+defined by the ack-command variable."
+  (interactive
+   (list (read-string "Search for: " (if mvn-ack-guess-search-string (thing-at-point 'symbol) ""))))
+  (let ((ack--project-root (mvn-find-current-module-root-directory )))
+    (ack pattern)))
+
 
 (provide 'mvn)
 

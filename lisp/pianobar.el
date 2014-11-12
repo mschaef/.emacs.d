@@ -69,7 +69,7 @@
 
 (require 'comint)
 
-(defvar pianobar-key [f7]
+(defvar pianobar-key [f9]
   "The prefix key for pianobar access.
 Call `pianobar-key-setup' when changed to have a correct keymap.")
 

@@ -1,3 +1,4 @@
+
 ;;; ack.el --- interface to ack-like tools           -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2012-2013  Free Software Foundation, Inc.
