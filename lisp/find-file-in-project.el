@@ -62,6 +62,9 @@
 
 (require 'cl)
 
+(defvar ffip-path-to-find "find"
+  "The path to find")
+
 (defvar ffip-project-file ".git"
   "The file that should be used to define a project root.
 
@@ -110,6 +113,17 @@ This overrides variable `ffip-project-root' when set.")
         (progn (message "No project was defined for the current file.")
                nil))))
 
+
+(defun ffip-cygwin-unix-path (path)
+  (if (and (boundp 'cygwin-mount-activated) cygwin-mount-activated)
+      (car (split-string (shell-command-to-string (format "cygpath -u %s" path))))
+    path))
+
+(defun ffip-cygwin-windows-path (path)
+  (if (and (boundp 'cygwin-mount-activated) cygwin-mount-activated)
+      (car (split-string (shell-command-to-string (format "cygpath --windows --absolute %s" path))))
+    path))
+
 (defun ffip-uniqueify (file-cons)
   "Set the car of FILE-CONS to include the directory name plus the file name."
   (setcar file-cons
@@ -147,9 +161,13 @@ directory they are found in so that they are unique."
                   (add-to-list 'file-alist file-cons)
                   file-cons)))
             (split-string (shell-command-to-string
-                           (format "find %s -type d -a \\( %s \\) -prune -o -type f \\( %s \\) -print %s | head -n %s"
-                                   root (ffip-prune-patterns) (ffip-join-patterns)
-                                   ffip-find-options ffip-limit))))))
+                           (format "%s %s -type d -a \\( %s \\) -prune -o -type f \\( %s \\) -print %s | head -n %s"
+                                   ffip-path-to-find
+                                   (ffip-cygwin-unix-path root)
+                                   (ffip-prune-patterns)
+                                   (ffip-join-patterns)
+                                   ffip-find-options
+                                   ffip-limit))))))
 
 ;;;###autoload
 (defun find-file-in-project ()
