@@ -20,7 +20,7 @@
 ;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program; see the file COPYING.  If not, write to                                    
+;; along with this program; see the file COPYING.  If not, write to
 ;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
@@ -50,6 +50,9 @@
 ;; do.
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cc-defs))
 
 (defun c-preprend-offset (symbol offset)
   "Find the offset entry for SYMBOL and add OFFSET at the front of the list.
