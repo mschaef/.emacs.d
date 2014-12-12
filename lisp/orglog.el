@@ -41,6 +41,7 @@ date's topic name.)")
 ;; http://www.emacswiki.org/emacs/TheMysteriousCaseOfShiftedFunctionKeys
 (global-set-key [f6] 'orglog-find-today)
 (global-set-key [(control shift f6)] 'orglog-find-tomorrow)
+(global-set-key [(control shift f7)] 'orglog-grep)
 
 (defun orglog-find-root-directory ()
   (if (not (file-exists-p orglog-root))
