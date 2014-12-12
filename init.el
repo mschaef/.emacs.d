@@ -437,6 +437,26 @@ the current fill-column."
 (defun rebind-emacs-lisp-shift-f5 ()
   (local-set-key [(shift f5)] 'eval-buffer))
 
+;;;; Switch to a more ISO-8601 compliant and noticable modeline date format
+
+(defface modeline-display-time
+   '((((type x w32 mac))
+      ;; #060525 is the background colour of my default face.
+      (:background "gray30" :inherit mode-line))
+     (((type tty))
+      (:background "gray30")))
+   "Face used to display the time in the mode line.")
+
+
+(setq display-time-string-forms
+  '((propertize
+     (format-time-string " %Y-%m-%d %H:%M " now)
+     'face 'modeline-display-time
+     'help-echo (format-time-string "%Y-%m-%d %H:%M" now))))
+
+
+(display-time-update)
+
 ;;;; Load local customizations
 
 (load "local" t)
