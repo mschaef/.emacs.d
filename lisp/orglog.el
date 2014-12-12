@@ -32,8 +32,15 @@ date's topic name.)")
   "Toggle interpretation of a buffer as an orglog buffer."
   :lighter " Orglog"
   :keymap '(([(shift f6)] . orglog-find-today)
+            ([(control shift f6)] . orglog-find-tomorrow)
             ([(control ?c) ?t ?i] . orglog-insert-topic-link)
             ([(control ?c) ?t ?I] . orglog-enter-topic)))
+
+;; Emacs 'helpfully' autotranslates (shift f6) to f6 too...
+;;
+;; http://www.emacswiki.org/emacs/TheMysteriousCaseOfShiftedFunctionKeys
+(global-set-key [f6] 'orglog-find-today)
+(global-set-key [(control shift f6)] 'orglog-find-tomorrow)
 
 (defun orglog-find-root-directory ()
   (if (not (file-exists-p orglog-root))
@@ -63,8 +70,16 @@ orglog entry."
   (interactive)
   (orglog-find-date (orglog-today-header)))
 
+(defun orglog-find-tomorrow ()
+  (interactive)
+  (orglog-find-date (orglog-tomorrow-header)))
+
 (defun orglog-today-header ()
   (format-time-string orglog-header-format-string (current-time)))
+
+(defun orglog-tomorrow-header ()
+  (format-time-string orglog-header-format-string (time-add (current-time)
+                                                            (seconds-to-time 86400))))
 
 (defun orglog-today-basename ()
   (format-time-string orglog-file-basename-format-string (current-time)))
@@ -135,12 +150,6 @@ orglog entry."
 
 (defun orglog-topic-open (topic)
   (orglog-find-file (orglog-topic-file-name topic)))
-
-;; Emacs 'helpfully' autotranslates (shift f6) to f6 too...
-;;
-;; http://www.emacswiki.org/emacs/TheMysteriousCaseOfShiftedFunctionKeys
-(global-set-key [f6] 'orglog-find-today)
-(global-set-key [(control shift f6)] 'orglog-grep)
 
 (defun orglog-activate-for-orglog-buffers ()
   (when (and buffer-file-truename
