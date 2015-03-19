@@ -460,6 +460,7 @@ the current fill-column."
 ;;;; Load local customizations
 
 (load "local" t)
+(load "~/.emacs.d/local" t)
 
 
 ;;;; Write out a message indicating how long it took to process the init script

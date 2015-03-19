@@ -4,7 +4,7 @@
 
 (require 'org)
 
-(defvar orglog-root "~/.emacs/orglog"
+(defvar orglog-root "~/.emacs.d/orglog"
   "Root directory for orglog files.")
 
 (defvar orglog-header-format-string "%Y-%m-%d"
