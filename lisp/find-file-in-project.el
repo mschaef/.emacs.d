@@ -72,7 +72,9 @@ May be set using .dir-locals.el. Checks each entry if set to a list.")
 
 (defvar ffip-patterns
   '("*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
-    "*.sh" "*.erl" "*.hs" "*.ml")
+    "*.sh" "*.erl" "*.hs" "*.ml" "*.css" "*.scss"
+    "*.json" "*.c" "*.cc" "*.cpp" "*.h" "*.hh" "*.hpp"
+    "*.sql")
   "List of patterns to look for with `find-file-in-project'.")
 
 (defvar ffip-prune-patterns
