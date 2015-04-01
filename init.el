@@ -16,6 +16,13 @@
 
 (defvar *emacs-load-start* (current-time))
 
+;;;; Package.el setup
+
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/") t)
+(package-initialize)
+
 ;;;; Setup the load path
 
 ;;; .emacs.d itself shoudl not be in the load path
@@ -25,8 +32,6 @@
 ;;; 2) http://stackoverflow.com/questions/24779041/disable-warning-about-emacs-d-in-load-path
 
 (push "~/.emacs.d/lisp" load-path)
-(push "~/.emacs.d/git-modes" load-path)
-(push "~/.emacs.d/magit" load-path)
 (push "~/.emacs.d/yasnippet" load-path)
 (push "~/.emacs.d/cider" load-path)
 
@@ -43,13 +48,7 @@
 (require 'find-file-in-project)
 (require 'uniquify)
 
-(require 'magit)
-(require 'magit-svn)
-
 (require 'ack)
-(require 'clojure-mode)
-
-(require 'cider)
 
 (require 'develock)
 (require 'keyfreq)
@@ -190,10 +189,6 @@
 
 ;;; paredit
 
-(autoload 'paredit-mode "paredit"
-   "Minor mode for pseudo-structurally editing Lisp code."
-    t)
-
 (defun lisp-enable-paredit-hook ()
   (paredit-mode 1))
 
@@ -201,7 +196,7 @@
 (add-hook 'lisp-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'scheme-mode-hook 'lisp-enable-paredit-hook)
 
-;; Allow C-j to work as it usually does in lisp interaction buffers
+;; Allow C-j to work as it usually does in lisp interaction buffers 
 
 (add-hook 'lisp-interaction-mode-hook
           (lambda ()
@@ -212,37 +207,26 @@
 
 ;;;;; Configure a few new automatic modes
 
-;;; markdown mode
-
-(autoload 'markdown-mode "markdown-mode" nil t)
-
-(push (cons "\\.md"     'markdown-mode) auto-mode-alist)
-
-(add-hook 'markdown-mode-hook 'turn-on-auto-fill)
-
-;;; js2 mode
-
-(autoload 'js2-mode "js2-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
 ;;; Clojure mode
 
-(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
-(add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
+;; (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+;; (add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
 
-(add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
+;;(add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 
-(define-clojure-indent 
-  (defroutes 'defun)
-  (GET 2)
-  (POST 2)
-  (PUT 2)
-  (DELETE 2)
-  (HEAD 2)
-  (ANY 2)
-  (context 2)
-  (unless 1)
-  (unless* 1))
+;; (define-clojure-indent 
+;;   (defroutes 'defun)
+;;   (GET 2)
+;;   (POST 2)
+;;   (PUT 2)
+;;   (DELETE 2)
+;;   (HEAD 2)
+;;   (ANY 2)
+;;   (context 2)
+;;   (unless 1)
+;;   (unless* 1))
 
 ;;;; Org mode keywords
 
@@ -344,7 +328,6 @@ the current fill-column."
     (split-window-vertically)))
 
 (global-set-key [(control ?x) ?2] 'interactive-split-current-window)
-(global-set-key [(control ?x) ?2] 'interactive-split-current-window)
 
 ;;;; find-file-in-project
 
@@ -407,23 +390,11 @@ the current fill-column."
 (setq cider-repl-popup-stacktraces t)
 
 
-;; (autoload 'nrepl "nrepl" nil t)
-
-;; (eval-after-load "nrepl"
-;;   '(progn
-;;      ;; Assume port 53095 as the default nrepl port
-;;      (setq nrepl-port "53095")))
-
 ;;;; Customize uniquify to get more rational unique buffer names
 
 (setq uniquify-buffer-name-style 'post-forward)
 (setq uniquify-separator ":")
 
-;;;; Add autoloads for pianobar
-
-(autoload 'pianobar "pianobar" nil t)
-
-(defalias 'pandora 'pianobar)
 
 ;;;; Enable keyfreq mode
 
