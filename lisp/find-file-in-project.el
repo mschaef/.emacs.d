@@ -143,9 +143,18 @@ This overrides variable `ffip-project-root' when set.")
              ffip-prune-patterns " -or "))
 
 
+(defun ffip-files-list ( root )
+  (split-string (shell-command-to-string
+                 (format "%s %s -type d -a \\( %s \\) -prune -o -type f \\( %s \\) -print %s | head -n %s"
+                         ffip-path-to-find
+                         root
+                         (ffip-prune-patterns)
+                         (ffip-join-patterns)
+                         ffip-find-options
+                         ffip-limit))))
+
 (defun ffip-project-files ()
   "Return an alist of all filenames in the project and their path.
-
 Files with duplicate filenames are suffixed with the name of the
 directory they are found in so that they are unique."
   (let ((file-alist nil)
@@ -162,14 +171,7 @@ directory they are found in so that they are unique."
                     (ffip-uniqueify file-cons))
                   (add-to-list 'file-alist file-cons)
                   file-cons)))
-            (split-string (shell-command-to-string
-                           (format "%s %s -type d -a \\( %s \\) -prune -o -type f \\( %s \\) -print %s | head -n %s"
-                                   ffip-path-to-find
-                                   (ffip-cygwin-unix-path root)
-                                   (ffip-prune-patterns)
-                                   (ffip-join-patterns)
-                                   ffip-find-options
-                                   ffip-limit))))))
+            (ffip-files-list (ffip-cygwin-unix-path root)))))
 
 ;;;###autoload
 (defun find-file-in-project ()
