@@ -211,22 +211,22 @@
 
 ;;; Clojure mode
 
-;; (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
-;; (add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
 
-;;(add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
+(add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 
-;; (define-clojure-indent 
-;;   (defroutes 'defun)
-;;   (GET 2)
-;;   (POST 2)
-;;   (PUT 2)
-;;   (DELETE 2)
-;;   (HEAD 2)
-;;   (ANY 2)
-;;   (context 2)
-;;   (unless 1)
-;;   (unless* 1))
+(define-clojure-indent 
+  (defroutes 'defun)
+  (GET 2)
+  (POST 2)
+  (PUT 2)
+  (DELETE 2)
+  (HEAD 2)
+  (ANY 2)
+  (context 2)
+  (unless 1)
+  (unless* 1))
 
 ;;;; Org mode keywords
 
