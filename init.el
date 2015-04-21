@@ -175,12 +175,6 @@
 (global-set-key [(shift f5)] 'mvn-build-module)
 (global-set-key [(control shift f5)] 'mvn-build-project)
 
-;;;; Load cygwin32-mount on Windows
-
-(when-on-windows
-  (require 'cygwin-mount)
-  (cygwin-mount-activate))
-
 ;;;; Scroll the compiler output window so that the most recent output
 ;;;; is always visible.
 
@@ -197,12 +191,13 @@
 
 ;; Allow C-j to work as it usually does in lisp interaction buffers 
 
-(add-hook 'lisp-interaction-mode-hook
-          (lambda ()
-            (setq minor-mode-overriding-map-alist
-                  `((paredit-mode
-                     ,@(remove (cons ?\C-j 'paredit-newline)
-                               paredit-mode-map))))))
+(defun override-paredit-c-j ()
+  (setq minor-mode-overriding-map-alist
+        `((paredit-mode
+           ,@(remove (cons ?\C-j 'paredit-newline)
+                     paredit-mode-map)))))
+
+(add-hook 'lisp-interaction-mode-hook 'override-paredit-c-j)
 
 ;;;;; Configure a few new automatic modes
 
@@ -236,11 +231,6 @@
                           "|" "DONE" "NOT-DONE")
       org-todo-interpretation 'sequence)
 
-;;; Bind a key to toggle fullscreen mode
-
-(when-fboundp ns-toggle-fullscreen
-  (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen))
-
 ;;;; Remove duplicate lines
 
 (defun uniq-lines (beg end)
@@ -262,7 +252,6 @@ BEG and END (region to sort)."
             (replace-match "" nil nil))
           (goto-char next-line))))))
 
-
 ;;;; Start the emacs server
 
 (when window-system
@@ -271,7 +260,6 @@ BEG and END (region to sort)."
 ;;;; Remove the "Yes"/"No" questions in favor of the simpler "Y"/"N"
 
 (defalias 'yes-or-no-p 'y-or-n-p)
-
 
 ;;;; A more completeframe title format, taken from
 ;;;;
