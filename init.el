@@ -21,7 +21,6 @@
 (require 'package)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
-(package-initialize)
 
 ;;;; Setup the load path
 
@@ -216,17 +215,20 @@
 
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 
-;; (define-clojure-indent 
-;;   (defroutes 'defun)
-;;   (GET 2)
-;;   (POST 2)
-;;   (PUT 2)
-;;   (DELETE 2)
-;;   (HEAD 2)
-;;   (ANY 2)
-;;   (context 2)
-;;   (unless 1)
-;;   (unless* 1))
+(defun setup-clojure-indents ()
+  (define-clojure-indent
+    (defroutes 'defun)
+    (GET 2)
+    (POST 2)
+    (PUT 2)
+    (DELETE 2)
+    (HEAD 2)
+    (ANY 2)
+    (context 2)
+    (unless 1)
+    (unless* 1)))
+
+(add-hook 'clojure-mode-hook 'setup-clojure-indents)
 
 ;;;; Org mode keywords
 
