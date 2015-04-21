@@ -22,6 +22,11 @@
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
 
+(defun load-package-init-file ()
+  (load "package-init.el"))
+
+(add-hook 'after-init-hook 'load-package-init-file)
+
 ;;;; Setup the load path
 
 ;;; .emacs.d itself shoudl not be in the load path
@@ -32,7 +37,6 @@
 
 (push "~/.emacs.d/lisp" load-path)
 (push "~/.emacs.d/yasnippet" load-path)
-(push "~/.emacs.d/cider" load-path)
 
 ;;;; External packages
 
@@ -46,9 +50,7 @@
 (require 'yasnippet)
 (require 'find-file-in-project)
 (require 'uniquify)
-
 (require 'ack)
-
 (require 'develock)
 (require 'keyfreq)
 
@@ -56,12 +58,6 @@
 
 (require 'tramp)
 (setq tramp-default-method "ssh")
-
-;; I've hacked sqlplus to work on emacs24, with its updated three
-;; argument switch-to-buffer. This now breaks it on emacs23. Ideally
-;; I'd fix it, but do not have time.
-(when (>= emacs-major-version 24)
-  (autoload 'sqlplus "sqlplus" nil t))
 
 ;;;; Avoid creating lockfiles
 
