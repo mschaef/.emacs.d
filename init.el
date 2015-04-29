@@ -160,6 +160,10 @@
 
 (global-unset-key [?\s-p])
 
+;;;; Unset s-q, usually bound to over-powerul `save-buffers-kill-emacs` on OSX
+
+(global-unset-key (kbd "s-q"))
+
 ;;;; Compile commands get bound appropriately, defaulting to Maven
 
 (defun c-mode-enable-compile-command ()
