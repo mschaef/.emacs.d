@@ -29,7 +29,7 @@
 
 ;;;; Setup the load path
 
-;;; .emacs.d itself shoudl not be in the load path
+;;; .emacs.d itself should not be in the load path
 ;;;
 ;;; See:
 ;;; 1) http://www.emacswiki.org/emacs/LoadPath
@@ -44,7 +44,7 @@
 (require 'point-stack)
 (require 'tabulate-region)
 (require 'orglog)
-(require 'mvn)
+(require 'javap)
 (require 'java-mode-indent-annotations)
 (require 'vcsh)
 (require 'yasnippet)
@@ -172,8 +172,8 @@
 (add-hook 'c-mode-common-hook 'c-mode-enable-compile-command)
 (add-hook 'makefile-mode-hook 'c-mode-enable-compile-command)
 
-(global-set-key [(shift f5)] 'mvn-build-module)
-(global-set-key [(control shift f5)] 'mvn-build-project)
+(global-set-key [(shift f5)] 'javap-build-module)
+(global-set-key [(control shift f5)] 'javap-build-project)
 
 ;;;; Scroll the compiler output window so that the most recent output
 ;;;; is always visible.
