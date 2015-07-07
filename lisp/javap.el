@@ -15,8 +15,9 @@
 (defvar javap-command-template ""
   "The string formatting template used to form the javap command.")
 
-(defvar javap-default-goal "clean install"
-  "The default goal for javap compilations")
+(defvar javap-default-goal nil
+  "The default goal for javap compilations. If nil, the default
+goal is taken from the module type definition.")
 
 (defvar javap-jdk-name ()
   "The name of the JDK to use for invoking Maven. NIL means use the
@@ -182,8 +183,7 @@ project root, returns the module root."
 and the specified goal."
   (let* ((module (javap-module-at-path-p module-path))
          (module-file (first module))
-         (command (second module))
-         (goal (third module)))
+         (command (second module)))
     (concat command " " module-path module-file " " goal " ")))
 
 (defun javap-compiler-process-environment ()
@@ -191,11 +191,15 @@ and the specified goal."
           (javap-path-override)
           process-environment))
 
-(defun javap-read-compile-command (module-path goal)
-  (javap-compile-command module-path
-                       (read-from-minibuffer (format "(JDK:%s) (Module: %s) Goal: " (javap-jdk-name) module-path)
-                                             goal
-                                             nil nil 'javap-command-history)))
+(defun javap-read-compile-command (module-path default-goal)
+  (let* ((module (javap-module-at-path-p module-path))
+         (module-type-default-goal (third module)))
+    (javap-compile-command module-path
+                           (read-from-minibuffer (format "(JDK:%s) (Module: %s) Goal: " (javap-jdk-name) module-path)
+                                                 (or default-goal
+                                                     module-type-default-goal
+                                                     "")
+                                                 nil nil 'javap-command-history))))
 
 (defun javap-interactive-compile (module-path goal)
   (let ((compile-command (javap-read-compile-command module-path goal)))
@@ -207,15 +211,15 @@ and the specified goal."
                          #'javap-compilation-buffer-name))))
 
 (defun javap-compile (goal target-root)
-  "Runs maven in the current project. Starting at the directoy
-where the file being visited resides, a search is made for
-pom.xml moving up the directory hierarchy. A maven command is
-made from the first directory where the pom.xml file is found is
-then displayed in the minibuffer. The command can be edited as
-needed and then executed. Compile errors can be jumped to as is
-usual for compilations."
+  "Runs project build for the current project. Starting at the
+directoy where the file being visited resides, a search is made
+for a project file moving up the directory hierarchy. A build
+command is made from the first directory where the build file
+found is then displayed in the minibuffer. The command can be
+edited as needed and then executed. Compile errors can be jumped
+to as is usual for compilations."
     (if (not target-root)
-        (message "No compilation target root. (pom.xml not found)")
+        (message "No compilation target root. (project file not found)")
       (javap-interactive-compile target-root goal)))
 
 (defun javap-find-module-relative-path (source-path)
@@ -224,7 +228,7 @@ path. This is the path to the file within the module's hierarchy."
   (let* ((source-path (file-truename source-path))
          (module-root (javap-find-module-root-directory source-path)))
     (and module-root
-         (string-prefix-p module source-path-root)
+         (string-prefix-p module-root source-path)
          (substring source-path (length module-root)))))
 
 (defvar javap-class-source-prefix "src/main/java/")
@@ -300,8 +304,8 @@ names for the corresponding test class."
       (list full-class-name)
     (cl-multiple-value-bind (package class-name) (javap-parse-full-class-name full-class-name)
       (list
-       (javap-assemble-full-class-name package (concat "Test" class-name))
-       (javap-assemble-full-class-name package (concat class-name "Test"))))))
+       (javap-assemble-full-class-name package (concat class-name "Test"))
+       (javap-assemble-full-class-name package (concat "Test" class-name))))))
 
 
 (defun javap-find-impl-class-name (full-class-name)
