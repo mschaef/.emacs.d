@@ -29,7 +29,8 @@ Emacs process environment.")
 (defvar javap-ack-guess-search-string nil
   "True if javap-ack should attempt to guess the search string.")
 
-(defvar javap-module-types '(("pom.xml" "mvn -o -f" "build install"))
+(defvar javap-module-types '(("pom.xml" "mvn -o -f" "build install")
+                             ("build.gradle" "gradle -q --console=plain -b" "clean build"))
   "A list of module types. Each element of this list is a list
 with three sub elements: the name of the build file that will be
 found in the root directory of the module, the name of the build
@@ -113,13 +114,13 @@ command, and a default goal to be passed to the build command.")
         (2 compilation-error-face nil t))))
 
 
-(defun javap-root-path-p (path)
-  "Determine if the given path is a Maven root path."
-  (equal path (javap-parent-path path)))
-
 (defun javap-parent-path (path)
   "The parent path for the given path."
   (file-truename (concat path "/..")))
+
+(defun javap-filesystem-root-path-p (path)
+  "Determine if the given path is a project root path."
+  (equal path (javap-parent-path path)))
 
 (defun javap-module-at-path-p (path)
   "Does a module exist rooted at the given path. If so, returns
@@ -133,12 +134,14 @@ the module type entry for the module type, otherwise nil."
 (defun javap-find-module-root-directory (source-file-name)
   "Search upward in the directory hierarchy, looking for the
   current module's root directory. The root directory is defined
-  to be the first upward directory containing a Maven POM
-  file. The search starts in the directory containing
-  SOURCE-FILE-NAME. If no POM is found, returns nil."
+  to be the first upward directory containing a project
+  definition file listed in `javap-module-types`.  The search
+  starts in the directory containing SOURCE-FILE-NAME.  If a
+  project file is found, the return value is the path to the
+  project file, otherwise, returns nil."
   (let ((path (file-name-directory source-file-name)))
     (while (and (not (javap-module-at-path-p path))
-                (not (javap-root-path-p path)))
+                (not (javap-filesystem-root-path-p path)))
       (setq path (javap-parent-path path)))
     (and (javap-module-at-path-p path)
          (file-name-as-directory path))))
@@ -146,9 +149,12 @@ the module type entry for the module type, otherwise nil."
 (defun javap-find-current-module-root-directory ()
   "Search upward in the directory hierarchy, looking for the
   current module's root directory. The root directory is defined
-  to be the first upward directory containing a Maven POM
-  file. The search starts in the directory for the current
-  buffer.  If no POM is found, returns nil."
+  to be the first upward directory containing a project
+  definition file listed in `javap-module-types`.  The search
+  starts in the directory containing SOURCE-FILE-NAME.  If a
+  project file is found, the return value is the path to the
+  project file, otherwise, returns nil. The search starts in the
+  directory for the current buffer."
   (let ((filename (or (buffer-file-name)
                       list-buffers-directory)))
         (and filename
@@ -178,7 +184,7 @@ and the specified goal."
          (module-file (first module))
          (command (second module))
          (goal (third module)))
-    (concat command module-path " " module-file " " goal " ")))
+    (concat command " " module-path module-file " " goal " ")))
 
 (defun javap-compiler-process-environment ()
   (append (javap-java-home-override)
