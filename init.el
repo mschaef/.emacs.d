@@ -36,7 +36,6 @@
 ;;; 2) http://stackoverflow.com/questions/24779041/disable-warning-about-emacs-d-in-load-path
 
 (push "~/.emacs.d/lisp" load-path)
-(push "~/.emacs.d/yasnippet" load-path)
 
 ;;;; External packages
 
@@ -47,7 +46,6 @@
 (require 'javap)
 (require 'java-mode-indent-annotations)
 (require 'vcsh)
-(require 'yasnippet)
 (require 'find-file-in-project)
 (require 'uniquify)
 (require 'ack)
@@ -202,6 +200,7 @@
 ;;;;; Configure a few new automatic modes
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.scss\\'" . css-mode))
 
 ;;; Clojure mode
 
@@ -309,10 +308,6 @@ the current fill-column."
 (push "*.xml" ffip-patterns)
 
 (global-set-key (kbd "C-x f") 'find-file-in-project)
-
-;;;; Set up snippets
-
-(yas/initialize)
 
 ;;;; With a running window system, have hyperlinks open up in a new chrome window
 

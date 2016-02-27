@@ -9,6 +9,7 @@
 (put 'bench-repeat  'scheme-indent-function 1)
 (put 'bind-if-match 'scheme-indent-function 2)
 (put 'call-with-compiler-tracing 'scheme-indent-function 3)
+(put 'check-for 'scheme-indent-function 1)
 (put 'cond-match 'scheme-indent-function 1)
 (put 'case 'scheme-indent-function 1)
 (put 'catch 'scheme-indent-function 1)
@@ -40,5 +41,6 @@
 (put 'with-global-environment 'scheme-indent-function 1)
 (put 'with-port 'scheme-indent-function 2)
 (put 'with-temporary-file 'scheme-indent-function 2)
+(put 'with-unexpected-escape-handler 'scheme-indent-function 1)
 
 (provide 'vcsh)
