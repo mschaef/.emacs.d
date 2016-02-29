@@ -199,7 +199,7 @@
 
 ;;;;; Configure a few new automatic modes
 
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-jsx-mode))
 (add-to-list 'auto-mode-alist '("\\.scss\\'" . css-mode))
 
 ;;; Clojure mode
