@@ -230,6 +230,9 @@
                           "|" "DONE" "NOT-DONE")
       org-todo-interpretation 'sequence)
 
+;;;; Setup org mode faces
+
+
 ;;;; Start the emacs server
 
 (when window-system
@@ -339,7 +342,16 @@ the current fill-column."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+
+ '(org-level-1 ((t (:inherit outline-1 :foreground "yellow" :background "gray50"))))
+ '(org-level-2 ((t (:inherit outline-2 :foreground "gray80"))))
+ '(org-level-3 ((t (:inherit outline-3 :foreground "gray75"))))
+ '(org-level-4 ((t (:inherit outline-4 :foreground "gray70"))))
+ '(org-level-5 ((t (:inherit outline-5 :foreground "gray65"))))
+ '(org-level-6 ((t (:inherit outline-6 :foreground "gray60"))))
+ '(org-level-7 ((t (:inherit outline-7 :foreground "gray55"))))
+ '(org-level-8 ((t (:inherit outline-8 :foreground "gray50")))))
+
 
 ;;;; Customize uniquify to get more rational unique buffer names
 
@@ -358,6 +370,8 @@ the current fill-column."
 
 (defun rebind-emacs-lisp-shift-f5 ()
   (local-set-key [(shift f5)] 'eval-buffer))
+
+
 
 ;;;; Switch to a more ISO-8601 compliant and noticable modeline date format
 

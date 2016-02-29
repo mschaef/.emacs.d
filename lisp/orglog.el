@@ -34,7 +34,10 @@ date's topic name.)")
   :keymap '(([(shift f6)] . orglog-find-today)
             ([(control shift f6)] . orglog-find-tomorrow)
             ([(control ?c) ?t ?i] . orglog-insert-topic-link)
-            ([(control ?c) ?t ?I] . orglog-enter-topic)))
+            ([(control ?c) ?t ?I] . orglog-enter-topic)
+            ([(control ?c) ?k] . orglog-current-date-header-to-kill)
+            ([(control up)] . orglog-backward-day)
+            ([(control down)] . orglog-forward-day)))
 
 ;; Emacs 'helpfully' autotranslates (shift f6) to f6 too...
 ;;
@@ -168,6 +171,31 @@ orglog entry."
   (progn
     (grep-compute-defaults)
     (grep (format "%s %s %s/*.orglog" grep-command regex orglog-root))))
+
+;;; Orglog navigation
+
+(defun orglog-to-day ()
+  (interactive)
+  (while (> (funcall outline-level) 1)
+    (outline-up-heading 1 t)))
+
+(defun orglog-current-date-header-to-kill ()
+  (interactive)
+  (save-excursion
+    (orglog-to-day)
+    (right-char 2)
+    (kill-line)
+    (yank)))
+
+(defun orglog-forward-day (arg)
+  (interactive "p")
+  (orglog-to-day)
+  (outline-forward-same-level 1))
+
+(defun orglog-backward-day (arg)
+  (interactive "p")
+  (orglog-to-day)
+  (outline-backward-same-level 1))
 
 ;;; Thing-at-point for orglog dates
 
