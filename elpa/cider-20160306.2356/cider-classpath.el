@@ -89,6 +89,7 @@
   "List all classpath entries."
   (interactive)
   (cider-ensure-connected)
+  (cider-ensure-op-supported "classpath")
   (with-current-buffer (cider-popup-buffer cider-classpath-buffer t)
     (cider-classpath-list (current-buffer)
                           (mapcar (lambda (name)
@@ -99,6 +100,8 @@
 (defun cider-open-classpath-entry ()
   "Open a classpath entry."
   (interactive)
+  (cider-ensure-connected)
+  (cider-ensure-op-supported "classpath")
   (when-let ((entry (completing-read "Classpath entries: " (cider-sync-request:classpath))))
     (find-file-other-window entry)))
 

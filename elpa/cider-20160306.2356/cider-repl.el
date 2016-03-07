@@ -299,14 +299,14 @@ client process connection.  Unless NO-BANNER is non-nil, insert a banner."
 ;;  Javadoc: (javadoc java-object-or-class)
 ;;     Exit: C-c C-q
 ;;  Results: Stored in vars *1, *2, *3, an exception in *e;"
-    port
-    host
-    host
-    port
-    (cider--version)
-    (cider--nrepl-version)
-    (cider--clojure-version)
-    (cider--java-version))))
+            port
+            host
+            host
+            port
+            (cider--version)
+            (cider--nrepl-version)
+            (cider--clojure-version)
+            (cider--java-version))))
 
 (defun cider-repl--help-banner ()
   "Generate the help banner."
@@ -323,7 +323,7 @@ client process connection.  Unless NO-BANNER is non-nil, insert a banner."
 ;;   will work in every Emacs buffer)
 ;; * Press <\\[cider-repl-handle-shortcut]> to quickly invoke some REPL command
 ;; * Press <\\[cider-switch-to-last-clojure-buffer]> to switch between the REPL and a Clojure file
-;; * Press <\\[cider-find-var] to jump to the source of something (e.g. a var, a
+;; * Press <\\[cider-find-var]> to jump to the source of something (e.g. a var, a
 ;;   Java method)
 ;; * Press <\\[cider-doc]> to view the documentation for something (e.g.
 ;;   a var, a Java method)
@@ -340,7 +340,8 @@ client process connection.  Unless NO-BANNER is non-nil, insert a banner."
 ;; Above all else - don’t panic! In case of an emergency - procure
 ;; some (hard) cider and enjoy it responsibly!
 ;;
-;; You can disable this message from appearing on start by setting
+;; You can remove this message with the `cider-repl-clear-help-banner' command.
+;; You can disable it from appearing on start by setting
 ;; `cider-repl-display-help-banner' to nil.
 ;; ======================================================================
 "))
@@ -484,7 +485,6 @@ This will not work on non-current prompts."
 (defun cider-repl-prompt-default (namespace)
   "Return a prompt string that mentions NAMESPACE."
   (format "%s> " namespace))
-(define-obsolete-function-alias 'cider-repl-default-prompt 'cider-repl-prompt-default "0.10.0")
 
 (defun cider-repl-prompt-abbreviated (namespace)
   "Return a prompt string that abbreviates NAMESPACE."
@@ -830,7 +830,44 @@ With a prefix argument CLEAR-REPL it will clear the entire REPL buffer instead."
           (save-excursion
             (goto-char start)
             (insert
-             (propertize ";;; output cleared" 'font-lock-face 'font-lock-comment-face))))))))
+             (propertize ";; output cleared" 'font-lock-face 'font-lock-comment-face))))))))
+
+(defun cider-repl-clear-banners ()
+  "Delete the REPL banners."
+  (interactive)
+  ;; TODO: Improve the boundaries detecting logic
+  ;; probably it should be based on text properties
+  ;; the current implemetation will clear warnings as well
+  (let ((start (point-min))
+        (end (save-excursion
+               (goto-char (point-min))
+               (cider-repl-next-prompt)
+               (forward-line -1)
+               (end-of-line)
+               (point))))
+    (when (< start end)
+      (let ((inhibit-read-only t))
+        (cider-repl--clear-region start (1+ end))))))
+
+(defun cider-repl-clear-help-banner ()
+  "Delete the help REPL banner."
+  (interactive)
+  ;; TODO: Improve the boundaries detecting logic
+  ;; probably it should be based on text properties
+  (let ((start (save-excursion
+                 (goto-char (point-min))
+                 (search-forward ";; =")
+                 (beginning-of-line)
+                 (point)))
+        (end (save-excursion
+               (goto-char (point-min))
+               (cider-repl-next-prompt)
+               (search-backward ";; =")
+               (end-of-line)
+               (point))))
+    (when (< start end)
+      (let ((inhibit-read-only t))
+        (cider-repl--clear-region start (1+ end))))))
 
 (defun cider-repl-switch-ns-handler (buffer)
   "Make a nREPL evaluation handler for the REPL BUFFER's ns switching."
@@ -1107,6 +1144,8 @@ constructs."
 (declare-function cider-refresh "cider-interaction")
 (cider-repl-add-shortcut "clear-output" #'cider-repl-clear-output)
 (cider-repl-add-shortcut "clear" #'cider-repl-clear-buffer)
+(cider-repl-add-shortcut "clear-banners" #'cider-repl-clear-banners)
+(cider-repl-add-shortcut "clear-help-banner" #'cider-repl-clear-help-banner)
 (cider-repl-add-shortcut "ns" #'cider-repl-set-ns)
 (cider-repl-add-shortcut "toggle-pretty" #'cider-repl-toggle-pretty-printing)
 (cider-repl-add-shortcut "browse-ns" (lambda () (cider-browse-ns (cider-current-ns))))
@@ -1254,10 +1293,17 @@ constructs."
         ["Set REPL ns" cider-repl-set-ns]
         ["Toggle pretty printing" cider-repl-toggle-pretty-printing]
         "--"
+        ["Browse classpath" cider-classpath]
+        ["Browse classpath entry" cider-open-classpath-entry]
+        ["Browse namespace" cider-browse-ns]
+        ["Browse all namespaces" cider-browse-ns-all]
+        "--"
         ["Next prompt" cider-repl-next-prompt]
         ["Previous prompt" cider-repl-previous-prompt]
         ["Clear output" cider-repl-clear-output]
         ["Clear buffer" cider-repl-clear-buffer]
+        ["Clear banners" cider-repl-clear-banners]
+        ["Clear help banner" cider-repl-clear-help-banner]
         ["Kill input" cider-repl-kill-input]
         "--"
         ["Interrupt evaluation" cider-interrupt]

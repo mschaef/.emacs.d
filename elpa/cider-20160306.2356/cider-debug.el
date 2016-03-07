@@ -216,11 +216,14 @@ Each element of LOCALS should be a list of at least two elements."
 
 (defun cider--debug-prompt (command-list)
   "Return prompt to display for COMMAND-LIST."
-  (concat
-   (mapconcat (lambda (x) (put-text-property 0 1 'face 'cider-debug-prompt-face x) x)
-              ;; `inspect' would conflict with `inject'.
-              (seq-difference command-list '("inspect")) " ")
-   "\n"))
+  ;; Force `default' face, otherwise the overlay "inherits" the face of the text
+  ;; after it.
+  (format (propertize "%s" 'face 'default)
+          (concat
+           (mapconcat (lambda (x) (put-text-property 0 1 'face 'cider-debug-prompt-face x) x)
+                      ;; `inspect' would conflict with `inject'.
+                      (seq-difference command-list '("inspect")) " ")
+           "\n")))
 
 (defvar-local cider--debug-prompt-overlay nil)
 
@@ -329,7 +332,7 @@ In order to work properly, this mode must be activated by
     ;; doesn't accidentally hit `n' between two messages (thus editing the code).
     (when-let ((proc (unless nrepl-ongoing-sync-request
                        (get-buffer-process (cider-current-connection)))))
-      (accept-process-output proc 0.5))
+      (accept-process-output proc 1))
     (unless cider--debug-mode
       (setq buffer-read-only nil)
       (cider--debug-remove-overlays (current-buffer)))

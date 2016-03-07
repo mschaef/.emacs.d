@@ -814,7 +814,6 @@ CONN-BUFFER refers to a (presumably) dead connection, which we can eventually re
     (setq nrepl-session nil)
     (setq nrepl-tooling-session nil)))
 
-(define-obsolete-function-alias 'nrepl-close 'cider--close-connection-buffer "0.10.0")
 
 ;;; Client: Response Handling
 ;; After being decoded, responses (aka, messages from the server) are dispatched
@@ -1023,7 +1022,7 @@ If LINE and COLUMN are non-nil and current buffer is a file buffer, \"line\",
 (defun nrepl-request:eval (input callback connection &optional session ns line column additional-params)
   "Send the request INPUT and register the CALLBACK as the response handler.
 The request is dispatched via CONNECTION and SESSION.  If NS is non-nil,
-include it in the request. LINE and COLUMN, if non-nil, define the position
+include it in the request.  LINE and COLUMN, if non-nil, define the position
 of INPUT in its buffer.
 ADDITIONAL-PARAMS is a plist to be appended to the request message."
   (nrepl-send-request (append (nrepl--eval-request input session ns line column) additional-params)
@@ -1111,30 +1110,33 @@ the port, and the client buffer."
 
 (defun nrepl-server-filter (process output)
   "Process nREPL server output from PROCESS contained in OUTPUT."
-  (with-current-buffer (process-buffer process)
-    ;; auto-scroll on new output
-    (let ((moving (= (point) (process-mark process))))
-      (save-excursion
-        (goto-char (process-mark process))
-        (insert output)
-        (set-marker (process-mark process) (point)))
-      (when moving
-        (goto-char (process-mark process))
-        (when-let ((win (get-buffer-window)))
-          (set-window-point win (point))))))
-  ;; detect the port the server is listening on from its output
-  (when (string-match "nREPL server started on port \\([0-9]+\\)" output)
-    (let ((port (string-to-number (match-string 1 output))))
-      (message "nREPL server started on %s" port)
-      (with-current-buffer (process-buffer process)
-        (let* ((client-proc (nrepl-start-client-process nil port process))
-               (client-buffer (process-buffer client-proc)))
-          (setq nrepl-client-buffers
-                (cons client-buffer
-                      (delete client-buffer nrepl-client-buffers)))
+  ;; In Windows this can be false:
+  (let ((server-buffer (process-buffer process)))
+    (when (buffer-live-p server-buffer)
+      (with-current-buffer server-buffer
+        ;; auto-scroll on new output
+        (let ((moving (= (point) (process-mark process))))
+          (save-excursion
+            (goto-char (process-mark process))
+            (insert output)
+            (set-marker (process-mark process) (point)))
+          (when moving
+            (goto-char (process-mark process))
+            (when-let ((win (get-buffer-window)))
+              (set-window-point win (point))))))
+      ;; detect the port the server is listening on from its output
+      (when (string-match "nREPL server started on port \\([0-9]+\\)" output)
+        (let ((port (string-to-number (match-string 1 output))))
+          (message "nREPL server started on %s" port)
+          (with-current-buffer server-buffer
+            (let* ((client-proc (nrepl-start-client-process nil port process))
+                   (client-buffer (process-buffer client-proc)))
+              (setq nrepl-client-buffers
+                    (cons client-buffer
+                          (delete client-buffer nrepl-client-buffers)))
 
-          (when (functionp nrepl-post-client-callback)
-            (funcall nrepl-post-client-callback client-buffer)))))))
+              (when (functionp nrepl-post-client-callback)
+                (funcall nrepl-post-client-callback client-buffer)))))))))
 
 (declare-function cider--close-connection-buffer "cider-client")
 
@@ -1198,14 +1200,14 @@ operations.")
   (setq-local electric-indent-chars nil)
   (setq-local comment-start ";")
   (setq-local comment-end "")
-  (setq-local paragraph-start "(--->\\|(<-")
-  (setq-local paragraph-separate "(<-"))
+  (setq-local paragraph-start "(-->\\|(<--")
+  (setq-local paragraph-separate "(<--"))
 
 (defun nrepl-decorate-msg (msg type)
   "Decorate nREPL MSG according to its TYPE."
   (pcase type
-    (`request (cons '---> (cdr msg)))
-    (`response (cons '<- (cdr msg)))))
+    (`request (cons '--> (cdr msg)))
+    (`response (cons '<-- (cdr msg)))))
 
 (defun nrepl-log-message (msg type)
   "Log the nREPL MSG.
@@ -1251,10 +1253,24 @@ Set this to nil to prevent truncation."
   "Expand the text hidden under overlay BUTTON."
   (delete-overlay button))
 
+(defun nrepl--expand-button-mouse (event)
+  "Expand the text hidden under overlay BUTTON."
+  (interactive "e")
+  (pcase (elt event 1)
+    (`(,window ,_ ,_ ,_ ,_ ,point . ,_)
+     (with-selected-window window
+       (nrepl--expand-button (button-at point))))))
+
+(define-button-type 'nrepl--collapsed-dict
+  'display "..."
+  'action #'nrepl--expand-button
+  'face 'link
+  'help-echo "RET: Expand dict.")
+
 (defun nrepl--pp (object &optional foreground)
   "Pretty print nREPL OBJECT, delimited using FOREGROUND."
   (if (not (and (listp object)
-                (memq (car object) '(<- ---> dict))))
+                (memq (car object) '(<-- --> dict))))
       (progn (when (stringp object)
                (setq object (substring-no-properties object)))
              (pp object (current-buffer))
@@ -1280,12 +1296,9 @@ Set this to nil to prevent truncation."
                            (> (count-screen-lines l (point) t)
                               nrepl-dict-max-message-size))
                   (make-button (1+ l) (point)
-                               'display "..."
-                               'action #'nrepl--expand-button
-                               'mouse-action #'nrepl--expand-button
-                               'face 'link
-                               'help-echo "RET: Expand dict."
-                               'follow-link t))))
+                               :type 'nrepl--collapsed-dict
+                               ;; Workaround for bug#1568.
+                               'local-map '(keymap (mouse-1 . nrepl--expand-button-mouse))))))
             (insert (color ")\n"))))))))
 
 (defun nrepl-messages-buffer-name (conn)

@@ -10,7 +10,7 @@
 ;;         Steve Purcell <steve@sanityinc.com>
 ;; Maintainer: Bozhidar Batsov <bozhidar@batsov.com>
 ;; URL: http://www.github.com/clojure-emacs/cider
-;; Version: 0.11.0-cvs
+;; Version: 0.12.0-cvs
 ;; Package-Requires: ((emacs "24.3") (clojure-mode "5.2.0") (pkg-info "0.4") (queue "0.1.1") (spinner "1.7") (seq "1.9"))
 ;; Keywords: languages, clojure, cider
 
@@ -86,10 +86,13 @@ project inference will take place."
 
 (require 'seq)
 
-(defconst cider-version "0.11.0-snapshot"
+(defconst cider-version "0.12.0-snapshot"
   "Fallback version used when it cannot be extracted automatically.
 Normally it won't be used, unless `pkg-info' fails to extract the
 version from the CIDER package or library.")
+
+(defconst cider-codename "Bulgaria"
+  "Codename used to denote stable releases.")
 
 (defcustom cider-lein-command
   "lein"
@@ -212,21 +215,23 @@ Sub-match 1 must be the project path.")
 
 
 ;;; Jack-in dependencies injection
-(defvar cider-jack-in-dependencies
-  '(("org.clojure/tools.nrepl" "0.2.12"))
+(defvar cider-jack-in-dependencies nil
   "List of dependencies where elements are lists of artifact name and version.")
 (put 'cider-jack-in-dependencies 'risky-local-variable t)
+(cider-add-to-alist 'cider-jack-in-dependencies
+                    "org.clojure/tools.nrepl" "0.2.12")
 
-(defvar cider-jack-in-lein-plugins
-  `(("cider/cider-nrepl" ,(upcase cider-version)))
+(defvar cider-jack-in-lein-plugins nil
   "List of Leiningen plugins where elements are lists of artifact name and version.")
 (put 'cider-jack-in-lein-plugins 'risky-local-variable t)
+(cider-add-to-alist 'cider-jack-in-lein-plugins
+                    "cider/cider-nrepl" (upcase cider-version))
 
-(defvar cider-jack-in-nrepl-middlewares
-  '("cider.nrepl/cider-middleware")
+(defvar cider-jack-in-nrepl-middlewares nil
   "List of Clojure variable names.
 Each of these Clojure variables should hold a vector of nREPL middlewares.")
 (put 'cider-jack-in-nrepl-middlewares 'risky-local-variable t)
+(add-to-list 'cider-jack-in-nrepl-middlewares "cider.nrepl/cider-middleware")
 
 (defun cider--list-as-boot-artifact (list)
   "Return a boot artifact string described by the elements of LIST.

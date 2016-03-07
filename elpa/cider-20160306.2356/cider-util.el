@@ -36,7 +36,6 @@
 (require 'cider-compat)
 
 (defalias 'cider-pop-back 'pop-tag-mark)
-(define-obsolete-function-alias 'cider-jump-back 'cider-pop-back "0.10.0")
 
 (defcustom cider-font-lock-max-length 10000
   "The max length of strings to fontify in `cider-font-lock-as'.
@@ -117,10 +116,11 @@ find a symbol if there isn't one at point."
         (unless (text-property-any 0 (length str) 'field 'cider-repl-prompt str)
           str))
       (when look-back
-        (ignore-errors
-          (while (not (looking-at "\\sw\\|\\s_\\|\\`"))
-            (forward-sexp -1)))
-        (cider-symbol-at-point))))
+        (save-excursion
+          (ignore-errors
+            (while (not (looking-at "\\sw\\|\\s_\\|\\`"))
+              (forward-sexp -1)))
+          (cider-symbol-at-point)))))
 
 
 ;;; sexp navigation
@@ -211,7 +211,9 @@ PROP is the name of a text property."
 (defalias 'cider--font-lock-flush
   (if (fboundp 'font-lock-flush)
       #'font-lock-flush
-    #'font-lock-fontify-buffer))
+    (with-no-warnings
+      (lambda (&optional _beg _end)
+        (font-lock-fontify-buffer)))))
 
 (defvar cider--mode-buffers nil
   "A list of buffers for different major modes.")
@@ -220,11 +222,9 @@ PROP is the name of a text property."
   "Return a temp buffer using major-mode MODE.
 This buffer is not designed to display anything to the user. For that, use
 `cider-make-popup-buffer' instead."
-  (or (let ((b (cdr (assq mode cider--mode-buffers))))
-        (if (buffer-live-p b)
-            b
-          (setq cider--mode-buffers (seq-remove (lambda (x) (eq (car x) mode))
-                                                cider--mode-buffers))))
+  (setq cider--mode-buffers (seq-filter (lambda (x) (buffer-live-p (cdr x)))
+                                        cider--mode-buffers))
+  (or (cdr (assq mode cider--mode-buffers))
       (let ((b (generate-new-buffer (format " *cider-temp %s*" mode))))
         (push (cons mode b) cider--mode-buffers)
         (with-current-buffer b
@@ -283,12 +283,17 @@ Unless you specify a BUFFER it will default to the current one."
 (autoload 'pkg-info-version-info "pkg-info.el")
 
 (defvar cider-version)
+(defvar cider-codename)
 
 (defun cider--version ()
-  "Retrieve CIDER's version."
-  (condition-case nil
-      (pkg-info-version-info 'cider)
-    (error cider-version)))
+  "Retrieve CIDER's version.
+A codename is added to stable versions."
+  (let ((version (condition-case nil
+                     (pkg-info-version-info 'cider)
+                   (error cider-version))))
+    (if (string-match-p "-snapshot" cider-version)
+        version
+      (format "%s (%s)" version cider-codename))))
 
 
 ;;; Strings
@@ -323,6 +328,20 @@ objects."
                 (cons (cider-string-join el (or separator ":")) el)
               (cons el el)))
           candidates))
+
+(defun cider-add-to-alist (symbol car cadr)
+  "Add '(CAR CADR) to the alist stored in SYMBOL.
+If CAR already corresponds to an entry in the alist, destructively replace
+the entry's second element with CADR.
+
+This can be used, for instance, to update the version of an injected
+plugin or dependency with:
+  (cider-add-to-alist 'cider-jack-in-lein-plugins
+                  \"plugin/artifact-name\" \"THE-NEW-VERSION\")"
+  (let ((alist (symbol-value symbol)))
+    (if-let ((cons (assoc car alist)))
+        (setcdr cons (list cadr))
+      (set symbol (cons (list car cadr) alist)))))
 
 (defun cider-namespace-qualified-p (sym)
   "Return t if SYM is namespace-qualified."
@@ -398,6 +417,9 @@ Any other value is just returned."
     "Think big!"
     "Think bold!"
     "Think fun!"
+    "Code big!"
+    "Code bold!"
+    "Code fun!"
     "Take this REPL, fellow hacker, and may it serve you well."
     "Let the hacking commence!"
     "Hacks and glory await!"
@@ -421,6 +443,7 @@ Any other value is just returned."
     "Unfortunately, no one can be told what CIDER is. You have to figure this out yourself."
     "Procure a bottle of cider to achieve optimum programming results."
     "In parentheses we trust!"
+    "Write you some Clojure for Great Good!"
     ,(format "%s, I've a feeling we're not in Kansas anymore."
              (cider-user-first-name))
     ,(format "%s, this could be the start of a beautiful program."
@@ -433,7 +456,9 @@ Any other value is just returned."
              cider-words-of-inspiration)))
 
 (defvar cider-tips
-  '("Press <\\[cider-view-manual]> to view CIDER's manual."
+  '("Press <\\[cider-connect]> to connect to a running nREPL server."
+    "Press <\\[cider-quit]> to quit the current connection."
+    "Press <\\[cider-view-manual]> to view CIDER's manual."
     "Press <\\[cider-view-refcard]> to view CIDER's refcard."
     "Press <\\[describe-mode]> to see a list of the keybindings available (this will work in every Emacs buffer)."
     "Press <\\[cider-repl-handle-shortcut]> to quickly invoke some REPL command."
@@ -455,6 +480,9 @@ Any other value is just returned."
     "Press <\\[cider-browse-ns-all]> to start CIDER's namespace browser."
     "Press <\\[cider-classpath]> to start CIDER's classpath browser."
     "Press <\\[cider-macroexpand-1]> to expand the preceding macro."
+    "Press <\\[cider-inspect]> to inspect the preceding expression's result."
+    "Press <C-u \\[cider-inspect]> to inspect the defun at point's result."
+    "Press <C-u C-u \\[cider-inspect]> to read Clojure code from the minibuffer and inspect its result."
     "Press <\\[cider-refresh]> to reload modified and unloaded namespaces."
     "You can define Clojure functions to be called before and after `cider-refresh' (see `cider-refresh-before-fn' and `cider-refresh-after-fn'."
     "Press <\\[cider-display-connection-info]> to view information about the connection."

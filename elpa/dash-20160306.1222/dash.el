@@ -4,7 +4,7 @@
 
 ;; Author: Magnar Sveen <magnars@gmail.com>
 ;; Version: 2.12.1
-;; Package-Version: 20160223.1028
+;; Package-Version: 20160306.1222
 ;; Keywords: lists
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -1190,6 +1190,29 @@ as `(nth i list)` for all i from INDICES."
       (!cons (nth it list) r))
     (nreverse r)))
 
+(defun -select-columns (columns table)
+  "Select COLUMNS from TABLE.
+
+TABLE is a list of lists where each element represents one row.
+It is assumed each row has the same length.
+
+Each row is transformed such that only the specified COLUMNS are
+selected.
+
+See also: `-select-column', `-select-by-indices'"
+  (--map (-select-by-indices columns it) table))
+
+(defun -select-column (column table)
+  "Select COLUMN from TABLE.
+
+TABLE is a list of lists where each element represents one row.
+It is assumed each row has the same length.
+
+The single selected column is returned as a list.
+
+See also: `-select-columns', `-select-by-indices'"
+  (--mapcat (-select-by-indices (list column) it) table))
+
 (defmacro -> (x &optional form &rest more)
   "Thread the expr through the forms. Insert X as the second item
 in the first form, making a list of it if it is not a list
@@ -2342,6 +2365,8 @@ structure such as plist or alist."
                              "-find-last-index"
                              "--find-last-index"
                              "-select-by-indices"
+                             "-select-columns"
+                             "-select-column"
                              "-grade-up"
                              "-grade-down"
                              "->"

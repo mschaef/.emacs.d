@@ -85,8 +85,6 @@ found."
       (unless no-error
         (error "No nREPL connection buffer"))))
 
-(define-obsolete-function-alias 'nrepl-current-connection-buffer 'cider-default-connection "0.10")
-
 (defun cider-connections ()
   "Return the list of connection buffers.
 If the list is empty and buffer-local, return the global value."
@@ -232,10 +230,13 @@ If TYPE is nil, then connections whose type matches the current file
 extension are given preference, but if none exist, any connection is
 returned.  In this case, only return nil if there are no active connections
 at all."
+  ;; If TYPE was specified, we only return that type (or nil).  OW, we prefer
+  ;; that TYPE, but ultimately allow any type.
   (cl-labels ((right-type-p
                (c)
                (when (or (not type)
-                         (with-current-buffer c (equal cider-repl-type type)))
+                         (and (buffer-live-p c)
+                              (with-current-buffer c (equal cider-repl-type type))))
                  c)))
     (let ((connections (cider-connections)))
       (cond
@@ -244,20 +245,19 @@ at all."
        ((and (derived-mode-p 'cider-repl-mode) (right-type-p (current-buffer))))
        ((eq cider-request-dispatch 'static) (car connections))
        ((= 1 (length connections)) (right-type-p (car connections)))
-       (t (let ((project-connections
-                 (cider-find-connection-buffer-for-project-directory
-                  nil :all-connections)))
-            (right-type-p
-             (if (= 1 (length project-connections))
-                 ;; Only one match, just return it.
-                 (car project-connections)
-               (let ((guessed-type (or type (cider-connection-type-for-buffer))))
-                 ;; OW, find one matching the language of the current buffer.
-                 (or (seq-find (lambda (conn)
-                                 (equal (cider--connection-type conn) guessed-type))
-                               project-connections)
-                     (car project-connections)
-                     (car connections)))))))))))
+       (t (let ((project-connections (cider-find-connection-buffer-for-project-directory
+                                      nil :all-connections))
+                (guessed-type (or type (cider-connection-type-for-buffer))))
+            ;; So we have multiple connections. Look for the connection type we
+            ;; want, prioritizing the current project.
+            (or (seq-find (lambda (conn)
+                            (equal (cider--connection-type conn) guessed-type))
+                          project-connections)
+                (seq-find (lambda (conn)
+                            (equal (cider--connection-type conn) guessed-type))
+                          connections)
+                (right-type-p (car project-connections))
+                (right-type-p (car connections)))))))))
 
 (defun cider-other-connection (&optional connection)
   "Return the first connection of another type than CONNECTION.
@@ -354,8 +354,6 @@ connection but can be invoked from any buffer (like `cider-refresh')."
         (unless (get-buffer-window buffer)
           (select-window (display-buffer buffer))))
     (cider--setup-connection-browser)))
-
-(define-obsolete-function-alias 'nrepl-connection-browser 'cider-connection-browser "0.10")
 
 (defun cider--connections-refresh ()
   "Refresh the connections buffer, if the buffer exists.
@@ -561,7 +559,7 @@ When NO-DEFAULT is non-nil, it will return nil instead of \"user\"."
   "Check for support of middleware op OP.
 Signal an error if it is not supported."
   (unless (cider-nrepl-op-supported-p op)
-    (user-error "Can't find nREPL middleware providing op \"%s\".  Please, install (or update) cider-nrepl %s and restart CIDER" op (upcase cider-version))))
+    (user-error "`%s' requires the nREPL op \"%s\".  Please, install (or update) cider-nrepl %s and restart CIDER" this-command op (upcase cider-version))))
 
 (defun cider-nrepl-send-request (request callback &optional connection)
   "Send REQUEST and register response handler CALLBACK.
@@ -694,8 +692,6 @@ Return the REPL buffer given by `cider-current-connection'.")
   (with-current-buffer (cider-current-connection)
     nrepl-session))
 
-(define-obsolete-function-alias 'nrepl-current-session 'cider-current-session "0.10")
-
 (defun cider-current-messages-buffer ()
   "The nREPL messages buffer, matching the current connection."
   (nrepl-messages-buffer (cider-current-connection)))
@@ -704,8 +700,6 @@ Return the REPL buffer given by `cider-current-connection'.")
   "Return the current tooling session."
   (with-current-buffer (cider-current-connection)
     nrepl-tooling-session))
-
-(define-obsolete-function-alias 'nrepl-current-tooling-session 'cider-current-tooling-session "0.10")
 
 (defun cider--var-choice (var-info)
   "Prompt to choose from among multiple VAR-INFO candidates, if required.
@@ -792,7 +786,9 @@ If CALLBACK is nil, use `cider-load-file-handler'."
 
 ;;; Sync Requests
 (defun cider-sync-request:apropos (query &optional search-ns docs-p privates-p case-sensitive-p)
-  "Send \"apropos\" op with args SEARCH-NS, DOCS-P, PRIVATES-P, CASE-SENSITIVE-P."
+  "Send \"apropos\" request for regexp QUERY.
+
+Optional arguments include SEARCH-NS, DOCS-P, PRIVATES-P, CASE-SENSITIVE-P."
   (thread-first `("op" "apropos"
                   "session" ,(cider-current-session)
                   "ns" ,(cider-current-ns)
@@ -979,8 +975,6 @@ default connection."
                                             (cider-default-connection)
                                           (cider-current-connection)))))
 
-(define-obsolete-function-alias 'cider-display-current-connection-info 'cider-display-connection-info "0.10")
-
 (defun cider-rotate-default-connection ()
   "Rotate and display the default nREPL connection."
   (interactive)
@@ -1002,7 +996,6 @@ If CONN is not provided the user will be prompted to select a connection."
          (project-dir (cider--connection-project-dir conn)))
     (cider-connect host port project-dir)))
 
-(define-obsolete-function-alias 'cider-rotate-connection 'cider-rotate-default-connection "0.10")
 (defun cider-extract-designation-from-current-repl-buffer ()
   "Extract the designation from the cider repl buffer name."
   (let ((repl-buffer-name (buffer-name (cider-current-repl-buffer)))
@@ -1046,9 +1039,8 @@ The request is dispatched via CONNECTION and SESSION.
 If NS is non-nil, include it in the request.
 RIGHT-MARGIN specifies the maximum column width of the
 pretty-printed result, and is included in the request if non-nil."
-  (cider-nrepl-send-request
-   (cider--nrepl-pprint-eval-request input (cider-current-session) ns right-margin pprint-fn)
-   callback))
+  (cider-nrepl-request:eval input callback ns nil nil
+                            (cider--nrepl-pprint-request-plist right-margin pprint-fn)))
 (make-obsolete 'cider-nrepl-request:pprint-eval
                "`cider-nrepl-request:eval' with `cider--nrepl-pprint-request-plist'"
                "0.11.0")

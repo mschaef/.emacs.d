@@ -1025,7 +1025,7 @@ arguments and only proceed with evaluation if it returns nil."
         (start (car-safe bounds))
         (end   (car-safe (cdr-safe bounds))))
     (when (and start end)
-      (remove-overlays start end))
+      (remove-overlays start end 'cider-temporary t))
     (unless (and cider-interactive-eval-override
                  (functionp cider-interactive-eval-override)
                  (funcall cider-interactive-eval-override form callback bounds))
@@ -1117,16 +1117,17 @@ Print its value into the current buffer."
 With DEBUG-IT prefix argument, also debug the entire form as with the
 command `cider-debug-defun-at-point'."
   (interactive "P")
-  (when (and debug-it (derived-mode-p 'clojurescript-mode))
-    (when (y-or-n-p (concat "The debugger doesn't support ClojureScript yet, and we need help with that."
-                            "  \nWould you like to read the Feature Request?"))
-      (browse-url "https://github.com/clojure-emacs/cider/issues/1416"))
-    (user-error "The debugger does not support ClojureScript"))
-  (cider-interactive-eval
-   (concat (if debug-it "#dbg\n")
-           (cider-defun-at-point))
-   nil
-   (cider-defun-at-point 'bounds)))
+  (when debug-it
+    (when (derived-mode-p 'clojurescript-mode)
+      (when (y-or-n-p (concat "The debugger doesn't support ClojureScript yet, and we need help with that."
+                              "  \nWould you like to read the Feature Request?"))
+        (browse-url "https://github.com/clojure-emacs/cider/issues/1416"))
+      (user-error "The debugger does not support ClojureScript"))
+    (save-excursion
+      (goto-char (car (cider-defun-at-point 'bounds)))
+      (insert-button "#dbg" :type 'cider-fragile)
+      (insert "\n")))
+  (cider-interactive-eval nil nil (cider-defun-at-point 'bounds)))
 
 (defun cider-pprint-eval-defun-at-point ()
   "Evaluate the \"top-level\" form at point and pprint its value in a popup buffer."
@@ -1415,7 +1416,7 @@ ClojureScript REPL exists for the project, it is evaluated in both REPLs."
                (or (eq cider-prompt-save-file-on-load 'always-save)
                    (y-or-n-p (format "Save file %s? " buffer-file-name))))
       (save-buffer))
-    (remove-overlays nil nil 'cider-type 'instrumented-defs)
+    (remove-overlays nil nil 'cider-temporary t)
     (cider--clear-compilation-highlights)
     (cider--quit-error-window)
     (cider--cache-ns-form)
@@ -1442,8 +1443,10 @@ The heavy lifting is done by `cider-load-buffer'."
                                 (when (buffer-file-name)
                                   (file-name-nondirectory
                                    (buffer-file-name))))))
-  (when-let ((buffer (find-buffer-visiting filename)))
-    (cider-load-buffer buffer)))
+  (if-let ((buffer (find-buffer-visiting filename)))
+      (cider-load-buffer buffer)
+    (find-file filename)
+    (cider-load-buffer (current-buffer))))
 
 (defalias 'cider-eval-file 'cider-load-file
   "A convenience alias as some people are confused by the load-* names.")
