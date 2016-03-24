@@ -37,7 +37,8 @@ date's topic name.)")
             ([(control ?c) ?t ?I] . orglog-enter-topic)
             ([(control ?c) ?k] . orglog-current-date-header-to-kill)
             ([(control up)] . orglog-backward-day)
-            ([(control down)] . orglog-forward-day)))
+            ([(control down)] . orglog-forward-day)
+            ([(control ?c) backtab] . orglog-hide-all-other-subtrees)))
 
 ;; Emacs 'helpfully' autotranslates (shift f6) to f6 too...
 ;;
@@ -187,17 +188,29 @@ orglog entry."
     (kill-line)
     (yank)))
 
-(defun orglog-forward-day (arg)
-  (interactive "p")
+(defun orglog-forward-day ()
+  (interactive)
   (orglog-to-day)
   (outline-forward-same-level 1))
 
-(defun orglog-backward-day (arg)
-  (interactive "p")
+(defun orglog-backward-day ()
+  (interactive)
   (let ((initial-point (point)))
     (orglog-to-day)
     (if (= initial-point (point))
         (outline-backward-same-level 1))))
+
+(defun orglog-hide-all-other-subtrees ()
+  (interactive)
+  (save-excursion
+    (orglog-to-day)
+    (let ((current-subtree-point (point)))
+      (goto-char (point-min))
+      (awhile (save-excursion
+                (outline-get-next-sibling))
+        (unless (= current-subtree-point (point))
+          (hide-subtree))
+        (goto-char it)))))
 
 ;;; Thing-at-point for orglog dates
 
