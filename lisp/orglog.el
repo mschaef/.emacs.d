@@ -194,8 +194,10 @@ orglog entry."
 
 (defun orglog-backward-day (arg)
   (interactive "p")
-  (orglog-to-day)
-  (outline-backward-same-level 1))
+  (let ((initial-point (point)))
+    (orglog-to-day)
+    (if (= initial-point (point))
+        (outline-backward-same-level 1))))
 
 ;;; Thing-at-point for orglog dates
 
