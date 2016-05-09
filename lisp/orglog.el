@@ -206,11 +206,10 @@ orglog entry."
     (orglog-to-day)
     (let ((current-subtree-point (point)))
       (goto-char (point-min))
-      (awhile (save-excursion
-                (outline-get-next-sibling))
+      (while (< (point) (point-max))
         (unless (= current-subtree-point (point))
           (hide-subtree))
-        (goto-char it)))))
+        (goto-char (outline-get-next-sibling))))))
 
 ;;; Thing-at-point for orglog dates
 
