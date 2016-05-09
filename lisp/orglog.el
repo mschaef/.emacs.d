@@ -209,7 +209,8 @@ orglog entry."
       (while (< (point) (point-max))
         (unless (= current-subtree-point (point))
           (hide-subtree))
-        (goto-char (outline-get-next-sibling))))))
+        (goto-char (or (outline-get-next-sibling)
+                       (point-max)))))))
 
 ;;; Thing-at-point for orglog dates
 
