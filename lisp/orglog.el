@@ -68,6 +68,8 @@ orglog entry."
         (goto-char (point-min))
         (unless (re-search-forward (format "^\\* +%s[:space:]*$" date) nil t)
           (goto-char (point-max))
+          (unless (= (point) (line-beginning-position))
+            (newline))
           (orglog-enter-day date-str)))
     (message "Invalid orglog date string: %s." orglog-root)))
 
