@@ -61,6 +61,10 @@
 
 (setq create-lockfiles nil)
 
+;;;; Filter out the group on dired listings.
+
+(setq dired-listing-switches "-alo")
+
 ;;;; Show the time and date
 
 (setq display-time-day-and-date t)
@@ -304,11 +308,13 @@ the current fill-column."
 
 (setq ffip-find-options "-and -not -regex \\\".*/target/.*\\\"")
 (setq ffip-limit 2048)
+(setq ffip-full-paths nil)
 
-(push "*.java" ffip-patterns)
-(push "*.ftl" ffip-patterns)
-(push "*.cs" ffip-patterns)
-(push "*.xml" ffip-patterns)
+(setq ffip-patterns
+      (append '("*.c"  "*.cc"  "*.clj"  "*.coffee"  "*.cs" "*.css"
+                "*.el"  "*.ftl" "*.h" "*.html" "*.java" "*.js"
+                "*.json" "*.scm" "*.scss" "*.sh" "*.xml")
+       ffip-patterns))
 
 (global-set-key (kbd "C-x f") 'find-file-in-project)
 
@@ -371,8 +377,6 @@ the current fill-column."
 (defun rebind-emacs-lisp-shift-f5 ()
   (local-set-key [(shift f5)] 'eval-buffer))
 
-
-
 ;;;; Switch to a more ISO-8601 compliant and noticable modeline date format
 
 (defface modeline-display-time
@@ -389,7 +393,6 @@ the current fill-column."
      (format-time-string " %Y-%m-%d %H:%M " now)
      'face 'modeline-display-time
      'help-echo (format-time-string "%Y-%m-%d %H:%M" now))))
-
 
 (display-time-update)
 
