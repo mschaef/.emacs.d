@@ -45,7 +45,6 @@ date's topic name.)")
 ;; http://www.emacswiki.org/emacs/TheMysteriousCaseOfShiftedFunctionKeys
 (global-set-key [f6] 'orglog-find-today)
 (global-set-key [(control shift f6)] 'orglog-find-tomorrow)
-(global-set-key [(control shift f7)] 'orglog-grep)
 
 (defun orglog-find-root-directory ()
   (if (not (file-exists-p orglog-root))
@@ -166,14 +165,6 @@ orglog entry."
 (add-hook 'org-mode-hook 'orglog-activate-for-orglog-buffers)
 
 (push (cons "\\.orglog" 'org-mode) auto-mode-alist)
-
-(defun orglog-grep (regex)
-  (interactive
-   (list
-    (read-string "Orglog grep regexp: " "" 'orglog-grep-history)))
-  (progn
-    (grep-compute-defaults)
-    (grep (format "%s %s %s/*.orglog" grep-command regex orglog-root))))
 
 ;;; Orglog navigation
 
