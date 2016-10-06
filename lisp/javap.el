@@ -27,9 +27,6 @@ Emacs process environment.")
   "A list of all JDK definitions. Each element has the form
 (JDK-NAME JAVA_HOME PATH_PREFIX)")
 
-(defvar javap-ack-guess-search-string nil
-  "True if javap-ack should attempt to guess the search string.")
-
 (defvar javap-module-types '(("pom.xml" "mvn -o -f" "build install")
                              ("build.gradle" "gradle -q --console=plain -b" "clean build"))
   "A list of module types. Each element of this list is a list
@@ -489,21 +486,6 @@ a master POM file, the master POM file is used."
     (javap-goto-import-location)
     (javap-insert-imports all-imports)
     (delete-blank-lines)))
-
-
-
-;;;; A form of ack that searches the current project
-
-(defun javap-ack (pattern)
-  "Run ack, with user-specified ARGS, and collect output in a buffer.
-While ack runs asynchronously, you can use the \\[next-error] command to
-find the text that ack hits refer to. The command actually run is
-defined by the ack-command variable."
-  (interactive
-   (list (read-string "Search for: " (if javap-ack-guess-search-string (thing-at-point 'symbol) ""))))
-  (let ((ack--project-root (javap-find-current-module-root-directory )))
-    (ack pattern)))
-
 
 (provide 'javap)
 

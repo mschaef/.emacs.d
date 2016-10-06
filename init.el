@@ -14,6 +14,13 @@
 
 ;;;; Record the start time
 
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (defvar *emacs-load-start* (current-time))
 
 ;;;; Package.el setup
@@ -47,8 +54,9 @@
 (require 'java-mode-indent-annotations)
 (require 'vcsh)
 (require 'find-file-in-project)
-(require 'uniquify)
 (require 'ack)
+(require 'uniquify)
+(require 'project-ack)
 (require 'develock)
 (require 'keyfreq)
 
