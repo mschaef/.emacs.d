@@ -1,6 +1,11 @@
 ;;;; project-ack.el
 ;;;;
 ;;;; Support for running ack against a project
+;;;;
+;;;; Two major differences between this and the default 'ack' behavior
+;;;;
+;;;; 1) This uses the came project root finder as find-file-in-project
+;;;; 2) This uses thing-at-point to guess the item to search.
 
 (require 'find-file-in-project)
 
@@ -17,8 +22,7 @@ point. This can be disabled with a prefix argument."
                               (if current-prefix-arg
                                   ""
                                 (thing-at-point 'symbol))))))
-  (let ((ack--project-root (ffip-get-project-root-directory)))
-    (ack pattern)))
+  (ack pattern (ffip-get-project-root-directory)))
 
 (global-set-key [(control shift f7)] 'project-ack)
 
