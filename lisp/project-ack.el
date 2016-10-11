@@ -5,7 +5,7 @@
 ;;;; Two major differences between this and the default 'ack' behavior
 ;;;;
 ;;;; 1) This uses the came project root finder as find-file-in-project
-;;;; 2) This uses thing-at-point to guess the item to search.
+;;;; 2) This uses thing-at-point to guess the item to search.y
 
 (require 'find-file-in-project)
 
