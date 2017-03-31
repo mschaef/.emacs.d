@@ -238,9 +238,11 @@
 
 ;;;; Org mode keywords
 
-(setq org-todo-keywords '("TODO" "XXX" "VERIFY" "FOLLOW-UP"
-                          "|" "DONE" "NOT-DONE")
-      org-todo-interpretation 'sequence)
+(setq org-todo-keywords
+      '((sequence "TODO" "XXX" "VERIFY" "FOLLOW-UP" "|" "DONE" "NOT-DONE")
+        (sequence "UNASKED" "|" "FAIL" "PASS" "EXCEPTIONAL")))
+
+(setq  org-todo-interpretation 'sequence)
 
 ;;;; Setup org mode faces
 
@@ -351,6 +353,9 @@ the current fill-column."
  '(keyfreq-file-lock "~/.emacs.d/emacs.keyfreq.lock")
  '(keyfreq-mode t)
  '(menu-bar-mode nil)
+ '(package-selected-packages
+   (quote
+    (yasnippet paredit markdown-mode js2-mode feature-mode elixir-mode dash coffee-mode cider)))
  '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
  '(tool-bar-mode nil))
 
