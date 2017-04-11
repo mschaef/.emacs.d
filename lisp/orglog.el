@@ -171,7 +171,8 @@ orglog entry."
 (defun orglog-to-day ()
   (interactive)
   (while (> (funcall outline-level) 1)
-    (outline-up-heading 1 t)))
+    (outline-up-heading 1 t))
+  (org-beginning-of-line))
 
 (defun orglog-current-date-header-to-kill ()
   (interactive)
