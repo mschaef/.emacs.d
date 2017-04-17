@@ -21,12 +21,11 @@ non-date topic files. The first regular expression subexpression is
 used for the name of the topic itself.")
 
 (defvar orglog-date-regexp
-  "\\([[:digit:]]\\{4\\}-[[:digit:]]\\{2\\}\\)-[[:digit:]]\\{2\\}"
+  "\\(\\([[:digit:]]\\{4\\}\\)-\\([[:digit:]]\\{2\\}\\)\\)\\(-\\([[:digit:]]\\{2\\}\\)\\)?"
   "Regular expression used to identify orglog date strings (in
 ISO-8601 YYYY-MM-DD format). The first regular expression
 subexpresison is used for the YYYY-MM portion of the date (the
 date's topic name.)")
-
 
 (define-minor-mode orglog-mode
   "Toggle interpretation of a buffer as an orglog buffer."
@@ -35,9 +34,9 @@ date's topic name.)")
             ([(control shift f6)] . orglog-find-tomorrow)
             ([(control ?c) ?t ?i] . orglog-insert-topic-link)
             ([(control ?c) ?t ?I] . orglog-enter-topic)
-            ([(control ?c) ?k] . orglog-current-date-header-to-kill)
-            ([(control up)] . orglog-backward-day)
-            ([(control down)] . orglog-forward-day)
+            ([(control ?c) ?k] . orglog-date-at-point-to-kill)
+            ([(control up)] . orglog-backward-toplevel-heading)
+            ([(control down)] . orglog-forward-toplevel-heading)
             ([(control ?c) backtab] . orglog-hide-all-other-subtrees)))
 
 ;; Emacs 'helpfully' autotranslates (shift f6) to f6 too...
@@ -45,6 +44,31 @@ date's topic name.)")
 ;; http://www.emacswiki.org/emacs/TheMysteriousCaseOfShiftedFunctionKeys
 (global-set-key [f6] 'orglog-find-today)
 (global-set-key [(control shift f6)] 'orglog-find-tomorrow)
+
+(defun orglog-format-date (date)
+  (format-time-string orglog-header-format-string date))
+
+
+(defun orglog-parse-date-str (date-str)
+  (if (string-match orglog-date-regexp date-str)
+      (let ((date-year (string-to-number (match-string 2 date-str)))
+            (date-month (string-to-number (match-string 3 date-str)))
+            (date-day (string-to-number (or (match-string 5 date-str) "1"))))
+        (encode-time 0 0 0 date-day date-month date-year))))
+
+(defun orglog-adjust-date-by-day (date days-delta)
+  (let ((decoded (decode-time date)))
+    (encode-time 0 0 0
+                 (+ days-delta (fourth decoded))
+                 (fifth decoded)
+                 (sixth decoded))))
+
+(defun orglog-adjust-date-by-month (date months-delta)
+  (let ((decoded (decode-time date)))
+    (encode-time 0 0 0
+                 1
+                 (+ months-delta (fifth decoded))
+                 (sixth decoded))))
 
 (defun orglog-find-root-directory ()
   (if (not (file-exists-p orglog-root))
@@ -57,20 +81,23 @@ date's topic name.)")
           "~")
       orglog-root)))
 
-(defun orglog-find-date ( date-str )
+(defun orglog-date-match (date-str)
+  (if (string-match orglog-date-regexp date-str)
+      (cons (match-string 1 date-str)
+            (match-string 0 date-str))
+    (user-error "Invalid orglog date string: %s." date-str)))
+
+(defun orglog-find-date (date-str)
   "Given an orglog date string (YYYY-MM-DD), jump to the date's
 orglog entry."
-  (if (string-match orglog-date-regexp date-str)
-      (let ((date-topic-name (match-string 1 date-str))
-            (date (match-string 0 date-str)))
-        (orglog-find-file (orglog-topic-file-name date-topic-name))
-        (goto-char (point-min))
-        (unless (re-search-forward (format "^\\* +%s[:space:]*$" date) nil t)
-          (goto-char (point-max))
-          (unless (= (point) (line-beginning-position))
-            (newline))
-          (orglog-enter-day date-str)))
-    (message "Invalid orglog date string: %s." orglog-root)))
+  (orglog-find-file (orglog-topic-file-name (car (orglog-date-match date-str))))
+  (goto-char (point-min))
+  (let ((date (cdr (orglog-date-match date-str))))
+    (unless (re-search-forward (format "^\\* +%s[:space:]*$" date) nil t)
+      (goto-char (point-max))
+      (unless (= (point) (line-beginning-position))
+        (newline))
+      (orglog-enter-day date-str))))
 
 (defun orglog-find-today ()
   (interactive)
@@ -81,17 +108,22 @@ orglog entry."
   (orglog-find-date (orglog-tomorrow-header)))
 
 (defun orglog-today-header ()
-  (format-time-string orglog-header-format-string (current-time)))
+  (orglog-format-date (current-time)))
 
 (defun orglog-tomorrow-header ()
-  (format-time-string orglog-header-format-string (time-add (current-time)
-                                                            (seconds-to-time 86400))))
+  (orglog-format-date (orglog-adjust-date-by-day (current-time) 1)))
+
+(defun orglog-date-basename (date)
+  (format-time-string orglog-file-basename-format-string date))
 
 (defun orglog-today-basename ()
-  (format-time-string orglog-file-basename-format-string (current-time)))
+  (orglog-date-basename (current-time)))
 
 (defun orglog-topic-file-name (topic)
   (concat (orglog-find-root-directory) "/" topic ".orglog"))
+
+(defun orglog-date-file-name (date)
+  (orglog-topic-file-name (orglog-date-basename date)))
 
 (defun orglog-todays-file-name ()
   (orglog-topic-file-name (orglog-today-basename)))
@@ -127,6 +159,7 @@ orglog entry."
 
 (defun orglog-topic-link (topic)
   (concat "[[orglog-topic:" topic "][" topic "]]"))
+
 
 (defun orglog-insert-topic-link ()
   (interactive)
@@ -168,36 +201,75 @@ orglog entry."
 
 ;;; Orglog navigation
 
-(defun orglog-to-day ()
+(defun orglog-to-toplevel-heading ()
   (interactive)
   (while (> (funcall outline-level) 1)
     (outline-up-heading 1 t))
   (org-beginning-of-line))
 
-(defun orglog-current-date-header-to-kill ()
+(defun orglog-date-at-point ()
+  (save-excursion
+    (orglog-to-toplevel-heading)
+    (and (= (funcall outline-level) 1)
+         (fifth (org-heading-components)))))
+
+(defun orglog-date-at-point-to-kill ()
   (interactive)
   (save-excursion
-    (orglog-to-day)
+    (orglog-to-toplevel-heading)
     (right-char 2)
     (kill-line)
     (yank)))
 
-(defun orglog-forward-day ()
-  (interactive)
-  (orglog-to-day)
-  (outline-forward-same-level 1))
 
-(defun orglog-backward-day ()
+(defun orglog-forward-file (month-delta)
+  (let ((date-at-point (orglog-date-at-point)))
+    (if date-at-point
+        (let ((file-name (orglog-date-file-name
+                          (orglog-adjust-date-by-month
+                           (orglog-parse-date-str date-at-point) month-delta))))
+          (if (file-exists-p file-name)
+              (orglog-find-file file-name)
+            (user-error "No file for date: %s" file-name)))
+      (user-error "No date available."))))
+
+(defun orglog-navigate-by-sibling (get-sibling)
+  (let ((initial-point (point))
+        (next-point (save-excursion
+                      (funcall get-sibling)
+                      (if (outline-on-heading-p)
+                          (point)))))
+    (when next-point
+      (goto-char next-point))
+    (and next-point
+         (/= next-point initial-point))))
+
+(defun orglog-get-last-sibling ()
+  (orglog-navigate-by-sibling #'outline-get-last-sibling))
+
+(defun orglog-get-next-sibling ()
+  (orglog-navigate-by-sibling #'outline-get-next-sibling))
+
+(defun orglog-forward-toplevel-heading ()
+  (interactive)
+  (orglog-to-toplevel-heading)
+  (unless (orglog-get-next-sibling)
+    (orglog-forward-file 1)
+    (goto-char (point-min))))
+
+(defun orglog-backward-toplevel-heading ()
   (interactive)
   (let ((initial-point (point)))
-    (orglog-to-day)
+    (orglog-to-toplevel-heading)
     (if (= initial-point (point))
-        (outline-backward-same-level 1))))
+        (unless (orglog-get-last-sibling)
+          (orglog-forward-file -1)
+          (goto-char (point-max))))))
 
 (defun orglog-hide-all-other-subtrees ()
   (interactive)
   (save-excursion
-    (orglog-to-day)
+    (orglog-to-toplevel-heading)
     (let ((current-subtree-point (point)))
       (goto-char (point-min))
       (while (< (point) (point-max))
