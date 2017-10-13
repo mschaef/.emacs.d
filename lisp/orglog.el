@@ -31,6 +31,7 @@ date's topic name.)")
   "Toggle interpretation of a buffer as an orglog buffer."
   :lighter " Orglog"
   :keymap '(([(shift f6)] . orglog-find-today)
+            ([(control ?c) ?s] . orglog-grep)
             ([(control shift f6)] . orglog-find-tomorrow)
             ([(control ?c) ?t ?i] . orglog-insert-topic-link)
             ([(control ?c) ?t ?I] . orglog-enter-topic)
@@ -277,6 +278,12 @@ orglog entry."
           (hide-subtree))
         (goto-char (or (outline-get-next-sibling)
                        (point-max)))))))
+
+(defun orglog-grep (regex)
+  (interactive
+   (list
+    (read-string "Regex: " "" 'orglog-grep-history)))
+  (grep (format "egrep -nH -ie %s *.orglog" regex)))
 
 ;;; Thing-at-point for orglog dates
 
