@@ -283,7 +283,7 @@ orglog entry."
   (interactive
    (list
     (read-string "Regex: " "" 'orglog-grep-history)))
-  (grep (format "egrep -nH -ie %s *.orglog" regex)))
+  (lgrep regex "*.orglog" (orglog-find-root-directory)))
 
 ;;; Thing-at-point for orglog dates
 
