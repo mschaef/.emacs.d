@@ -323,7 +323,7 @@ the current fill-column."
 (setq ffip-patterns
       (append '("*.c"  "*.cc"  "*.clj"  "*.coffee"  "*.cs" "*.css"
                 "*.csv" "*.el"  "*.ftl" "*.h" "*.html" "*.java" "*.js"
-                "*.json" "*.scm" "*.scss" "*.sh" "*.sql" "*.xml")
+                "*.json" "*.scm" "*.scss" "*.sh" "*.sql" "*.xml" "*.kt")
        ffip-patterns))
 
 (global-set-key (kbd "C-x f") 'find-file-in-project)
@@ -355,7 +355,7 @@ the current fill-column."
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (yasnippet paredit markdown-mode js2-mode feature-mode elixir-mode dash coffee-mode cider)))
+    (typescript-mode yasnippet paredit markdown-mode js2-mode feature-mode elixir-mode dash coffee-mode cider)))
  '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
  '(tool-bar-mode nil))
 
