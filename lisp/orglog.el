@@ -38,6 +38,10 @@ date's topic name.)")
             ([(control ?c) ?k] . orglog-date-at-point-to-kill)
             ([(control up)] . orglog-backward-toplevel-heading)
             ([(control down)] . orglog-forward-toplevel-heading)
+
+            ([(control shift up)] . orglog-show-previous-day)
+            ([(control shift down)] . orglog-show-next-day)
+
             ([(control ?c) backtab] . orglog-hide-all-other-subtrees)))
 
 ;; Emacs 'helpfully' autotranslates (shift f6) to f6 too...
@@ -49,7 +53,6 @@ date's topic name.)")
 
 (defun orglog-format-date (date)
   (format-time-string orglog-header-format-string date))
-
 
 (defun orglog-parse-date-str (date-str)
   (if (string-match orglog-date-regexp date-str)
@@ -252,12 +255,23 @@ orglog entry."
 (defun orglog-get-next-sibling ()
   (orglog-navigate-by-sibling #'outline-get-next-sibling))
 
-(defun orglog-forward-toplevel-heading ()
+(defun orglog-show-current-day ()
   (interactive)
-  (orglog-to-toplevel-heading)
-  (unless (orglog-get-next-sibling)
-    (orglog-forward-file 1)
-    (goto-char (point-min))))
+  (save-excursion
+    (orglog-to-toplevel-heading)
+    (outline-show-subtree)))
+
+(defun orglog-hide-all-other-subtrees ()
+  (interactive)
+  (save-excursion
+    (orglog-to-toplevel-heading)
+    (let ((current-subtree-point (point)))
+      (goto-char (point-min))
+      (while (< (point) (point-max))
+        (unless (= current-subtree-point (point))
+          (outline-hide-subtree))
+        (goto-char (or (outline-get-next-sibling)
+                       (point-max)))))))
 
 (defun orglog-backward-toplevel-heading ()
   (interactive)
@@ -268,17 +282,24 @@ orglog entry."
           (orglog-forward-file -1)
           (goto-char (point-max))))))
 
-(defun orglog-hide-all-other-subtrees ()
+(defun orglog-forward-toplevel-heading ()
   (interactive)
-  (save-excursion
-    (orglog-to-toplevel-heading)
-    (let ((current-subtree-point (point)))
-      (goto-char (point-min))
-      (while (< (point) (point-max))
-        (unless (= current-subtree-point (point))
-          (hide-subtree))
-        (goto-char (or (outline-get-next-sibling)
-                       (point-max)))))))
+  (orglog-to-toplevel-heading)
+  (unless (orglog-get-next-sibling)
+    (orglog-forward-file 1)
+    (goto-char (point-min))))
+
+(defun orglog-show-previous-day ()
+  (interactive)
+  (orglog-backward-toplevel-heading)
+  (orglog-show-current-day)
+  (orglog-hide-all-other-subtrees))
+
+(defun orglog-show-next-day ()
+  (interactive)
+  (orglog-forward-toplevel-heading)
+  (orglog-show-current-day)
+  (orglog-hide-all-other-subtrees))
 
 (defun orglog-grep (regex)
   (interactive
