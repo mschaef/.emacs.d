@@ -355,7 +355,7 @@ the current fill-column."
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (magit ## typescript-mode yasnippet paredit markdown-mode js2-mode cider)))
+    (magit-find-file ## typescript-mode yasnippet paredit markdown-mode js2-mode cider)))
  '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
  '(tool-bar-mode nil))
 
