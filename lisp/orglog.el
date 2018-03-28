@@ -45,6 +45,7 @@ date's topic name.)")
 ;; http://www.emacswiki.org/emacs/TheMysteriousCaseOfShiftedFunctionKeys
 (global-set-key [f6] 'orglog-find-today)
 (global-set-key [(control shift f6)] 'orglog-find-tomorrow)
+(global-set-key [(control ?c) f6] 'orglog-grep)
 
 (defun orglog-format-date (date)
   (format-time-string orglog-header-format-string date))
@@ -283,7 +284,8 @@ orglog entry."
   (interactive
    (list
     (read-string "Regex: " "" 'orglog-grep-history)))
-  (grep (format "egrep -nH -ie %s %s/*.orglog" regex (orglog-find-root-directory))))
+  (let ((grep-find-ignored-files nil))
+    (lgrep regex "*.orglog" (orglog-find-root-directory))))
 
 ;;; Thing-at-point for orglog dates
 
