@@ -2,8 +2,9 @@
   '((emacs "24.4")
     (async "1.9.2")
     (dash "2.13.0"))
-  :url "https://github.com/magit/magit-popup" :keywords
-  '("bindings"))
+  :keywords
+  '("bindings")
+  :url "https://github.com/magit/magit-popup")
 ;; Local Variables:
 ;; no-byte-compile: t
 ;; End:

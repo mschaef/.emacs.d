@@ -9,7 +9,7 @@
 ;;       Bozhidar Batsov <bozhidar@batsov.com>
 ;;       Artur Malabarba <bruce.connor.am@gmail.com>
 ;; URL: http://github.com/clojure-emacs/clojure-mode
-;; Package-Version: 20180313.620
+;; Package-Version: 20180327.523
 ;; Keywords: languages clojure clojurescript lisp
 ;; Version: 5.7.0-snapshot
 ;; Package-Requires: ((emacs "24.4"))
@@ -855,18 +855,19 @@ any number of matches of `clojure--sym-forbidden-rest-chars'."))
 
       ;; TODO dedupe the code for matching of keywords, type-hints and unmatched symbols
 
-      ;; keywords: {:oneword/veryCom|pLex.stu-ff 0}
-      (,(concat "\\(:\\)\\(" clojure--sym-regexp "\\)\\(/\\)\\(" clojure--sym-regexp "\\)")
+      ;; keywords: {:oneword/ve/yCom|pLex.stu-ff 0}
+      (,(concat "\\(:\\{1,2\\}\\)\\(" clojure--sym-regexp "?\\)\\(/\\)\\(" clojure--sym-regexp "\\)")
        (1 'clojure-keyword-face)
        (2 font-lock-type-face)
+       ;; (2 'clojure-keyword-face)
        (3 'default)
        (4 'clojure-keyword-face))
-      (,(concat "\\(:\\)\\(" clojure--sym-regexp "\\)")
+      (,(concat "\\(:\\{1,2\\}\\)\\(" clojure--sym-regexp "\\)")
        (1 'clojure-keyword-face)
        (2 'clojure-keyword-face))
 
       ;; type-hints: #^oneword
-      (,(concat "\\(#^\\)\\(" clojure--sym-regexp "\\)\\(/\\)\\(" clojure--sym-regexp "\\)")
+      (,(concat "\\(#^\\)\\(" clojure--sym-regexp "?\\)\\(/\\)\\(" clojure--sym-regexp "\\)")
        (1 'default)
        (2 font-lock-type-face)
        (3 'default)
@@ -875,13 +876,18 @@ any number of matches of `clojure--sym-forbidden-rest-chars'."))
        (1 'default)
        (2 font-lock-type-face))
 
-      ;; clojure symbols not matched by the previous regexps
-      (,(concat "\\(" clojure--sym-regexp "\\)\\(/\\)\\(" clojure--sym-regexp "\\)")
+      ;; clojure symbols not matched by the previous regexps; influences CIDER's
+      ;; dynamic syntax highlighting (CDSH). See https://git.io/vxEEA:
+      (,(concat "\\(" clojure--sym-regexp "?\\)\\(/\\)\\(" clojure--sym-regexp "\\)")
        (1 font-lock-type-face)
-       (2 'default)
-       (3 'default))
+       ;; 2nd and 3th matching groups can be font-locked to `nil' or `default'.
+       ;; CDSH seems to kick in only for functions and variables referenced w/o
+       ;; writing their namespaces.
+       (2 nil)
+       (3 nil))
       (,(concat "\\(" clojure--sym-regexp "\\)")
-       (1 'default))
+       ;; this matching group must be font-locked to `nil' otherwise CDSH breaks.
+       (1 nil))
 
       ;; #_ and (comment ...) macros.
       (clojure--search-comment-macro 1 font-lock-comment-face t)

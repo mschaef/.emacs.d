@@ -355,7 +355,7 @@ the current fill-column."
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (magit-find-file ## typescript-mode yasnippet paredit markdown-mode js2-mode cider)))
+    (magit dash ## typescript-mode yasnippet paredit markdown-mode cider)))
  '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
  '(tool-bar-mode nil))
 
@@ -402,8 +402,8 @@ the current fill-column."
       (:background "gray30" :inherit mode-line))
      (((type tty))
       (:background "gray30")))
-   "Face used to display the time in the mode line.")
-
+   "Face used to display the time in the mode line."
+   :group 'mode-line-faces)
 
 (setq display-time-string-forms
   '((propertize
