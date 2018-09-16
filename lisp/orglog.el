@@ -15,7 +15,7 @@ with `format-time-string'.")
   "Format string for orglog file base names. Must be compatible
 with `format-time-string'.")
 
-(defvar orglog-topic-file-name-regexp "^\\([a-zA-Z-][a-zA-Z0-9-]+\\).orglog$"
+(defvar orglog-topic-file-name-regexp "^\\(\\(\\([a-zA-Z-][a-zA-Z0-9-]+/\\)\\)*[a-zA-Z-][a-zA-Z0-9-]+\\).orglog$"
   "Regular expression used to identify the filenames for orglog
 non-date topic files. The first regular expression subexpression is
 used for the name of the topic itself.")
@@ -134,7 +134,11 @@ orglog entry."
   (orglog-topic-file-name (orglog-today-basename)))
 
 (defun orglog-topic-file-names ()
-  (directory-files (orglog-find-root-directory) nil orglog-topic-file-name-regexp))
+  (let ((dirname (file-truename (orglog-find-root-directory))))
+    (mapcar #'(lambda (s) (substring s (+ 1 (length dirname))))
+            (directory-files-recursively dirname
+                                         orglog-topic-file-name-regexp
+                                         nil))))
 
 (defun orglog-topic-names ()
   (mapcar #'(lambda (file-name)
@@ -147,7 +151,10 @@ orglog entry."
   (let ((buffer (get-file-buffer filename)))
     (if buffer
         (switch-to-buffer buffer)
-      (find-file filename))))
+      (let ((dirname (file-name-directory filename)))
+        (unless (file-exists-p dirname)
+          (make-directory dirname t))
+        (find-file filename)))))
 
 (defun orglog-read-topic-name (prompt)
   (interactive)
@@ -195,7 +202,7 @@ orglog entry."
 (defun orglog-topic-open (topic)
   (orglog-find-file (orglog-topic-file-name topic)))
 
-(defun orglog-activate-for-orglog-buffers ()
+(defun orglog-activate-f(lambda (s) (substring s (length dirname)))or-orglog-buffers ()
   (when (and buffer-file-truename
              (string-suffix-p ".orglog" buffer-file-truename))
     (orglog-mode)))
