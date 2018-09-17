@@ -147,6 +147,19 @@ orglog entry."
                 ""))
           (orglog-topic-file-names)))
 
+(defun orglog-buffer-topic-name ()
+  (and buffer-file-truename
+       (string-prefix-p orglog-root buffer-file-truename)
+       (string-suffix-p ".orglog" buffer-file-truename)
+       (substring buffer-file-truename
+                  (+ 1 (length orglog-root))
+                  (- (length buffer-file-truename)
+                     (length ".orglog")))))
+
+(defun orglog-topic-category-name (topic-name)
+  (and topic-name
+       (file-name-directory topic-name)))
+
 (defun orglog-find-file (filename)
   (let ((buffer (get-file-buffer filename)))
     (if buffer
@@ -158,10 +171,11 @@ orglog entry."
 
 (defun orglog-read-topic-name (prompt)
   (interactive)
-  (let ((topic-names (orglog-topic-names)))
+  (let ((topic-names (orglog-topic-names))
+        (topic-category (orglog-topic-category-name (orglog-buffer-topic-name))))
     (if (and (boundp 'ido-mode) ido-mode)
-        (ido-completing-read prompt topic-names nil 'confirm)
-      (completing-read prompt topic-names nil 'confirm))))
+        (ido-completing-read prompt topic-names nil 'confirm topic-category)
+      (completing-read prompt topic-names nil 'confirm topic-category))))
 
 (defun orglog-find-topic-file ()
   (interactive)
@@ -171,7 +185,6 @@ orglog entry."
 
 (defun orglog-topic-link (topic)
   (concat "[[orglog-topic:" topic "][" topic "]]"))
-
 
 (defun orglog-insert-topic-link ()
   (interactive)
@@ -232,7 +245,6 @@ orglog entry."
     (right-char 2)
     (kill-line)
     (yank)))
-
 
 (defun orglog-forward-file (month-delta)
   (let ((date-at-point (orglog-date-at-point)))
