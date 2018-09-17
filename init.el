@@ -381,17 +381,22 @@ the current fill-column."
  '(org-level-7 ((t (:inherit outline-7 :foreground "gray55"))))
  '(org-level-8 ((t (:inherit outline-8 :foreground "gray50")))))
 
-
 ;;;; Customize uniquify to get more rational unique buffer names
 
 (setq uniquify-buffer-name-style 'post-forward)
 (setq uniquify-separator ":")
 
-
 ;;;; Enable keyfreq mode
 
 (keyfreq-mode 1)
 (keyfreq-autosave-mode 1)
+
+;;;; Add a utility key to the minibuffer that clears it without altering the kill ring
+
+(add-hook 'minibuffer-setup-hook 'add-minibuffer-delete-binding)
+
+(defun add-minibuffer-delete-binding ()
+  (local-set-key (kbd "C-c C-k") 'delete-minibuffer-contents))
 
 ;;;; Bind shift-f5 in Emacs Lisp mode to evaluate the current buffer
 
@@ -423,7 +428,6 @@ the current fill-column."
 
 (load "local" t)
 (load "~/.emacs.d/local" t)
-
 
 ;;;; Write out a message indicating how long it took to process the init script
 

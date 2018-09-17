@@ -202,7 +202,7 @@ orglog entry."
 (defun orglog-topic-open (topic)
   (orglog-find-file (orglog-topic-file-name topic)))
 
-(defun orglog-activate-f(lambda (s) (substring s (length dirname)))or-orglog-buffers ()
+(defun orglog-activate-for-orglog-buffers ()
   (when (and buffer-file-truename
              (string-suffix-p ".orglog" buffer-file-truename))
     (orglog-mode)))
