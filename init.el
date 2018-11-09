@@ -365,7 +365,7 @@ the current fill-column."
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (scala-mode magit dash ## typescript-mode yasnippet paredit markdown-mode cider)))
+    (js2-mode scala-mode magit dash ## typescript-mode yasnippet paredit markdown-mode cider)))
  '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
  '(tool-bar-mode nil))
 
