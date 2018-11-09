@@ -322,8 +322,10 @@ orglog entry."
 
 (defun orglog-grep (regex)
   (interactive
-   (list
-    (read-string "Regex: " "" 'orglog-grep-history)))
+   (progn
+     (grep-compute-defaults)
+     (list
+      (read-string "Regex: " "" 'orglog-grep-history))))
   (let ((grep-find-ignored-files nil))
     (lgrep regex "*.orglog" (orglog-find-root-directory))))
 
