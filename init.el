@@ -250,8 +250,13 @@
 
 (setq  org-todo-interpretation 'sequence)
 
-;;;; Setup org mode faces
+;;;; PEP8 Compliant 4-character indent of Python Code
 
+(add-hook 'python-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode t)
+            (setq tab-width 4)
+            (setq python-indent-offset 4)))
 
 ;;;; Start the emacs server
 
@@ -338,8 +343,7 @@ the current fill-column."
 
 (when window-system
   (setq browse-url-browser-function 'browse-url-generic)
-  (setq browse-url-generic-args '("--new-window"))
-  (setq browse-url-generic-program "chromium-browser"))
+  (setq browse-url-generic-program "open"))
 
 ;;;; Custom stuff.
 
