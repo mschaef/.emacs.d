@@ -57,7 +57,6 @@
 (require 'ack)
 (require 'uniquify)
 (require 'project-ack)
-(require 'develock)
 (require 'keyfreq)
 
 ;; Enable Tramp mode for remote editing
