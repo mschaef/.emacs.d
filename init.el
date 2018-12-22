@@ -54,9 +54,9 @@
 (require 'java-mode-indent-annotations)
 (require 'vcsh)
 (require 'find-file-in-project)
-(require 'uniquify)
 (require 'ack)
-(require 'develock)
+(require 'uniquify)
+(require 'project-ack)
 (require 'keyfreq)
 
 ;; Enable Tramp mode for remote editing
@@ -67,6 +67,10 @@
 ;;;; Avoid creating lockfiles
 
 (setq create-lockfiles nil)
+
+;;;; Filter out the group on dired listings.
+
+(setq dired-listing-switches "-alo")
 
 ;;;; Show the time and date
 
@@ -169,6 +173,12 @@
 
 (global-unset-key (kbd "s-q"))
 
+;;;; On Mac Emacs, use keybindings consistent with mainline GNU Emacs on the Mac
+
+(when (eq system-type 'darwin)
+  (setq mac-option-modifier 'super)
+  (setq mac-command-modifier 'meta))
+
 ;;;; Compile commands get bound appropriately, defaulting to Maven
 
 (defun c-mode-enable-compile-command ()
@@ -233,12 +243,19 @@
 
 ;;;; Org mode keywords
 
-(setq org-todo-keywords '("TODO" "XXX" "VERIFY" "FOLLOW-UP"
-                          "|" "DONE" "NOT-DONE")
-      org-todo-interpretation 'sequence)
+(setq org-todo-keywords
+      '((sequence "TODO" "XXX" "VERIFY" "FOLLOW-UP" "|" "DONE" "NOT-DONE")
+        (sequence "UNASKED" "|" "FAIL" "PASS" "EXCEPTIONAL")))
 
-;;;; Setup org mode faces
+(setq  org-todo-interpretation 'sequence)
 
+;;;; PEP8 Compliant 4-character indent of Python Code
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode nil)
+            (setq tab-width 4)
+            (setq python-indent-offset 4)))
 
 ;;;; Start the emacs server
 
@@ -311,11 +328,13 @@ the current fill-column."
 
 (setq ffip-find-options "-and -not -regex \\\".*/target/.*\\\"")
 (setq ffip-limit 2048)
+(setq ffip-full-paths nil)
 
-(push "*.java" ffip-patterns)
-(push "*.ftl" ffip-patterns)
-(push "*.cs" ffip-patterns)
-(push "*.xml" ffip-patterns)
+(setq ffip-patterns
+      (append '("*.c"  "*.cc"  "*.clj"  "*.coffee"  "*.cs" "*.css"
+                "*.csv" "*.el"  "*.ftl" "*.h" "*.html" "*.java" "*.js"
+                "*.json" "*.scm" "*.scss" "*.sh" "*.sql" "*.xml" "*.kt")
+       ffip-patterns))
 
 (global-set-key (kbd "C-x f") 'find-file-in-project)
 
@@ -323,8 +342,7 @@ the current fill-column."
 
 (when window-system
   (setq browse-url-browser-function 'browse-url-generic)
-  (setq browse-url-generic-args '("--new-window"))
-  (setq browse-url-generic-program "chromium-browser"))
+  (setq browse-url-generic-program "open"))
 
 ;;;; Custom stuff.
 
@@ -333,6 +351,9 @@ the current fill-column."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(develock-max-column-plist
+   (quote
+    (emacs-lisp-mode 79 lisp-interaction-mode w change-log-mode t texinfo-mode t c-mode 79 c++-mode 79 java-mode 120 jde-mode 79 html-mode 79 html-helper-mode 79 cperl-mode 79 perl-mode 79 mail-mode t message-mode t cmail-mail-mode t tcl-mode 79 ruby-mode 79)))
  '(inhibit-startup-echo-area-message "mschaef")
  '(inhibit-startup-screen t)
  '(initial-buffer-choice t)
@@ -341,6 +362,9 @@ the current fill-column."
  '(keyfreq-file-lock "~/.emacs.d/emacs.keyfreq.lock")
  '(keyfreq-mode t)
  '(menu-bar-mode nil)
+ '(package-selected-packages
+   (quote
+    (js2-mode scala-mode magit dash ## typescript-mode yasnippet paredit markdown-mode cider)))
  '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
  '(tool-bar-mode nil))
 
@@ -349,7 +373,8 @@ the current fill-column."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-
+ '(develock-long-line-2 ((t (:background "gray50"))))
+ '(develock-whitespace-2 ((t (:background "DarkOrange4"))))
  '(org-level-1 ((t (:inherit outline-1 :foreground "yellow" :background "gray50"))))
  '(org-level-2 ((t (:inherit outline-2 :foreground "gray80"))))
  '(org-level-3 ((t (:inherit outline-3 :foreground "gray75"))))
@@ -359,17 +384,22 @@ the current fill-column."
  '(org-level-7 ((t (:inherit outline-7 :foreground "gray55"))))
  '(org-level-8 ((t (:inherit outline-8 :foreground "gray50")))))
 
-
 ;;;; Customize uniquify to get more rational unique buffer names
 
 (setq uniquify-buffer-name-style 'post-forward)
 (setq uniquify-separator ":")
 
-
 ;;;; Enable keyfreq mode
 
 (keyfreq-mode 1)
 (keyfreq-autosave-mode 1)
+
+;;;; Add a utility key to the minibuffer that clears it without altering the kill ring
+
+(add-hook 'minibuffer-setup-hook 'add-minibuffer-delete-binding)
+
+(defun add-minibuffer-delete-binding ()
+  (local-set-key (kbd "C-c C-k") 'delete-minibuffer-contents))
 
 ;;;; Bind shift-f5 in Emacs Lisp mode to evaluate the current buffer
 
@@ -377,8 +407,6 @@ the current fill-column."
 
 (defun rebind-emacs-lisp-shift-f5 ()
   (local-set-key [(shift f5)] 'eval-buffer))
-
-
 
 ;;;; Switch to a more ISO-8601 compliant and noticable modeline date format
 
@@ -388,8 +416,8 @@ the current fill-column."
       (:background "gray30" :inherit mode-line))
      (((type tty))
       (:background "gray30")))
-   "Face used to display the time in the mode line.")
-
+   "Face used to display the time in the mode line."
+   :group 'mode-line-faces)
 
 (setq display-time-string-forms
   '((propertize
@@ -397,14 +425,12 @@ the current fill-column."
      'face 'modeline-display-time
      'help-echo (format-time-string "%Y-%m-%d %H:%M" now))))
 
-
 (display-time-update)
 
 ;;;; Load local customizations
 
 (load "local" t)
 (load "~/.emacs.d/local" t)
-
 
 ;;;; Write out a message indicating how long it took to process the init script
 
