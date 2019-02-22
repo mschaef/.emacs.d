@@ -219,6 +219,9 @@
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-jsx-mode))
 (add-to-list 'auto-mode-alist '("\\.scss\\'" . css-mode))
 
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+
 ;;; Clojure mode
 
 (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
@@ -364,7 +367,7 @@ the current fill-column."
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (js2-mode scala-mode magit dash ## typescript-mode yasnippet paredit markdown-mode cider)))
+    (yaml-mode js2-mode scala-mode magit dash ## typescript-mode yasnippet paredit markdown-mode cider)))
  '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
  '(tool-bar-mode nil))
 
