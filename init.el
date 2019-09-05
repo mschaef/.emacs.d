@@ -334,17 +334,10 @@ the current fill-column."
 
 ;;;; find-file-in-project
 
-(setq ffip-find-options "-and -not -regex \\\".*/target/.*\\\" -and -not -regex \\\".*/node_modules/.*\\\  -and -not -regex \\\".*/.git/.*\\")
+(setq ffip-use-rust-fd t)
 
-(setq ffip-limit 2048)
+(setq ffip-limit 4096)
 (setq ffip-full-paths nil)
-
-(setq ffip-patterns
-      (append '("*.c"  "*.cc"  "*.clj"  "*.coffee"  "*.cs" "*.css"
-                "*.csv" "*.el"  "*.ftl" "*.h" "*.html" "*.java" "*.js"
-                "*.json" "*.scm" "*.scss" "*.sh" "*.sql" "*.xml" "*.kt"
-                "*.scss" "*.tsx" "*.ts")
-       ffip-patterns))
 
 (global-set-key (kbd "C-x f") 'find-file-in-project)
 
