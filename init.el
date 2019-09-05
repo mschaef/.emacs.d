@@ -71,6 +71,7 @@
 ;;;; Filter out the group on dired listings.
 
 (setq dired-listing-switches "-alo")
+(setq dired-use-ls-dired nil)
 
 ;;;; Show the time and date
 
@@ -136,6 +137,10 @@
 
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
+
+;;;;; Display trailing whitespace
+
+(setq-default show-trailing-whitespace t)
 
 ;;;;; Turn on some paren matching
 
@@ -329,14 +334,16 @@ the current fill-column."
 
 ;;;; find-file-in-project
 
-(setq ffip-find-options "-and -not -regex \\\".*/target/.*\\\"")
+(setq ffip-find-options "-and -not -regex \\\".*/target/.*\\\" -and -not -regex \\\".*/node_modules/.*\\\  -and -not -regex \\\".*/.git/.*\\")
+
 (setq ffip-limit 2048)
 (setq ffip-full-paths nil)
 
 (setq ffip-patterns
       (append '("*.c"  "*.cc"  "*.clj"  "*.coffee"  "*.cs" "*.css"
                 "*.csv" "*.el"  "*.ftl" "*.h" "*.html" "*.java" "*.js"
-                "*.json" "*.scm" "*.scss" "*.sh" "*.sql" "*.xml" "*.kt")
+                "*.json" "*.scm" "*.scss" "*.sh" "*.sql" "*.xml" "*.kt"
+                "*.scss" "*.tsx" "*.ts")
        ffip-patterns))
 
 (global-set-key (kbd "C-x f") 'find-file-in-project)
