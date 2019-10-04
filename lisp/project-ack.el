@@ -9,7 +9,7 @@
 
 (require 'find-file-in-project)
 
-(defun project-ack (pattern)
+(defun project-ack (pattern project-root)
   "Run ack, with user-specified ARGS, and collect output in a buffer.
 While ack runs asynchronously, you can use the \\[next-error]
 command to find the text that ack hits refer to. The command
@@ -17,12 +17,15 @@ actually run is defined by the ack-command variable. By default,
 this function guesses the item to search for based on the symbol at
 point. This can be disabled with a prefix argument."
   (interactive
-   (list (read-string "Project Ack: "
-                      (concat ack-command
-                              (if current-prefix-arg
-                                  ""
-                                (thing-at-point 'symbol))))))
-  (ack pattern (ffip-get-project-root-directory)))
+   (let ((project-root (ffip-get-project-root-directory)))
+     (list
+      (read-string (concat "Project Ack (in " project-root "): ")
+                   (concat ack-command
+                           (if current-prefix-arg
+                               ""
+                             (thing-at-point 'symbol))))
+      project-root)))
+  (ack pattern project-root))
 
 (global-set-key [(control shift f7)] 'project-ack)
 
