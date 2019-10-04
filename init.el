@@ -57,7 +57,7 @@
 (require 'ack)
 (require 'uniquify)
 (require 'project-ack)
-(require 'keyfreq)
+
 
 ;; Enable Tramp mode for remote editing
 
@@ -360,10 +360,6 @@ the current fill-column."
  '(inhibit-startup-echo-area-message "mschaef")
  '(inhibit-startup-screen t)
  '(initial-buffer-choice t)
- '(keyfreq-autosave-mode t)
- '(keyfreq-file "~/.emacs.d/emacs.keyfreq")
- '(keyfreq-file-lock "~/.emacs.d/emacs.keyfreq.lock")
- '(keyfreq-mode t)
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
@@ -391,11 +387,6 @@ the current fill-column."
 
 (setq uniquify-buffer-name-style 'post-forward)
 (setq uniquify-separator ":")
-
-;;;; Enable keyfreq mode
-
-(keyfreq-mode 1)
-(keyfreq-autosave-mode 1)
 
 ;;;; Add a utility key to the minibuffer that clears it without altering the kill ring
 
