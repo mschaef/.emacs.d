@@ -4,3 +4,4 @@ server/*
 *.elc
 local.el
 elpa/archives/
+eshell/*
