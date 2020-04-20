@@ -14,6 +14,9 @@
 
 ;;;; Record the start time
 
+(print 'before)
+(print features)
+
 
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
@@ -26,8 +29,13 @@
 ;;;; Package.el setup
 
 (require 'package)
+;; Default access to GNU Elpa is over HTTPS, which doesn't seem to work
+;; for some reason
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
+             '("gnu-http" . "http://elpa.gnu.org/packages/"))
+
+(add-to-list 'package-archives
+             '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 
 (defun load-package-init-file ()
   (load "package-init.el"))
@@ -46,6 +54,7 @@
 
 ;;;; External packages
 
+(require 'dash)
 (require 'lisp-utilities)
 (require 'point-stack)
 (require 'tabulate-region)
@@ -58,6 +67,8 @@
 (require 'uniquify)
 (require 'project-ack)
 
+(print 'after)
+(print features)
 
 ;; Enable Tramp mode for remote editing
 
@@ -359,11 +370,10 @@ the current fill-column."
     (emacs-lisp-mode 79 lisp-interaction-mode w change-log-mode t texinfo-mode t c-mode 79 c++-mode 79 java-mode 120 jde-mode 79 html-mode 79 html-helper-mode 79 cperl-mode 79 perl-mode 79 mail-mode t message-mode t cmail-mail-mode t tcl-mode 79 ruby-mode 79)))
  '(inhibit-startup-echo-area-message "mschaef")
  '(inhibit-startup-screen t)
- '(initial-buffer-choice t)
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (yaml-mode js2-mode scala-mode magit dash ## typescript-mode yasnippet paredit markdown-mode cider)))
+    (cider js2-mode magit markdown-mode paredit typescript-mode yasnippet yaml-mode dash ##)))
  '(safe-local-variable-values (quote ((sh-indent-comment . t) (lexical-binding . t))))
  '(tool-bar-mode nil))
 
