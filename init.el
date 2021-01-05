@@ -57,7 +57,6 @@
 (require 'tabulate-region)
 (require 'orglog)
 (require 'javap)
-(require 'java-mode-indent-annotations)
 (require 'vcsh)
 (require 'find-file-in-project)
 (require 'ack)
