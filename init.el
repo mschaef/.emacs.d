@@ -14,9 +14,6 @@
 
 ;;;; Record the start time
 
-(print 'before)
-(print features)
-
 
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
@@ -67,8 +64,6 @@
 (require 'uniquify)
 (require 'project-ack)
 
-(print 'after)
-(print features)
 
 ;; Enable Tramp mode for remote editing
 
@@ -170,10 +165,12 @@
   (global-font-lock-mode t)
   (setq font-lock-maximum-decoration t))
 
-(when-fboundp global-linum-mode
-  (global-linum-mode 1)
-  (set-face-background 'linum "gray40")
-  (set-face-foreground 'linum "gray70"))
+;; Disabled - slow on slow hardware.
+;;
+;; (when-fboundp global-linum-mode
+;;   (global-linum-mode 1)
+;;   (set-face-background 'linum "gray40")
+;;   (set-face-foreground 'linum "gray70"))
 
 ;;;; Set a few keys to honor a few old Visual Studio habits
 
@@ -263,8 +260,7 @@
 ;;;; Org mode keywords
 
 (setq org-todo-keywords
-      '((sequence "TODO" "XXX" "VERIFY" "FOLLOW-UP" "|" "DONE" "NOT-DONE")
-        (sequence "UNASKED" "|" "FAIL" "PASS" "EXCEPTIONAL")))
+      '((sequence "TODO" "|" "DONE" "NOT-DONE")))
 
 (setq  org-todo-interpretation 'sequence)
 
@@ -431,6 +427,10 @@ the current fill-column."
 
 (display-time-update)
 
+;;;; OS X Keybinding for switching frames
+
+(global-set-key "\M-`" 'other-frame)
+
 ;;;; Load local customizations
 
 (load "local" t)
@@ -443,4 +443,5 @@ the current fill-column."
            (- (+ hi lo)
               (+ (first *emacs-load-start*)
                  (second *emacs-load-start*)))))
+
 
