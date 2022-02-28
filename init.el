@@ -309,17 +309,29 @@
 
 ;;;; Scratch and Message Buffer Tools
 
+(setq previous-switch-buffer nil)
+
+(defun switch-to-another-buffer ( other-buffer )
+  (if (eq (current-buffer) other-buffer)
+      (if previous-switch-buffer
+          (switch-to-buffer previous-switch-buffer))
+    (progn
+      (setq previous-switch-buffer (current-buffer))
+      (switch-to-buffer other-buffer))))
+
 (defun switch-to-scratch-buffer ()
   "Make the scratch buffer (*scratch*) current and display it in
-the current window."
+the current window. If the buffer is already current, switch
+back to the buffer from before any previous switch."
   (interactive)
-  (switch-to-buffer "*scratch*"))
+  (switch-to-another-buffer (get-buffer-create "*scratch*")))
 
 (defun switch-to-messages-buffer ()
   "Make the messages buffer (*Messages*) current and display it in
-the current window."
+the current window. If the buffer is already current, switch
+back to the buffer from before any previous switch."
   (interactive)
-  (switch-to-buffer "*Messages*"))
+  (switch-to-another-buffer (get-buffer-create "*Messages*")))
 
 (global-set-key [(shift f4)] 'switch-to-scratch-buffer)
 (global-set-key [(control shift f4)] 'switch-to-messages-buffer)
