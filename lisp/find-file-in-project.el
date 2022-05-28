@@ -426,9 +426,7 @@ This overrides variable `ffip-project-root' when set.")
                              (locate-dominating-file default-directory
                                                      ffip-project-file))))))
     (or (and project-root (file-name-as-directory project-root))
-        (progn
-          (message "Since NO project was found, use `default-directory' instead.")
-          default-directory))))
+        (error "NO project was found."))))
 
 (defun ffip--read-file-text (file)
   "Read text from FILE."
