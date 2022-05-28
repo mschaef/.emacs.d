@@ -164,12 +164,10 @@
   (global-font-lock-mode t)
   (setq font-lock-maximum-decoration t))
 
-;; Disabled - slow on slow hardware.
-;;
-;; (when-fboundp global-linum-mode
-;;   (global-linum-mode 1)
-;;   (set-face-background 'linum "gray40")
-;;   (set-face-foreground 'linum "gray70"))
+(when-fboundp global-linum-mode
+  (global-linum-mode 1)
+  (set-face-background 'linum "gray40")
+  (set-face-foreground 'linum "gray70"))
 
 ;;;; Set a few keys to honor a few old Visual Studio habits
 
@@ -372,6 +370,7 @@ the current fill-column."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ack-command "/opt/homebrew/bin/ack ")
  '(develock-max-column-plist
    '(emacs-lisp-mode 79 lisp-interaction-mode w change-log-mode t texinfo-mode t c-mode 79 c++-mode 79 java-mode 120 jde-mode 79 html-mode 79 html-helper-mode 79 cperl-mode 79 perl-mode 79 mail-mode t message-mode t cmail-mail-mode t tcl-mode 79 ruby-mode 79))
  '(inhibit-startup-echo-area-message "mschaef")
