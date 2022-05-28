@@ -119,21 +119,6 @@
 
 ;;;;; Pick an appropriate font for the machine, based on the fonts that are available.
 
-(cond
- ((not window-system)
-  ;; Do nothing without a window sytem
-  )
-
- ((font-info "Lucida Console")
-  (safe-set-face-font '(modeline mode-line) "Lucida Console:Bold:10")
-  (push '(font . "-*-Lucida Console-normal-r-*-*-13-*-*-*-*-*-iso8859-1")
-        default-frame-alist))
-
- ((font-info "Ubuntu Mono")
-  (safe-set-face-font '(modeline mode-line) "Ubuntu Mono:Bold:16")
-  (push '(font . "-*-Ubuntu Mono-normal-r-*-*-16-*-*-*-*-*-iso8859-1")
-        default-frame-alist)))
-
 ;;;;; Switch to rational spacing rules
 
 (setq c-default-style '((java-mode . "java")
@@ -179,7 +164,7 @@
 
 (global-unset-key [?\s-p])
 
-;;;; Unset s-q, usually bound to over-powerul `save-buffers-kill-emacs` on OSX
+;;;; Unset s-q, usually bound to over-powerful `save-buffers-kill-emacs` on OSX
 
 (global-unset-key (kbd "s-q"))
 
@@ -214,7 +199,7 @@
 (add-hook 'lisp-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'scheme-mode-hook 'lisp-enable-paredit-hook)
 
-;; Allow C-j to work as it usually does in lisp interaction buffers 
+;; Allow C-j to work as it usually does in lisp interaction buffers
 
 (defun override-paredit-c-j ()
   (setq minor-mode-overriding-map-alist
