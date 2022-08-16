@@ -89,12 +89,22 @@ function grbm() {
         return 1
     fi
 
+    branch_name=`git branch --show-current`
+
+    main_branch="master"
     if _git_branch_exists main; then
-        git fetch origin main
-        git rebase -i origin/main
+        main_branch="main"
+    fi
+
+    git fetch origin "${main_branch}"
+
+    if [ "${branch_name}" = "${main_branch}" ]; then
+        echo "On project main branch, pulling from origin."
+        # pull == fetch + merge
+        git merge "origin/${main_branch}"
     else
-        git fetch origin master
-        git rebase -i origin/master
+        echo "On project development branch, rebasing interactively."
+        git rebase -i "origin/${main_branch}"
     fi
 }
 
