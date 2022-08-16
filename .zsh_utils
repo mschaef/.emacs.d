@@ -112,8 +112,9 @@ function gpush() {
     fi
 
     if [ "${branch_name}" = "${main_branch}" ]; then
-        echo "Cannot push to project main branch."
-        return 1
+        echo "Pushing to project main branch, will not force."
+        git push origin "${branch_name}"
+        return 0
     fi
 
     git push origin "${branch_name}" --force-with-lease
