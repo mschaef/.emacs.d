@@ -11,10 +11,10 @@
 ;;       Magnar Sveen <magnars@gmail.com>
 ;; Maintainer: Bozhidar Batsov <bozhidar@batsov.dev>
 ;; URL: http://github.com/clojure-emacs/clojure-mode
-;; Package-Version: 5.14.0
-;; Package-Commit: b7d08b87f6a116ff47b33ee857926b60c66c3ab7
+;; Package-Version: 5.15.1
+;; Package-Commit: ad322e989e56c10c05bb286e5b55a82b1e031d62
 ;; Keywords: languages clojure clojurescript lisp
-;; Version: 5.14.0
+;; Version: 5.15.1
 ;; Package-Requires: ((emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -143,10 +143,10 @@ to indent function forms.
           merge
           some-coll)"
   :safe #'symbolp
-  :type '(choice (const :tag "Same as `lisp-mode'" 'always-align)
-                 (const :tag "Indent like a macro body" 'always-indent)
+  :type '(choice (const :tag "Same as `lisp-mode'" always-align)
+                 (const :tag "Indent like a macro body" always-indent)
                  (const :tag "Indent like a macro body unless first arg is on the same line"
-                        'align-arguments))
+                        align-arguments))
   :package-version '(clojure-mode . "5.2.0"))
 
 (defcustom clojure-use-backtracking-indent t
@@ -202,7 +202,7 @@ Out-of-the box `clojure-mode' understands lein, boot, gradle,
                (cl-every 'stringp value))))
 
 (defcustom clojure-directory-prefixes
-  '("\\`clj[scx]?\\.")
+  '("\\`clj[scxd]?\\.")
   "A list of directory prefixes used by `clojure-expected-ns'.
 The prefixes are used to generate the correct namespace."
   :type '(repeat string)
@@ -756,8 +756,11 @@ Called by `imenu--generic-function'."
               (when (char-equal ?\) (char-after (point)))
                 (backward-sexp)))
           (cl-destructuring-bind (def-beg . def-end) (bounds-of-thing-at-point 'sexp)
-            (if (char-equal ?^ (char-after def-beg))
-                (progn (forward-sexp) (backward-sexp))
+            (when (char-equal ?^ (char-after def-beg))
+              ;; move to the beginning of next sexp
+              (progn (forward-sexp) (backward-sexp)))
+            (when (or (not (char-equal ?^ (char-after def-beg)))
+                      (and (char-equal ?^ (char-after (point))) (= def-beg (point))))
               (setq found? t)
               (when (string= deftype "defmethod")
                 (setq def-end (progn (goto-char def-end)
@@ -833,7 +836,7 @@ any number of matches of `clojure--sym-forbidden-rest-chars'."))
       (,(concat
          "("
          (regexp-opt
-          '("def" "do" "if" "let" "let*" "var" "fn" "fn*" "loop" "loop*"
+          '("def" "do" "if" "let*" "var" "fn" "fn*" "loop*"
             "recur" "throw" "try" "catch" "finally"
             "set!" "new" "."
             "monitor-enter" "monitor-exit" "quote") t)
@@ -843,15 +846,79 @@ any number of matches of `clojure--sym-forbidden-rest-chars'."))
       (,(concat
          "(\\(?:clojure.core/\\)?"
          (regexp-opt
-          '("letfn" "case" "cond" "cond->" "cond->>" "condp"
-            "for" "when" "when-not" "when-let" "when-first" "when-some"
-            "if-let" "if-not" "if-some"
-            ".." "->" "->>" "as->" "doto" "and" "or"
-            "dosync" "doseq" "dotimes" "dorun" "doall"
-            "ns" "in-ns"
-            "with-open" "with-local-vars" "binding"
-            "with-redefs" "with-redefs-fn"
-            "declare") t)
+          '(
+            "->"
+            "->>"
+            ".."
+            "amap"
+            "and"
+            "areduce"
+            "as->"
+            "assert"
+            "binding"
+            "bound-fn"
+            "case"
+            "comment"
+            "cond"
+            "cond->"
+            "cond->>"
+            "condp"
+            "declare"
+            "delay"
+            "doall"
+            "dorun"
+            "doseq"
+            "dosync"
+            "dotimes"
+            "doto"
+            "extend-protocol"
+            "extend-type"
+            "for"
+            "future"
+            "gen-class"
+            "gen-interface"
+            "if-let"
+            "if-not"
+            "if-some"
+            "import"
+            "in-ns"
+            "io!"
+            "lazy-cat"
+            "lazy-seq"
+            "let"
+            "letfn"
+            "locking"
+            "loop"
+            "memfn"
+            "ns"
+            "or"
+            "proxy"
+            "proxy-super"
+            "pvalues"
+            "refer-clojure"
+            "reify"
+            "some->"
+            "some->>"
+            "sync"
+            "time"
+            "vswap!"
+            "when"
+            "when-first"
+            "when-let"
+            "when-not"
+            "when-some"
+            "while"
+            "with-bindings"
+            "with-in-str"
+            "with-loading-context"
+            "with-local-vars"
+            "with-open"
+            "with-out-str"
+            "with-precision"
+            "with-redefs"
+            "with-redefs-fn"
+            )
+           t)
          "\\>")
        1 font-lock-keyword-face)
       ;; Macros similar to let, when, and while
@@ -1145,7 +1212,7 @@ will align the values like this:
   :type `(choice (const :tag "Make blank lines prevent vertical alignment from happening."
                         ,clojure--align-separator-newline-regexp)
                  (other :tag "Allow blank lines to happen within a vertically-aligned expression."
-                        'entire)))
+                        entire)))
 
 (defcustom clojure-align-reader-conditionals nil
   "Whether to align reader conditionals, as if they were maps."
@@ -2437,7 +2504,8 @@ See: https://github.com/clojure-emacs/clj-refactor.el/wiki/cljr-cycle-privacy"
                 "-")))))
 
 (defun clojure--convert-collection (coll-open coll-close)
-  "Convert the collection at (point) by unwrapping it an wrapping it between COLL-OPEN and COLL-CLOSE."
+  "Convert the collection at (point)
+by unwrapping it an wrapping it between COLL-OPEN and COLL-CLOSE."
   (save-excursion
     (while (and
             (not (bobp))
@@ -3072,7 +3140,7 @@ With universal argument \\[universal-argument], act on the \"top-level\" form."
 ;;;###autoload
 (progn
   (add-to-list 'auto-mode-alist
-               '("\\.\\(clj\\|dtm\\|edn\\)\\'" . clojure-mode))
+               '("\\.\\(clj\\|cljd\\|dtm\\|edn\\)\\'" . clojure-mode))
   (add-to-list 'auto-mode-alist '("\\.cljc\\'" . clojurec-mode))
   (add-to-list 'auto-mode-alist '("\\.cljs\\'" . clojurescript-mode))
   ;; boot build scripts are Clojure source files

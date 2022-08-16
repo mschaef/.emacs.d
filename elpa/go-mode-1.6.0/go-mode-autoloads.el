@@ -1,4 +1,4 @@
-;;; go-mode-autoloads.el --- automatically extracted autoloads
+;;; go-mode-autoloads.el --- automatically extracted autoloads  -*- lexical-binding: t -*-
 ;;
 ;;; Code:
 
@@ -94,7 +94,14 @@ Tries to look for a URL at point.
 
 \(fn URL)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "go-mode" '("go-" "god" "gofmt")))
+(autoload 'go-dot-mod-mode "go-mode" "\
+A major mode for editing go.mod files.
+
+\(fn)" t nil)
+
+(add-to-list 'auto-mode-alist '("go\\.mod\\'" . go-dot-mod-mode))
+
+(register-definition-prefixes "go-mode" '("go-" "god" "gofmt"))
 
 ;;;***
 
