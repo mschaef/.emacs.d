@@ -83,7 +83,7 @@ function gcom() {
     fi
 }
 
-function grbm() {
+function gpull() {
     if ! _in_git_repo; then
         echo "Not in git repository."
         return 1
