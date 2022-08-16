@@ -90,8 +90,10 @@ function grbm() {
     fi
 
     if _git_branch_exists main; then
+        git fetch origin main
         git rebase -i origin/main
     else
+        git fetch origin master
         git rebase -i origin/master
     fi
 }
