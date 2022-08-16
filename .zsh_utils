@@ -1,0 +1,122 @@
+# -*- shell-script -*-
+
+#### Useful aliases
+
+alias kc="kubectl"
+alias wkc='watch kubectl'
+
+function kclf() {
+    kubectl logs -f -l app=$1 |\
+        jq -r '"\(.time) \(.severity) [\(.["logging.googleapis.com/labels"].logger_name)] - \(.message)"'
+}
+
+function kcl() {
+    kubectl logs -l app=$1 --tail=-1 |\
+        jq -r '"\(.time) \(.severity) [\(.["logging.googleapis.com/labels"].logger_name)] - \(.message)"'
+}
+
+#### A couple git utilities
+
+function _in_git_repo() {
+    git rev-parse --show-toplevel &> /dev/null
+    return $?
+}
+
+function _git_branch_exists() {
+    git rev-parse --verify "$1" &> /dev/null
+    return $?
+}
+
+function wip() {
+    if ! _in_git_repo; then
+        echo "Not in git repository."
+        return 1
+    fi
+
+    git commit -a -m "WIP"
+}
+
+function wipx() {
+    if ! _in_git_repo; then
+        echo "Not in git repository."
+        return 1
+    fi
+
+    git log -1 --pretty=%B | egrep "^WIP"
+
+    if [ $? -eq 0 ]
+    then
+        git commit --amend -a -m "WIP"
+    else
+        echo Cannot extend non-WIP commit.
+    fi
+}
+
+function gpom() {
+    if ! _in_git_repo; then
+        echo "Not in git repository."
+        return 1
+    fi
+
+    if _git_branch_exists main; then
+        git pull origin main
+    else
+        git pull origin master
+    fi
+}
+
+function gcom() {
+    if ! _in_git_repo; then
+        echo "Not in git repository."
+        return 1
+    fi
+
+    if _git_branch_exists main; then
+        git checkout main
+    else
+        git checkout master
+    fi
+}
+
+function grbm() {
+    if ! _in_git_repo; then
+        echo "Not in git repository."
+        return 1
+    fi
+
+    if _git_branch_exists main; then
+        git rebase -i origin/main
+    else
+        git rebase -i origin/master
+    fi
+}
+
+function gpush() {
+    branch_name=`git branch --show-current`
+
+    if [ -z "${branch_name}" ]; then
+        echo "No current branch name. (detached head?)"
+        return 1
+    fi
+
+    main_branch="master"
+    if _git_branch_exists main; then
+        main_branch="main"
+    fi
+
+    if [ "${branch_name}" = "${main_branch}" ]; then
+        echo "Cannot push to project main branch."
+        return 1
+    fi
+
+    git push origin "${branch_name}" --force-with-lease
+}
+
+function cdtop() {
+    if ! _in_git_repo; then
+        echo "Not in git repository."
+        return 1
+    fi
+
+    cd `git rev-parse --show-toplevel`
+}
