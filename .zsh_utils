@@ -1,5 +1,10 @@
 # -*- shell-script -*-
 
+# A suite of ZSH utilities. Can be loaded from .zshrc with the
+# following command:
+#
+# [[ -f ${HOME}/.emacs.d/.zsh_utils ]] && source ${HOME}/.emacs.d/.zsh_utils || true
+
 #### Useful aliases
 
 alias kc="kubectl"
