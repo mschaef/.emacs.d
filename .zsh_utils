@@ -57,6 +57,19 @@ function wipx() {
     fi
 }
 
+function gmain() {
+    if ! _in_git_repo; then
+        echo "Not in git repository."
+        return 1
+    fi
+
+    if _git_branch_exists main; then
+        git checkout main
+    else
+        git checkout master
+    fi
+}
+
 function gpom() {
     if ! _in_git_repo; then
         echo "Not in git repository."
