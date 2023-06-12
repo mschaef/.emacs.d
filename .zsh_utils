@@ -143,6 +143,10 @@ function gpush() {
     git push origin "${branch_name}" --force-with-lease
 }
 
+function grc() {
+    git rebase --continue
+}
+
 function cdtop() {
     if ! _in_git_repo; then
         echo "Not in git repository."
