@@ -59,7 +59,6 @@
 (require 'javap)
 (require 'vcsh)
 (require 'find-file-in-project)
-(require 'ack)
 (require 'uniquify)
 (require 'project-ack)
 
@@ -153,7 +152,7 @@
   (set-face-background 'line-number "grey10")
   (set-face-foreground 'line-number "gray50")
   (set-face-background 'line-number-current-line "grey30")
-  (set-face-foreground 'line-number-current-line "yello")
+  (set-face-foreground 'line-number-current-line "yellow")
   (global-display-line-numbers-mode))
 
 ;;;; Set a few keys to honor a few old Visual Studio habits
@@ -206,7 +205,7 @@
 (defun override-paredit-c-j ()
   (setq minor-mode-overriding-map-alist
         `((paredit-mode
-           ,@(remove (cons ?\C-j 'paredit-newline)
+           ,@(remove (cons ?\C-j 'paredit-C-j)
                      paredit-mode-map)))))
 
 (add-hook 'lisp-interaction-mode-hook 'override-paredit-c-j)
@@ -364,7 +363,7 @@ the current fill-column."
  '(inhibit-startup-screen t)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(go-mode cider js2-mode magit markdown-mode paredit typescript-mode yasnippet yaml-mode dash ##))
+   '(ack go-mode cider js2-mode magit markdown-mode paredit typescript-mode yasnippet yaml-mode dash ##))
  '(safe-local-variable-values '((sh-indent-comment . t) (lexical-binding . t)))
  '(tool-bar-mode nil))
 
@@ -434,7 +433,7 @@ the current fill-column."
 ;;;; Write out a message indicating how long it took to process the init script
 
 (message ".emacs loaded in %ds"
-         (destructuring-bind (hi lo ms ps) (current-time)
+         (cl-destructuring-bind (hi lo ms ps) (current-time)
            (- (+ hi lo)
               (+ (first *emacs-load-start*)
                  (second *emacs-load-start*)))))

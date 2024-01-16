@@ -8,6 +8,7 @@
 ;;;; 2) This uses thing-at-point to guess the item to search.y
 
 (require 'find-file-in-project)
+(require 'ack)
 
 (defun project-ack (pattern ack-search-root-dir)
   "Runs ack at the project root, with user-specified ARGS, and
