@@ -149,10 +149,12 @@
   (global-font-lock-mode t)
   (setq font-lock-maximum-decoration t))
 
-(when-fboundp global-linum-mode
-  (global-linum-mode 1)
-  (set-face-background 'linum "gray40")
-  (set-face-foreground 'linum "gray70"))
+(when-fboundp global-display-line-numbers-mode
+  (set-face-background 'line-number "grey10")
+  (set-face-foreground 'line-number "gray50")
+  (set-face-background 'line-number-current-line "grey30")
+  (set-face-foreground 'line-number-current-line "yello")
+  (global-display-line-numbers-mode))
 
 ;;;; Set a few keys to honor a few old Visual Studio habits
 
