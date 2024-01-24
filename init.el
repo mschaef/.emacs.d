@@ -57,7 +57,6 @@
 (require 'tabulate-region)
 (require 'orglog)
 (require 'javap)
-(require 'vcsh)
 (require 'find-file-in-project)
 (require 'uniquify)
 (require 'project-ack)
@@ -363,7 +362,7 @@ the current fill-column."
  '(inhibit-startup-screen t)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(scala-mode haskell-mode ack go-mode cider js2-mode magit markdown-mode paredit typescript-mode yasnippet yaml-mode dash ##))
+   '(scala-mode haskell-mode ack go-mode cider js2-mode magit markdown-mode paredit typescript-mode yaml-mode dash ##))
  '(safe-local-variable-values '((sh-indent-comment . t) (lexical-binding . t)))
  '(tool-bar-mode nil))
 
