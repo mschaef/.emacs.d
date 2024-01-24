@@ -363,7 +363,7 @@ the current fill-column."
  '(inhibit-startup-screen t)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(ack go-mode cider js2-mode magit markdown-mode paredit typescript-mode yasnippet yaml-mode dash ##))
+   '(scala-mode haskell-mode ack go-mode cider js2-mode magit markdown-mode paredit typescript-mode yasnippet yaml-mode dash ##))
  '(safe-local-variable-values '((sh-indent-comment . t) (lexical-binding . t)))
  '(tool-bar-mode nil))
 
