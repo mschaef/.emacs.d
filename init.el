@@ -279,13 +279,6 @@
                          (t
                           "[no file]")))))
 
-;;;; Git integration is slow on windows machines.
-
-(when-on-windows
-  (require 'vc)
-  (remove-hook 'find-file-hooks 'vc-find-file-hook)
-  (delete 'Git vc-handled-backends))
-
 ;;;; Scratch and Message Buffer Tools
 
 (setq previous-switch-buffer nil)
@@ -430,7 +423,7 @@ the current fill-column."
 (message ".emacs loaded in %ds"
          (cl-destructuring-bind (hi lo ms ps) (current-time)
            (- (+ hi lo)
-              (+ (first *emacs-load-start*)
-                 (second *emacs-load-start*)))))
+              (+ (car *emacs-load-start*)
+                 (cadr *emacs-load-start*)))))
 
 

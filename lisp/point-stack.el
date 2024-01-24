@@ -3,8 +3,6 @@
 ;;
 ;; from: http://www.zafar.se/bkz/Articles/EmacsTips
 
-(require 'cl)              ;; Common Lisp compatibiliy functions
-
 (global-set-key [f7] 'point-stack-save)
 (global-set-key [(shift f7)] 'point-stack-save-overwrite)
 
