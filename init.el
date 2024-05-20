@@ -58,8 +58,6 @@
 (require 'orglog)
 (require 'find-file-in-project)
 (require 'uniquify)
-(require 'project-ack)
-
 
 ;; Enable Tramp mode for remote editing
 
@@ -344,14 +342,13 @@ the current fill-column."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ack-command "/opt/homebrew/bin/ack ")
  '(develock-max-column-plist
    '(emacs-lisp-mode 79 lisp-interaction-mode w change-log-mode t texinfo-mode t c-mode 79 c++-mode 79 java-mode 120 jde-mode 79 html-mode 79 html-helper-mode 79 cperl-mode 79 perl-mode 79 mail-mode t message-mode t cmail-mail-mode t tcl-mode 79 ruby-mode 79))
  '(inhibit-startup-echo-area-message "mschaef")
  '(inhibit-startup-screen t)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(scala-mode haskell-mode ack go-mode cider js2-mode magit markdown-mode paredit typescript-mode yaml-mode dash ##))
+   '(rust-mode ack go-mode cider js2-mode magit markdown-mode paredit typescript-mode yasnippet yaml-mode dash ##))
  '(safe-local-variable-values '((sh-indent-comment . t) (lexical-binding . t)))
  '(tool-bar-mode nil))
 
