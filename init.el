@@ -155,17 +155,13 @@
 
 ;;;; Set a few keys to honor a few old Visual Studio habits
 
-(global-set-key [f12] 'next-error)
-(global-set-key "\C-z" 'undo)
-(global-set-key [f5] 'goto-line)
-
-(global-set-key [f2] 'ff-find-other-file)
-
-(global-unset-key [?\s-p])
+(keymap-global-set "<f12>" 'next-error)
+(keymap-global-set "C-z" 'undo)
+(keymap-global-set "<f5>" 'goto-line)
+(keymap-global-set "<f2>" 'ff-find-other-file)
 
 ;;;; Unset s-q, usually bound to over-powerful `save-buffers-kill-emacs` on OSX
-
-(global-unset-key (kbd "s-q"))
+(keymap-global-unset "s-q")
 
 ;;;; On Mac Emacs, use keybindings consistent with mainline GNU Emacs on the Mac
 
@@ -181,8 +177,8 @@
 (add-hook 'c-mode-common-hook 'c-mode-enable-compile-command)
 (add-hook 'makefile-mode-hook 'c-mode-enable-compile-command)
 
-(global-set-key [(shift f5)] 'javap-build-module)
-(global-set-key [(control shift f5)] 'javap-build-project)
+(keymap-global-set "S-<f5>" 'javap-build-module)
+(keymap-global-set "C-S-<f5>" 'javap-build-project)
 
 ;;;; Scroll the compiler output window so that the most recent output
 ;;;; is always visible.
@@ -315,8 +311,8 @@ back to the buffer from before any previous switch."
   (interactive)
   (switch-to-another-buffer (get-buffer-create "*Messages*")))
 
-(global-set-key [(shift f4)] 'switch-to-scratch-buffer)
-(global-set-key [(control shift f4)] 'switch-to-messages-buffer)
+(keymap-global-set "S-<f4>" 'switch-to-scratch-buffer)
+(keymap-global-set "C-S-<f4>" 'switch-to-messages-buffer)
 
 ;;;; Interactive window split
 
@@ -330,7 +326,7 @@ the current fill-column."
       (split-window-horizontally)
     (split-window-vertically)))
 
-(global-set-key [(control ?x) ?2] 'interactive-split-current-window)
+(keymap-global-set "C-x 2" 'interactive-split-current-window)
 
 ;;;; find-file-in-project
 
@@ -339,7 +335,7 @@ the current fill-column."
 (setq ffip-limit 4096)
 (setq ffip-full-paths nil)
 
-(global-set-key (kbd "C-x f") 'find-file-in-project)
+(keymap-global-set "C-x f" 'find-file-in-project)
 
 ;;;; With a running window system, have hyperlinks open up in a new chrome window
 
@@ -420,7 +416,7 @@ the current fill-column."
 
 ;;;; OS X Keybinding for switching frames
 
-(global-set-key "\M-`" 'other-frame)
+(keymap-global-set "M-`" 'other-frame)
 
 ;;;; Load local customizations
 
