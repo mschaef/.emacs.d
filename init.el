@@ -160,7 +160,7 @@
 
 ;;;; Ack bindings
 
-(keymap-global-set "C-S-<f7>" 'ack)
+(keymap-global-set "C-s-<f7>" 'ack)
 
 ;;;; Unset s-q, usually bound to over-powerful `save-buffers-kill-emacs` on OSX
 (keymap-global-unset "s-q")
@@ -174,7 +174,7 @@
 ;;;; Compile commands get bound appropriately, defaulting to Maven
 
 (defun c-mode-enable-compile-command ()
-  (local-set-key [(shift f5)] 'compile))
+  (keymap-local-set "s-<f5>" 'compile))
 
 (add-hook 'c-mode-common-hook 'c-mode-enable-compile-command)
 (add-hook 'makefile-mode-hook 'c-mode-enable-compile-command)
@@ -252,10 +252,6 @@
 
 (when window-system
   (server-start))
-
-;;;; Remove the "Yes"/"No" questions in favor of the simpler "Y"/"N"
-
-(defalias 'yes-or-no-p 'y-or-n-p)
 
 ;;;; A more completeframe title format, taken from
 ;;;;
@@ -378,14 +374,14 @@ the current fill-column."
 (add-hook 'minibuffer-setup-hook 'add-minibuffer-delete-binding)
 
 (defun add-minibuffer-delete-binding ()
-  (local-set-key (kbd "C-c C-k") 'delete-minibuffer-contents))
+  (keymap-local-set "C-c C-k" 'delete-minibuffer-contents))
 
 ;;;; Bind shift-f5 in Emacs Lisp mode to evaluate the current buffer
 
 (add-hook 'emacs-lisp-mode-hook 'rebind-emacs-lisp-shift-f5)
 
 (defun rebind-emacs-lisp-shift-f5 ()
-  (local-set-key [(shift f5)] 'eval-buffer))
+  (keymap-local-set "s-<f5>" 'eval-buffer))
 
 ;;;; Switch to a more ISO-8601 compliant and noticable modeline date format
 
