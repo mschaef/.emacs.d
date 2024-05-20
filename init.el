@@ -158,6 +158,10 @@
 (keymap-global-set "<f5>" 'goto-line)
 (keymap-global-set "<f2>" 'ff-find-other-file)
 
+;;;; Ack bindings
+
+(keymap-global-set "C-S-<f7>" 'ack)
+
 ;;;; Unset s-q, usually bound to over-powerful `save-buffers-kill-emacs` on OSX
 (keymap-global-unset "s-q")
 
