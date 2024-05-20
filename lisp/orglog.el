@@ -61,6 +61,10 @@ date's topic name.)")
             (date-day (string-to-number (or (match-string 5 date-str) "1"))))
         (encode-time 0 0 0 date-day date-month date-year))))
 
+(defun fourth (x) (cadddr x))
+(defun fifth  (x) (car (cddddr x)))
+(defun sixth  (x) (cadr (cddddr x)))
+
 (defun orglog-adjust-date-by-day (date days-delta)
   (let ((decoded (decode-time date)))
     (encode-time 0 0 0
