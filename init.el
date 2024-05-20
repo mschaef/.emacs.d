@@ -56,8 +56,6 @@
 (require 'point-stack)
 (require 'tabulate-region)
 (require 'orglog)
-(require 'javap)
-(require 'vcsh)
 (require 'find-file-in-project)
 (require 'uniquify)
 
@@ -177,9 +175,6 @@
 (add-hook 'c-mode-common-hook 'c-mode-enable-compile-command)
 (add-hook 'makefile-mode-hook 'c-mode-enable-compile-command)
 
-(keymap-global-set "S-<f5>" 'javap-build-module)
-(keymap-global-set "C-S-<f5>" 'javap-build-project)
-
 ;;;; Scroll the compiler output window so that the most recent output
 ;;;; is always visible.
 
@@ -277,13 +272,6 @@
                           (concat "{" dired-directory "}"))
                          (t
                           "[no file]")))))
-
-;;;; Git integration is slow on windows machines.
-
-(when-on-windows
-  (require 'vc)
-  (remove-hook 'find-file-hooks 'vc-find-file-hook)
-  (delete 'Git vc-handled-backends))
 
 ;;;; Scratch and Message Buffer Tools
 
@@ -428,7 +416,7 @@ the current fill-column."
 (message ".emacs loaded in %ds"
          (cl-destructuring-bind (hi lo ms ps) (current-time)
            (- (+ hi lo)
-              (+ (first *emacs-load-start*)
-                 (second *emacs-load-start*)))))
+              (+ (car *emacs-load-start*)
+                 (cadr *emacs-load-start*)))))
 
 
