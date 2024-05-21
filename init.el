@@ -160,7 +160,7 @@
 
 ;;;; Ack bindings
 
-(keymap-global-set "C-s-<f7>" 'ack)
+(keymap-global-set "C-S-<f7>" 'ack)
 
 ;;;; Unset s-q, usually bound to over-powerful `save-buffers-kill-emacs` on OSX
 (keymap-global-unset "s-q")
@@ -170,6 +170,11 @@
 (when (eq system-type 'darwin)
   (setq mac-option-modifier 'super)
   (setq mac-command-modifier 'meta))
+
+;;;; On Mac Emacs, ensure homebrew is on the path
+
+(when (eq system-type 'darwin)
+  (add-to-list 'exec-path "/opt/homebrew/bin/"))
 
 ;;;; Compile commands get bound appropriately, defaulting to Maven
 
