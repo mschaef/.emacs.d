@@ -151,7 +151,7 @@ orglog entry."
                   (- (length buffer-file-truename)
                      (length ".orglog")))))
 
-(defun orglog-topic-category-name (topic-name)
+(defun orglog-topic-category-prefix (topic-name)
   (and topic-name
        (file-name-directory topic-name)))
 
@@ -165,12 +165,14 @@ orglog entry."
         (find-file filename)))))
 
 (defun orglog-read-topic-name (prompt)
-  (interactive)
-  (let ((topic-names (orglog-topic-names))
-        (topic-category (orglog-topic-category-name (orglog-buffer-topic-name))))
+  (let* ((topic-names (orglog-topic-names))
+         (topic-category-prefix (orglog-topic-category-prefix (orglog-buffer-topic-name)))
+         (completion-prefix (if (equal topic-category-prefix "month/")
+                                ""
+                              topic-category-prefix)))
     (if (and (boundp 'ido-mode) ido-mode)
-        (ido-completing-read prompt topic-names nil 'confirm topic-category)
-      (completing-read prompt topic-names nil 'confirm topic-category))))
+        (ido-completing-read prompt topic-names nil 'confirm completion-prefix)
+      (completing-read prompt topic-names nil 'confirm completion-prefix))))
 
 (defun orglog-find-topic-file ()
   (interactive)
