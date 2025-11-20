@@ -210,6 +210,8 @@
 
 ;;;;; Configure a few new automatic modes
 
+(add-to-list 'auto-mode-alist '("\\.daml\\'" . haskell-mode))
+
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-jsx-mode))
 (add-to-list 'auto-mode-alist '("\\.scss\\'" . css-mode))
 
