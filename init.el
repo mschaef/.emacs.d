@@ -360,7 +360,9 @@ the current fill-column."
         paredit rust-mode scala-mode typescript-mode yaml-mode
         yasnippet))
  '(safe-local-variable-values '((sh-indent-comment . t) (lexical-binding . t)))
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+ '(typescript-auto-indent-flag nil)
+ '(typescript-indent-level 2))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
