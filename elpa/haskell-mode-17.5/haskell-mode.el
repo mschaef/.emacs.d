@@ -5,7 +5,8 @@
 
 ;; Copyright © 1992, 1997-1998  Simon Marlow, Graeme E Moss, and Tommy Thorn
 
-;; Version: 17.5
+;; Package-Version: 17.5
+;; Package-Revision: 8d0f44bfe2a9
 ;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: haskell cabal ghc repl languages
 ;; URL: https://github.com/haskell/haskell-mode

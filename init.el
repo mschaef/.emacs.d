@@ -210,6 +210,8 @@
 
 ;;;;; Configure a few new automatic modes
 
+(add-to-list 'auto-mode-alist '("\\.daml\\'" . haskell-mode))
+
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-jsx-mode))
 (add-to-list 'auto-mode-alist '("\\.scss\\'" . css-mode))
 
@@ -349,14 +351,23 @@ the current fill-column."
      (".hg" . "hg grep -n -i")
      (".bzr" . "bzr grep --color=always -n")))
  '(develock-max-column-plist
-   '(emacs-lisp-mode 79 lisp-interaction-mode w change-log-mode t texinfo-mode t c-mode 79 c++-mode 79 java-mode 120 jde-mode 79 html-mode 79 html-helper-mode 79 cperl-mode 79 perl-mode 79 mail-mode t message-mode t cmail-mail-mode t tcl-mode 79 ruby-mode 79))
+   '(emacs-lisp-mode 79 lisp-interaction-mode w change-log-mode t
+                     texinfo-mode t c-mode 79 c++-mode 79 java-mode
+                     120 jde-mode 79 html-mode 79 html-helper-mode 79
+                     cperl-mode 79 perl-mode 79 mail-mode t
+                     message-mode t cmail-mail-mode t tcl-mode 79
+                     ruby-mode 79))
  '(inhibit-startup-echo-area-message "mschaef")
  '(inhibit-startup-screen t)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(rust-mode ack go-mode cider js2-mode magit markdown-mode paredit typescript-mode yasnippet yaml-mode dash ##))
+   '(## ack cider dash go-mode haskell-mode js2-mode magit markdown-mode
+        paredit rust-mode scala-mode typescript-mode yaml-mode
+        yasnippet))
  '(safe-local-variable-values '((sh-indent-comment . t) (lexical-binding . t)))
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+ '(typescript-auto-indent-flag nil)
+ '(typescript-indent-level 2))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

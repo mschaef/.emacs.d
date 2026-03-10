@@ -1,4 +1,4 @@
-This is docbc2HPm.info, produced by makeinfo version 6.8 from
+This is haskell-mode.info, produced by makeinfo version 6.8 from
 haskell-mode.texi.
 
 This manual is for Haskell mode, version 17.5
@@ -16,7 +16,7 @@ START-INFO-DIR-ENTRY
 END-INFO-DIR-ENTRY
 
 
-File: docbc2HPm.info,  Node: Top,  Next: Introduction,  Up: (dir)
+File: haskell-mode.info,  Node: Top,  Next: Introduction,  Up: (dir)
 
 Haskell Mode
 ************
@@ -54,7 +54,7 @@ interpreter (e.g.  GHCi).
 * Variable index::                       Index of options and types
 
 
-File: docbc2HPm.info,  Node: Introduction,  Next: Installation,  Prev: Top,  Up: Top
+File: haskell-mode.info,  Node: Introduction,  Next: Installation,  Prev: Top,  Up: Top
 
 1 Introduction
 **************
@@ -94,7 +94,7 @@ are left with a box full of interesting toys that may or may not work.
 <https://github.com/haskell/haskell-mode>.
 
 
-File: docbc2HPm.info,  Node: Installation,  Next: Editing Haskell Code,  Prev: Introduction,  Up: Top
+File: haskell-mode.info,  Node: Installation,  Next: Editing Haskell Code,  Prev: Introduction,  Up: Top
 
 2 Installation
 **************
@@ -157,7 +157,7 @@ can customize ‘haskell-mode-hook’ by
 any function to the list.
 
 
-File: docbc2HPm.info,  Node: Editing Haskell Code,  Next: Syntax highlighting,  Prev: Installation,  Up: Top
+File: haskell-mode.info,  Node: Editing Haskell Code,  Next: Syntax highlighting,  Prev: Installation,  Up: Top
 
 3 Editing Haskell Code
 **********************
@@ -267,7 +267,7 @@ if one is present, or add one if point is over whitespace.  By default
 it is bound to ‘C-c C-s’.
 
 
-File: docbc2HPm.info,  Node: Syntax highlighting,  Next: Completion support,  Prev: Editing Haskell Code,  Up: Top
+File: haskell-mode.info,  Node: Syntax highlighting,  Next: Completion support,  Prev: Editing Haskell Code,  Up: Top
 
 4 Syntax highlighting
 *********************
@@ -325,7 +325,7 @@ unambiguous.  Any of the following will work:
 fixed due to backward compatibility baggage.
 
 
-File: docbc2HPm.info,  Node: Completion support,  Next: Unicode support,  Prev: Syntax highlighting,  Up: Top
+File: haskell-mode.info,  Node: Completion support,  Next: Unicode support,  Prev: Syntax highlighting,  Up: Top
 
 5 Completion support
 ********************
@@ -365,7 +365,7 @@ major slowdown while trying to complete after an Haskell operator (See
 GHC-Bug 10576 (https://ghc.haskell.org/trac/ghc/ticket/10576)).
 
 
-File: docbc2HPm.info,  Node: Unicode support,  Next: Indentation,  Prev: Completion support,  Up: Top
+File: haskell-mode.info,  Node: Unicode support,  Next: Indentation,  Prev: Completion support,  Up: Top
 
 6 Unicode support
 *****************
@@ -445,7 +445,7 @@ can turn it off by setting ‘input-method-highlight-flag’ to ‘nil’ via
 ‘M-x customize-variable’.
 
 
-File: docbc2HPm.info,  Node: Indentation,  Next: External indentation,  Prev: Unicode support,  Up: Top
+File: haskell-mode.info,  Node: Indentation,  Next: External indentation,  Prev: Unicode support,  Up: Top
 
 7 Indentation
 *************
@@ -525,7 +525,7 @@ require time travel.
 in ‘haskell-mode’.
 
 
-File: docbc2HPm.info,  Node: External indentation,  Next: Autoformatting,  Prev: Indentation,  Up: Top
+File: haskell-mode.info,  Node: External indentation,  Next: Autoformatting,  Prev: Indentation,  Up: Top
 
 8 Other ways to indent code
 ***************************
@@ -547,7 +547,7 @@ code by parsing the code with a full Haskell parser and deciding where
 to indent based on that.
 
 
-File: docbc2HPm.info,  Node: Autoformatting,  Next: Module templates,  Prev: External indentation,  Up: Top
+File: haskell-mode.info,  Node: Autoformatting,  Next: Module templates,  Prev: External indentation,  Up: Top
 
 9 Using external formatters
 ***************************
@@ -569,7 +569,7 @@ automatically formatted.
 ‘haskell-mode-stylish-buffer’.
 
 
-File: docbc2HPm.info,  Node: Module templates,  Next: Declaration scanning,  Prev: Autoformatting,  Up: Top
+File: haskell-mode.info,  Node: Module templates,  Next: Declaration scanning,  Prev: Autoformatting,  Up: Top
 
 10 Module templates
 *******************
@@ -587,7 +587,7 @@ To enable auto-insertion of module templates, enable:
    And put your cursor in the comment section.
 
 
-File: docbc2HPm.info,  Node: Declaration scanning,  Next: Compilation,  Prev: Module templates,  Up: Top
+File: haskell-mode.info,  Node: Declaration scanning,  Next: Compilation,  Prev: Module templates,  Up: Top
 
 11 Declaration scannning
 ************************
@@ -696,7 +696,7 @@ if you enable Haskell support for speedbar:
 the line in the right file when clicked/selected.
 
 
-File: docbc2HPm.info,  Node: Compilation,  Next: Interactive Haskell,  Prev: Declaration scanning,  Up: Top
+File: haskell-mode.info,  Node: Compilation,  Next: Interactive Haskell,  Prev: Declaration scanning,  Up: Top
 
 12 Compilation
 **************
@@ -827,7 +827,7 @@ C-c   kill-compilation
 C-k   
 
 
-File: docbc2HPm.info,  Node: Interactive Haskell,  Next: Editing Cabal files,  Prev: Compilation,  Up: Top
+File: haskell-mode.info,  Node: Interactive Haskell,  Next: Editing Cabal files,  Prev: Compilation,  Up: Top
 
 13 Interactive Haskell
 **********************
@@ -1866,7 +1866,7 @@ to:
    And you’re done debugging.
 
 
-File: docbc2HPm.info,  Node: Editing Cabal files,  Next: Browsing Haddocks,  Prev: Interactive Haskell,  Up: Top
+File: haskell-mode.info,  Node: Editing Cabal files,  Next: Browsing Haddocks,  Prev: Interactive Haskell,  Up: Top
 
 14 Editing Cabal files
 **********************
@@ -1885,7 +1885,7 @@ sequence ‘C-c v c’.
    TODO/WRITEME
 
 
-File: docbc2HPm.info,  Node: Browsing Haddocks,  Next: Spell checking strings and comments,  Prev: Editing Cabal files,  Up: Top
+File: haskell-mode.info,  Node: Browsing Haddocks,  Next: Spell checking strings and comments,  Prev: Editing Cabal files,  Up: Top
 
 15 Browsing Haddocks using ‘w3m’
 ********************************
@@ -1976,7 +1976,7 @@ to.
    This feature will be improved gradually as time goes on.
 
 
-File: docbc2HPm.info,  Node: Spell checking strings and comments,  Next: Aligning code,  Prev: Browsing Haddocks,  Up: Top
+File: haskell-mode.info,  Node: Spell checking strings and comments,  Next: Aligning code,  Prev: Browsing Haddocks,  Up: Top
 
 16 Using with ‘flyspell-prog-mode’
 **********************************
@@ -2005,7 +2005,7 @@ your ‘~/.emacs’ file:
    ‘(add-hook 'haskell-mode-hook 'flyspell-prog-mode)’
 
 
-File: docbc2HPm.info,  Node: Aligning code,  Next: Rectangular commands,  Prev: Spell checking strings and comments,  Up: Top
+File: haskell-mode.info,  Node: Aligning code,  Next: Rectangular commands,  Prev: Spell checking strings and comments,  Up: Top
 
 17 Aligning code
 ****************
@@ -2052,7 +2052,7 @@ aligner about Haskell.  Once you evaluate this, you can just use ‘M-x’
                     (modes quote (haskell-mode haskell-literate-mode))))
 
 
-File: docbc2HPm.info,  Node: Rectangular commands,  Next: REPL,  Prev: Aligning code,  Up: Top
+File: haskell-mode.info,  Node: Rectangular commands,  Next: REPL,  Prev: Aligning code,  Up: Top
 
 18 Using rectangular region commands
 ************************************
@@ -2099,7 +2099,7 @@ whitespace sensitive languages.
 out what keys are bound beginning with the ‘C-x r’ prefix.
 
 
-File: docbc2HPm.info,  Node: REPL,  Next: Collapsing Haskell code,  Prev: Rectangular commands,  Up: Top
+File: haskell-mode.info,  Node: REPL,  Next: Collapsing Haskell code,  Prev: Rectangular commands,  Up: Top
 
 19 Using GHCi REPL within Emacs
 *******************************
@@ -2229,7 +2229,7 @@ following preference is followed: ‘cabal.project’ > ‘stack.yaml’ >
 ‘*.cabal’
 
 
-File: docbc2HPm.info,  Node: Collapsing Haskell code,  Next: Getting Help and Reporting Bugs,  Prev: REPL,  Up: Top
+File: haskell-mode.info,  Node: Collapsing Haskell code,  Next: Getting Help and Reporting Bugs,  Prev: REPL,  Up: Top
 
 20 Collapsing Haskell code
 **************************
@@ -2317,7 +2317,7 @@ for indentation and it collapses all toplevel functions.
      dp money a @ (coin:coins)...
 
 
-File: docbc2HPm.info,  Node: Getting Help and Reporting Bugs,  Next: Concept index,  Prev: Collapsing Haskell code,  Up: Top
+File: haskell-mode.info,  Node: Getting Help and Reporting Bugs,  Next: Concept index,  Prev: Collapsing Haskell code,  Up: Top
 
 21 Getting Help and Reporting Bugs
 **********************************
@@ -2343,7 +2343,7 @@ gmane.comp.lang.haskell.emacs
 coding Haskell even more.
 
 
-File: docbc2HPm.info,  Node: Concept index,  Next: Function index,  Prev: Getting Help and Reporting Bugs,  Up: Top
+File: haskell-mode.info,  Node: Concept index,  Next: Function index,  Prev: Getting Help and Reporting Bugs,  Up: Top
 
 Concept index
 *************
@@ -2368,7 +2368,7 @@ Concept index
 * Unicode:                               Unicode support.     (line   6)
 
 
-File: docbc2HPm.info,  Node: Function index,  Next: Variable index,  Prev: Concept index,  Up: Top
+File: haskell-mode.info,  Node: Function index,  Next: Variable index,  Prev: Concept index,  Up: Top
 
 Function index
 **************
@@ -2387,7 +2387,7 @@ Function index
 * haskell-svg-toggle-render-images:      Interactive Haskell. (line 628)
 
 
-File: docbc2HPm.info,  Node: Variable index,  Prev: Function index,  Up: Top
+File: haskell-mode.info,  Node: Variable index,  Prev: Function index,  Up: Top
 
 Variable index
 **************
@@ -2428,32 +2428,32 @@ Variable index
 
 
 Tag Table:
-Node: Top676
-Node: Introduction2578
-Node: Installation4160
-Node: Editing Haskell Code6520
-Node: Syntax highlighting10277
-Node: Completion support12534
-Node: Unicode support14575
-Node: Indentation19244
-Node: External indentation22717
-Node: Autoformatting23443
-Node: Module templates24069
-Node: Declaration scanning24497
-Node: Compilation27782
-Node: Interactive Haskell32085
-Ref: printing mode51506
-Node: Editing Cabal files64270
-Node: Browsing Haddocks65014
-Node: Spell checking strings and comments67836
-Node: Aligning code68939
-Node: Rectangular commands70681
-Node: REPL72198
-Node: Collapsing Haskell code76944
-Node: Getting Help and Reporting Bugs79549
-Node: Concept index80590
-Node: Function index81845
-Node: Variable index82637
+Node: Top679
+Node: Introduction2584
+Node: Installation4169
+Node: Editing Haskell Code6532
+Node: Syntax highlighting10292
+Node: Completion support12552
+Node: Unicode support14596
+Node: Indentation19268
+Node: External indentation22744
+Node: Autoformatting23473
+Node: Module templates24102
+Node: Declaration scanning24533
+Node: Compilation27821
+Node: Interactive Haskell32127
+Ref: printing mode51551
+Node: Editing Cabal files64315
+Node: Browsing Haddocks65062
+Node: Spell checking strings and comments67887
+Node: Aligning code68993
+Node: Rectangular commands70738
+Node: REPL72258
+Node: Collapsing Haskell code77007
+Node: Getting Help and Reporting Bugs79615
+Node: Concept index80659
+Node: Function index81917
+Node: Variable index82712
 
 End Tag Table
 

@@ -54,6 +54,12 @@ date's topic name.)")
 (defun orglog-format-date (date)
   (format-time-string orglog-header-format-string date))
 
+(defun orglog-today-header ()
+  (orglog-format-date (current-time)))
+
+(defun orglog-tomorrow-header ()
+  (orglog-format-date (orglog-adjust-date-by-day (current-time) 1)))
+
 (defun orglog-parse-date-str (date-str)
   (if (string-match orglog-date-regexp date-str)
       (let ((date-year (string-to-number (match-string 2 date-str)))
@@ -96,10 +102,16 @@ date's topic name.)")
             (match-string 0 date-str))
     (user-error "Invalid orglog date string: %s." date-str)))
 
+(defun orglog-topic-file-name (topic)
+  (concat (orglog-find-root-directory) "/" topic ".orglog"))
+
+(defun orglog-date-file-name (date-str)
+  (orglog-topic-file-name (concat "month/" date-str)))
+
 (defun orglog-find-date (date-str)
   "Given an orglog date string (YYYY-MM-DD), jump to the date's
 orglog entry."
-  (orglog-find-file (orglog-topic-file-name (car (orglog-date-match date-str))))
+  (orglog-find-file (orglog-date-file-name (car (orglog-date-match date-str))))
   (goto-char (point-min))
   (let ((date (cdr (orglog-date-match date-str))))
     (unless (re-search-forward (format "^\\* +%s[:space:]*$" date) nil t)
@@ -115,27 +127,6 @@ orglog entry."
 (defun orglog-find-tomorrow ()
   (interactive)
   (orglog-find-date (orglog-tomorrow-header)))
-
-(defun orglog-today-header ()
-  (orglog-format-date (current-time)))
-
-(defun orglog-tomorrow-header ()
-  (orglog-format-date (orglog-adjust-date-by-day (current-time) 1)))
-
-(defun orglog-date-basename (date)
-  (format-time-string orglog-file-basename-format-string date))
-
-(defun orglog-today-basename ()
-  (orglog-date-basename (current-time)))
-
-(defun orglog-topic-file-name (topic)
-  (concat (orglog-find-root-directory) "/" topic ".orglog"))
-
-(defun orglog-date-file-name (date)
-  (orglog-topic-file-name (orglog-date-basename date)))
-
-(defun orglog-todays-file-name ()
-  (orglog-topic-file-name (orglog-today-basename)))
 
 (defun orglog-topic-file-names ()
   (let ((dirname (file-truename (orglog-find-root-directory))))
@@ -160,7 +151,7 @@ orglog entry."
                   (- (length buffer-file-truename)
                      (length ".orglog")))))
 
-(defun orglog-topic-category-name (topic-name)
+(defun orglog-topic-category-prefix (topic-name)
   (and topic-name
        (file-name-directory topic-name)))
 
@@ -174,12 +165,14 @@ orglog entry."
         (find-file filename)))))
 
 (defun orglog-read-topic-name (prompt)
-  (interactive)
-  (let ((topic-names (orglog-topic-names))
-        (topic-category (orglog-topic-category-name (orglog-buffer-topic-name))))
+  (let* ((topic-names (orglog-topic-names))
+         (topic-category-prefix (orglog-topic-category-prefix (orglog-buffer-topic-name)))
+         (completion-prefix (if (equal topic-category-prefix "month/")
+                                ""
+                              topic-category-prefix)))
     (if (and (boundp 'ido-mode) ido-mode)
-        (ido-completing-read prompt topic-names nil 'confirm topic-category)
-      (completing-read prompt topic-names nil 'confirm topic-category))))
+        (ido-completing-read prompt topic-names nil 'confirm completion-prefix)
+      (completing-read prompt topic-names nil 'confirm completion-prefix))))
 
 (defun orglog-find-topic-file ()
   (interactive)
@@ -254,8 +247,10 @@ orglog entry."
   (let ((date-at-point (orglog-date-at-point)))
     (if date-at-point
         (let ((file-name (orglog-date-file-name
-                          (orglog-adjust-date-by-month
-                           (orglog-parse-date-str date-at-point) month-delta))))
+                          (format-time-string
+                           orglog-file-basename-format-string
+                           (orglog-adjust-date-by-month
+                           (orglog-parse-date-str date-at-point) month-delta)))))
           (if (file-exists-p file-name)
               (orglog-find-file file-name)
             (user-error "No file for date: %s" file-name)))
@@ -352,4 +347,3 @@ orglog entry."
 
 
 (provide 'orglog)
-
