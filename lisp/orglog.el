@@ -32,7 +32,7 @@ date's topic name.)")
   :lighter " Orglog"
   :keymap '(([(shift f6)] . orglog-find-today)
             ([(control ?c) ?s] . orglog-grep)
-            ([(control shift f6)] . orglog-find-tomorrow)
+            ([(control shift f6)] . orglog-journal-today)
             ([(control ?c) ?t ?i] . orglog-insert-topic-link)
             ([(control ?c) ?t ?I] . orglog-enter-topic)
             ([(control ?c) ?k] . orglog-date-at-point-to-kill)
@@ -48,7 +48,7 @@ date's topic name.)")
 ;;
 ;; http://www.emacswiki.org/emacs/TheMysteriousCaseOfShiftedFunctionKeys
 (global-set-key [f6] 'orglog-find-today)
-(global-set-key [(control shift f6)] 'orglog-find-tomorrow)
+(global-set-key [(control shift f6)] 'orglog-journal-today)
 (global-set-key [(control ?c) f6] 'orglog-grep)
 
 (defun orglog-format-date (date)
@@ -56,9 +56,6 @@ date's topic name.)")
 
 (defun orglog-today-header ()
   (orglog-format-date (current-time)))
-
-(defun orglog-tomorrow-header ()
-  (orglog-format-date (orglog-adjust-date-by-day (current-time) 1)))
 
 (defun orglog-parse-date-str (date-str)
   (if (string-match orglog-date-regexp date-str)
@@ -102,6 +99,9 @@ date's topic name.)")
             (match-string 0 date-str))
     (user-error "Invalid orglog date string: %s." date-str)))
 
+(defun orglog-journal-file-name (topic)
+  (concat (orglog-find-root-directory) "/journal/" topic ".md"))
+
 (defun orglog-topic-file-name (topic)
   (concat (orglog-find-root-directory) "/" topic ".orglog"))
 
@@ -120,13 +120,13 @@ orglog entry."
         (newline))
       (orglog-enter-day date-str))))
 
+(defun orglog-journal-today ()
+  (interactive)
+  (orglog-find-file (orglog-journal-file-name (cdr (orglog-date-match (orglog-today-header))))))
+
 (defun orglog-find-today ()
   (interactive)
   (orglog-find-date (orglog-today-header)))
-
-(defun orglog-find-tomorrow ()
-  (interactive)
-  (orglog-find-date (orglog-tomorrow-header)))
 
 (defun orglog-topic-file-names ()
   (let ((dirname (file-truename (orglog-find-root-directory))))
