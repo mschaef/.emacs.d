@@ -32,7 +32,7 @@ date's topic name.)")
   :lighter " Orglog"
   :keymap '(([(shift f6)] . orglog-find-today)
             ([(control ?c) ?s] . orglog-grep)
-            ([(control shift f6)] . orglog-journal-today)
+            ([(control shift f6)] . orglog-journal-current-day)
             ([(control ?c) ?t ?i] . orglog-insert-topic-link)
             ([(control ?c) ?t ?I] . orglog-enter-topic)
             ([(control ?c) ?k] . orglog-date-at-point-to-kill)
@@ -100,7 +100,7 @@ date's topic name.)")
     (user-error "Invalid orglog date string: %s." date-str)))
 
 (defun orglog-journal-file-name (topic)
-  (concat (orglog-find-root-directory) "/journal/" topic ".md"))
+  (concat (orglog-find-root-directory) "/journal/" topic ".orglog"))
 
 (defun orglog-topic-file-name (topic)
   (concat (orglog-find-root-directory) "/" topic ".orglog"))
@@ -119,6 +119,10 @@ orglog entry."
       (unless (= (point) (line-beginning-position))
         (newline))
       (orglog-enter-day date-str))))
+
+(defun orglog-journal-current-day ()
+  (interactive)
+  (orglog-find-file (orglog-journal-file-name (orglog-date-at-point))))
 
 (defun orglog-journal-today ()
   (interactive)
