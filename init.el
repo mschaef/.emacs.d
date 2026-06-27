@@ -158,6 +158,15 @@
 (keymap-global-set "<f5>" 'goto-line)
 (keymap-global-set "<f2>" 'ff-find-other-file)
 
+;;;; Disable Mouse Wheel Scaling
+;;
+;; This is a nice feature, but I'm continually invoking it by accident
+;; while I'm trying to scroll the buffer.
+
+(global-set-key (kbd "<pinch>") 'ignore)
+(global-set-key (kbd "<C-wheel-up>") 'ignore)
+(global-set-key (kbd "<C-wheel-down>") 'ignore)
+
 ;;;; Ack bindings
 
 (keymap-global-set "C-S-<f7>" 'ack)
