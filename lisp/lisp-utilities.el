@@ -1,4 +1,4 @@
-;;;; lisp-utilities.el
+;;;; lisp-utilities.el  -*- lexical-binding: t; -*-
 ;;;;
 ;;;; A set of Emacs Lisp utility functions.
 

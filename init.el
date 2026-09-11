@@ -1,4 +1,4 @@
-;;;; init.el
+;;;; init.el  -*- lexical-binding: t; -*-
 ;;;;
 ;;;; Toplevel Emacs initialization code.
 
@@ -34,11 +34,6 @@
 (add-to-list 'package-archives
              '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 
-(defun load-package-init-file ()
-  (load "package-init.el"))
-
-(add-hook 'after-init-hook 'load-package-init-file)
-
 ;;;; Setup the load path
 
 ;;; .emacs.d itself should not be in the load path
@@ -56,7 +51,6 @@
 (require 'point-stack)
 (require 'tabulate-region)
 (require 'orglog)
-(require 'find-file-in-project)
 (require 'uniquify)
 
 ;; Enable Tramp mode for remote editing
@@ -357,8 +351,7 @@ the current fill-column."
  ;; If there is more than one, they won't work right.
  '(ack-vc-grep-commands
    '((".git" . "git --no-pager grep --color -n")
-     (".hg" . "hg grep -n -i")
-     (".bzr" . "bzr grep --color=always -n")))
+     (".hg" . "hg grep -n -i") (".bzr" . "bzr grep --color=always -n")))
  '(develock-max-column-plist
    '(emacs-lisp-mode 79 lisp-interaction-mode w change-log-mode t
                      texinfo-mode t c-mode 79 c++-mode 79 java-mode
@@ -370,9 +363,9 @@ the current fill-column."
  '(inhibit-startup-screen t)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(## ack cider dash go-mode haskell-mode js2-mode magit markdown-mode
-        paredit rust-mode scala-mode typescript-mode yaml-mode
-        yasnippet))
+   '(## ack clojure-mode dash find-file-in-project go-mode haskell-mode
+        js2-mode magit markdown-mode paredit rust-mode scala-mode
+        typescript-mode yaml-mode yasnippet))
  '(safe-local-variable-values '((sh-indent-comment . t) (lexical-binding . t)))
  '(tool-bar-mode nil)
  '(typescript-auto-indent-flag nil)

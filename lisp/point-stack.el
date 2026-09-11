@@ -1,5 +1,4 @@
-
-;;;;; A simple point-stack mechanism
+;;;;; A simple point-stack mechanism  -*- lexical-binding: t; -*-
 ;;
 ;; from: http://www.zafar.se/bkz/Articles/EmacsTips
 

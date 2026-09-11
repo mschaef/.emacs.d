@@ -1,4 +1,4 @@
-;;;; Text tabulate (convert into columns)
+;;;; Text tabulate (convert into columns)  -*- lexical-binding: t; -*-
 
 (defun tab-current-char-to-point (target-point)
   (let ((spaces-needed (- target-point (point))))
