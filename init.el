@@ -378,14 +378,14 @@ the current fill-column."
  ;; If there is more than one, they won't work right.
  '(develock-long-line-2 ((t (:background "gray50"))))
  '(develock-whitespace-2 ((t (:background "DarkOrange4"))))
- '(org-level-1 ((t (:inherit outline-1 :foreground "yellow" :background "gray50"))))
- '(org-level-2 ((t (:inherit outline-2 :foreground "gray80"))))
- '(org-level-3 ((t (:inherit outline-3 :foreground "gray75"))))
- '(org-level-4 ((t (:inherit outline-4 :foreground "gray70"))))
- '(org-level-5 ((t (:inherit outline-5 :foreground "gray65"))))
- '(org-level-6 ((t (:inherit outline-6 :foreground "gray60"))))
- '(org-level-7 ((t (:inherit outline-7 :foreground "gray55"))))
- '(org-level-8 ((t (:inherit outline-8 :foreground "gray50")))))
+ '(org-level-1 ((t (:inherit outline-1 :foreground "green" :background "gray10" :weight bold))))
+ '(org-level-2 ((t (:inherit outline-2 :foreground "red" :background "gray30"))))
+ '(org-level-3 ((t (:inherit outline-3 :foreground "orange" :background "gray30"))))
+ '(org-level-4 ((t (:inherit outline-4 :foreground "DarkGoldenrod2" :background "gray30"))))
+ '(org-level-5 ((t (:inherit outline-5 :foreground "DarkOliveGreen3" :background "gray30"))))
+ '(org-level-6 ((t (:inherit outline-6 :foreground "CadetBlue4" :background "gray30"))))
+ '(org-level-7 ((t (:inherit outline-7 :foreground "systemIndigoColor" :background "gray30"))))
+ '(org-level-8 ((t (:inherit outline-8 :foreground "violet" :background "gray30")))))
 
 ;;;; Customize uniquify to get more rational unique buffer names
 

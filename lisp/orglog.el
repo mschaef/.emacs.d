@@ -1,8 +1,9 @@
-;;;; orglog.el
+;;;; orglog.el  -*- lexical-binding: t; -*-
 ;;;;
 ;;;; Personal Log Support
 
 (require 'org)
+(require 'grep)
 
 (defvar orglog-root "~/.emacs.d/orglog"
   "Root directory for orglog files.")
@@ -100,7 +101,7 @@ date's topic name.)")
     (user-error "Invalid orglog date string: %s." date-str)))
 
 (defun orglog-journal-file-name (topic)
-  (concat (orglog-find-root-directory) "/journal/" topic ".orglog"))
+  (concat (orglog-find-root-directory) "/journal/" topic ".md"))
 
 (defun orglog-topic-file-name (topic)
   (concat (orglog-find-root-directory) "/" topic ".orglog"))
@@ -211,7 +212,8 @@ orglog entry."
   (save-excursion
     (newline)))
 
-(org-add-link-type "orglog-topic" 'orglog-topic-open)
+(org-link-set-parameters "orglog-topic"
+                         :follow #'orglog-topic-open)
 
 (defun orglog-topic-open (topic)
   (orglog-find-file (orglog-topic-file-name topic)))
@@ -329,8 +331,7 @@ orglog entry."
      (grep-compute-defaults)
      (list
       (read-string "Regex: " "" 'orglog-grep-history))))
-  (let ((grep-find-ignored-files nil))
-    (lgrep regex "*.orglog" (orglog-find-root-directory))))
+  (lgrep regex "*.orglog" (orglog-find-root-directory)))
 
 ;;; Thing-at-point for orglog dates
 
